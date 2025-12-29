@@ -1,0 +1,72 @@
+import 'package:farmtracker/databases/mocks/models/projeto_response_model_mock.dart';
+import 'package:farmtracker/databases/models/response/cliente_response_model.dart';
+
+ClienteResponseModel getMockCliente() => ClienteResponseModel(
+  uuid: '987fcdeb-51a3-12d3-a456-426614174000',
+  nome: 'Fazenda João Silva',
+  email: 'joao.silva@email.com',
+  celular: '11999887766',
+  observacao: 'Cliente desde 2020',
+  endereco: '456abcde-f123-12d3-a456-426614174000',
+  proprietario: 'João Silva',
+  responsavelTecnico: 'Jorge Henrique',
+  projetos: [ProjetoResponseModelMock.getMockProjeto1()],
+);
+
+List<ClienteResponseModel> getMockClientes() => [
+  ClienteResponseModel(
+    uuid: '987fcdeb-51a3-12d3-a456-426614174000',
+    nome: 'Fazenda João Silva',
+    email: 'joao.silva@email.com',
+    celular: '11999887766',
+    observacao: 'Cliente desde 2020',
+    endereco: '456abcde-f123-12d3-a456-426614174000',
+    proprietario: 'João Silva',
+    responsavelTecnico: 'Jorge Henrique',
+    projetos: [ProjetoResponseModelMock.getMockProjeto2()],
+  ),
+  ClienteResponseModel(
+    uuid: '987fcdeb-51a3-12d3-a456-426614174001',
+    nome: 'Santo Agro Indústria',
+    email: 'maria.santos@email.com',
+    celular: '11988776655',
+    observacao: 'Cliente VIP',
+    endereco: '456abcde-f123-12d3-a456-426614174001',
+    proprietario: 'Maria Santos',
+    responsavelTecnico: 'Manoel Santos',
+    projetos: [ProjetoResponseModelMock.getMockProjeto3()],
+  ),
+  ClienteResponseModel(
+    uuid: '987fcdeb-51a3-12d3-a456-426614174002',
+    nome: 'Fazend da Oliveira',
+    email: 'pedro.oliveira@email.com',
+    celular: '11977665544',
+    observacao: 'Novo cliente',
+    endereco: '456abcde-f123-12d3-a456-426614174002',
+    proprietario: 'Pedro Oliveira',
+    responsavelTecnico: 'Carlos Augusto',
+    projetos: [ProjetoResponseModelMock.getMockProjeto1()],
+  ),
+  ClienteResponseModel(
+    uuid: '987fcdeb-51a3-12d3-a456-426614174003',
+    nome: 'Fazenda Campo Largo',
+    email: 'ana.souza@email.com',
+    celular: '11966554433',
+    observacao: 'Cliente preferencial',
+    endereco: '456abcde-f123-12d3-a456-426614174003',
+    proprietario: 'Ana Souza',
+    responsavelTecnico: 'Manoel Dantas',
+    projetos: [ProjetoResponseModelMock.getMockProjeto2()],
+  ),
+  ClienteResponseModel(
+    uuid: '987fcdeb-51a3-12d3-a456-426614174004',
+    nome: 'Fazenda São Paulo',
+    email: 'carlos.ferreira@email.com',
+    celular: '11955443322',
+    observacao: 'Cliente corporativo',
+    endereco: '456abcde-f123-12d3-a456-426614174004',
+    proprietario: 'Carlos Ferreira',
+    responsavelTecnico: 'Calors Ferreira',
+    projetos: [ProjetoResponseModelMock.getMockProjeto3()],
+  ),
+];

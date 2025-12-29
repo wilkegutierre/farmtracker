@@ -1,0 +1,86 @@
+import 'package:farmtracker/databases/models/response/agenda_response_model.dart';
+import 'package:farmtracker/databases/mocks/models/cliente_response_model_mock.dart';
+import 'package:farmtracker/databases/mocks/models/motivo_agenda_response_model_mock.dart';
+import 'package:farmtracker/domains/enums/appointment_situation_enum.dart';
+
+AgendaResponseModel getMockAgenda() => AgendaResponseModel(
+  uuid: '123e4567-e89b-12d3-a456-426614174000',
+  dataCriacao: DateTime.now().millisecondsSinceEpoch,
+  //dataAgenda: DateTime.now().add(const Duration(days: 2)).millisecondsSinceEpoch,
+  dataAgenda: DateTime(2025, 12, 5).millisecondsSinceEpoch,
+  cliente: getMockCliente(),
+  descricao: 'Descrição do agendamento teste',
+  motivo: mockMotivoAgendaResponseModel(),
+  situacao: AppointmentSituationEnum.scheduled.status,
+  kmAtendimento: '10.5',
+  observacao: 'Observação do agendamento teste',
+);
+
+final List<AgendaResponseModel> mockAgendaList = [
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174001',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 6)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 9).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Reunião com equipe técnica',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.pending.status,
+    kmAtendimento: '8.2',
+    observacao: 'Discutir plano de manejo.',
+  ),
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174002',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 10)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 15).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Inspeção de solo',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.completed.status,
+    kmAtendimento: '4.6',
+    observacao: 'Solicitar amostra adicional.',
+  ),
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174003',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 24).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Visita de cliente',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.canceled.status,
+    kmAtendimento: '15.3',
+    observacao: 'Levar relatório de produção.',
+  ),
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174003',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 24).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Visita de cliente',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.canceled.status,
+    kmAtendimento: '15.3',
+    observacao: 'Levar relatório de produção.',
+  ),
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174004',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 2)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 26).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Manutenção do maquinário',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.scheduled.status,
+    kmAtendimento: '12.0',
+    observacao: 'Verificar nível de óleo.',
+  ),
+  AgendaResponseModel(
+    uuid: '123e4567-e89b-12d3-a456-426614174005',
+    dataCriacao: DateTime.now().subtract(const Duration(days: 8)).millisecondsSinceEpoch,
+    dataAgenda: DateTime(2025, 12, 5).millisecondsSinceEpoch,
+    cliente: getMockCliente(),
+    descricao: 'Capacitação de funcionários',
+    motivo: mockMotivoAgendaResponseModel(),
+    situacao: AppointmentSituationEnum.completed.status,
+    kmAtendimento: '6.7',
+    observacao: 'Providenciar material didático.',
+  ),
+];
