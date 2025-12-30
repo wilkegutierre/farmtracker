@@ -12,35 +12,27 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-            (Set<WidgetState> states) {
-              if (states.contains(WidgetState.pressed)) {
-                return AppColors.primaryTeal.withOpacity(0.5);
-              } else {
-                return colorBackground ?? AppColors.primaryTeal;
-              }
-            },
-          ),
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.pressed)) {
+            return AppColors.primaryTeal.withValues(alpha: 0.5);
+          } else {
+            return colorBackground ?? AppColors.primaryTeal;
+          }
+        }),
+      ),
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) Icon(icon, color: AppColors.white),
+            if (icon != null) const SizedBox(width: 16),
+            Text(textButton, style: AppTextStyles.button.copyWith(fontSize: 20)),
+          ],
         ),
-        onPressed: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null)
-                Icon(
-                  icon,
-                  color: AppColors.white,
-                ),
-              if (icon != null) const SizedBox(width: 16),
-              Text(
-                textButton,
-                style: AppTextStyles.button.copyWith(fontSize: 20),
-              ),
-            ],
-          ),
-        ));
+      ),
+    );
   }
 }

@@ -14,38 +14,29 @@ class CustomHttpClient implements HttpClientInterface {
   }
 
   @override
-  Future<dynamic> post(String url, String body,
-      {Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'}}) {
-    return http
-        .post(
-          Uri.parse(url),
-          headers: headers,
-          body: body,
-        )
-        .timeout(const Duration(seconds: 2));
+  Future<dynamic> post(
+    String url,
+    String body, {
+    Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'},
+  }) {
+    return http.post(Uri.parse(url), headers: headers, body: body).timeout(const Duration(seconds: 2));
   }
 
   @override
-  Future<dynamic> put(String url, String body,
-      {Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'}}) {
-    return http
-        .put(
-          Uri.parse(url),
-          headers: headers,
-          body: body,
-        )
-        .timeout(const Duration(seconds: 2));
+  Future<dynamic> put(
+    String url,
+    String body, {
+    Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'},
+  }) {
+    return http.put(Uri.parse(url), headers: headers, body: body).timeout(const Duration(seconds: 2));
   }
 
   @override
-  Future<dynamic> delete(String url, String body,
-      {Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'}}) {
-    return http
-        .delete(
-          Uri.parse(url),
-          headers: headers,
-          body: body,
-        )
-        .timeout(const Duration(seconds: 2));
+  Future<dynamic> delete(
+    String url,
+    String body, {
+    Map<String, String>? headers = const {'Content-Type': 'application/json; charset=UTF-8'},
+  }) {
+    return http.delete(Uri.parse(url), headers: headers, body: body).timeout(const Duration(seconds: 2));
   }
 }

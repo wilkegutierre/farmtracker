@@ -1,9 +1,7 @@
-import 'dart:math';
-
 import 'package:farmtracker/databases/local/repositories/projeto_local_repository.dart';
 import 'package:farmtracker/domains/models/projeto_model.dart';
 import 'package:farmtracker/views/viewmodels/projeto/projeto_data.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class ProjetoViewmodel extends ChangeNotifier {
@@ -64,7 +62,9 @@ class ProjetoViewmodel extends ChangeNotifier {
     await _projetoRepository.alterar(projeto).then((result) {
       result.fold(
         (success) {
-          print(success);
+          if (kDebugMode) {
+            print(success);
+          }
           notifyListeners();
         },
         (failure) {

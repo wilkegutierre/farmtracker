@@ -1,4 +1,3 @@
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/farmtracker_database.dart';
 import 'package:farmtracker/databases/local/repositories/cliente_local_repository.dart';
@@ -20,10 +19,7 @@ class ClienteDatabaseImpl implements ClienteLocalRepository {
       String whereField = 'nome';
       final data = await db.query(clienteTable, where: '$whereField = ?', whereArgs: [nome]);
       if (data.isNotEmpty) {
-        final result = List<Map<String, dynamic>>.generate(
-          data.length,
-          (index) => Map<String, dynamic>.from(data[index]),
-        ).first;
+        List<Map<String, dynamic>>.generate(data.length, (index) => Map<String, dynamic>.from(data[index])).first;
         //return Success(ClienteResponseModel.fromJson(result));
         return Success(getMockCliente());
       }
@@ -40,10 +36,7 @@ class ClienteDatabaseImpl implements ClienteLocalRepository {
       String whereField = 'uuid';
       final data = await db.query(clienteTable, where: '$whereField = ?', whereArgs: [uuid]);
       if (data.isNotEmpty) {
-        final result = List<Map<String, dynamic>>.generate(
-          data.length,
-          (index) => Map<String, dynamic>.from(data[index]),
-        ).first;
+        List<Map<String, dynamic>>.generate(data.length, (index) => Map<String, dynamic>.from(data[index])).first;
         //return Success(ClienteResponseModel.fromJson(result));
         return Success(getMockCliente());
       }

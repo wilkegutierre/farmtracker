@@ -14,7 +14,6 @@ class _LotePageState extends State<LotePage> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
 
-
   final List<_LoteItem> _lotes = [
     const _LoteItem(title: 'Seção A do Campo Norte', detail: 'Solo rico em argila, adequado para milho.'),
     const _LoteItem(title: 'Talhão Oeste — Melancias', detail: 'Solo arenoso, requer irrigação frequente.'),
@@ -26,10 +25,7 @@ class _LotePageState extends State<LotePage> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
-        title: Text(
-          'Lote',
-          style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.w800),
-        ),
+        title: Text('Lote', style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.w800)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -76,10 +72,7 @@ class _LotePageState extends State<LotePage> {
                     context,
                   ).showSnackBar(const SnackBar(content: Text('Lote adicionado (exemplo estático)')));
                 },
-                child: Text(
-                  'Adicionar Lote',
-                  style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
-                ),
+                child: Text('Adicionar Lote', style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700)),
               ),
             ),
             const SizedBox(height: 28),
@@ -145,7 +138,7 @@ class _LoteCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.6)),
+            border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

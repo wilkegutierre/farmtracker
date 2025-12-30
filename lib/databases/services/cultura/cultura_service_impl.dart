@@ -1,13 +1,11 @@
-import 'dart:convert';
-
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/errors/http_error.dart';
 import 'package:farmtracker/databases/mocks/models/cultura_response_model_mock.dart';
+import 'package:farmtracker/databases/mocks/services/base_service_mock.dart';
 import 'package:farmtracker/databases/models/response/cultura_response_model.dart';
 import 'package:farmtracker/databases/services/cultura/cultura_service.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
-import 'package:farmtracker/databases/mocks/services/base_service_mock.dart';
 import 'package:farmtracker/enviroment.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -25,6 +23,9 @@ class CutluraServiceImpl with BaseServiceMockMixin implements CulturaService {
       }).fold(
         (success) {
           final Response(:body) = success;
+          if (kDebugMode) {
+            print(body);
+          }
           // Map<String, dynamic> element = jsonDecode(body);
           // List<CulturaResponseModel> culturasResult = [];
           // for (var item in element as List) {

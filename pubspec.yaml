@@ -102,6 +102,7 @@ dependencies:
 
   # Ambientes
   flutter_dotenv: ^6.0.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

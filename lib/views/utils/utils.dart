@@ -7,7 +7,10 @@ import 'package:form_field_validator/form_field_validator.dart';
 
 ///Retorna um MaterialApp com o widget passado como filho
 MaterialApp buildTestableWidget(Key testkey, Widget widget) {
-  return MaterialApp(key: testkey, home: RxRoot(child: widget));
+  return MaterialApp(
+    key: testkey,
+    home: RxRoot(child: widget),
+  );
 }
 
 MultiValidator cpfCnpjPatternValidator(int length, {String? textError}) {
@@ -17,12 +20,12 @@ MultiValidator cpfCnpjPatternValidator(int length, {String? textError}) {
   if ((length > 0) && (length > cpfLength) && (length < cnpjLength || length > cnpjLength)) {
     return MultiValidator([
       PatternValidator(PatternsEnum.cnpj.pattern, errorText: 'CNPJ inválido!'),
-      RequiredValidator(errorText: textError ?? 'Informe o CNPJ ou CPF!')
+      RequiredValidator(errorText: textError ?? 'Informe o CNPJ ou CPF!'),
     ]);
   } else if (length > 0 && length < cpfLength) {
     return MultiValidator([
       PatternValidator(PatternsEnum.cpf.pattern, errorText: 'CPF inválido!.'),
-      RequiredValidator(errorText: textError ?? 'Informe o CNPJ ou CPF!')
+      RequiredValidator(errorText: textError ?? 'Informe o CNPJ ou CPF!'),
     ]);
   } else {
     return MultiValidator([]);
@@ -30,52 +33,52 @@ MultiValidator cpfCnpjPatternValidator(int length, {String? textError}) {
 }
 
 MultiValidator telefoneValidator({String textError = 'Telefone inválido!'}) => MultiValidator([
-      PatternValidator(PatternsEnum.telefone.pattern, errorText: textError),
-      RequiredValidator(errorText: 'Informe o telefone!')
-    ]);
+  PatternValidator(PatternsEnum.telefone.pattern, errorText: textError),
+  RequiredValidator(errorText: 'Informe o telefone!'),
+]);
 
-MultiValidator cepValidator({String textError = 'CEP inválido!'}) => MultiValidator(
-    [PatternValidator(PatternsEnum.cep.pattern, errorText: textError), RequiredValidator(errorText: 'Informe o CEP!')]);
+MultiValidator cepValidator({String textError = 'CEP inválido!'}) => MultiValidator([
+  PatternValidator(PatternsEnum.cep.pattern, errorText: textError),
+  RequiredValidator(errorText: 'Informe o CEP!'),
+]);
 
 ///Exibe uma mensagen em um MaterialBanner.
 ///O tempo padrão de exibição da mensagem [duration] é 4 segundos.
 ///Se o booleano [isError] for true a cor de background será vermelha.
-showBanner(
-    {required BuildContext context,
-    required String message,
-    Duration duration = const Duration(seconds: 4),
-    bool isError = false}) {
+showBanner({
+  required BuildContext context,
+  required String message,
+  Duration duration = const Duration(seconds: 4),
+  bool isError = false,
+}) {
   ScaffoldMessenger.of(context).showMaterialBanner(
     MaterialBanner(
-        content: isError
-            ? CustomTextError(
-                textError: message,
-                showIcon: false,
-              )
-            : Text(message),
-        backgroundColor: isError ? Colors.redAccent.withOpacity(.3) : Colors.grey.withOpacity(.3),
-        actions: const [Text('')]),
+      content: isError ? CustomTextError(textError: message, showIcon: false) : Text(message),
+      backgroundColor: isError ? Colors.redAccent.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.3),
+      actions: const [Text('')],
+    ),
   );
-  Future.delayed(duration, () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+
+  Future.delayed(duration, () {
+    if (context.mounted) {
+      return ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+    }
+  });
 }
 
 ///Exibe uma mensagen em uma Snackbar.
 ///O tempo padrão de exibição da mensagem [duration] é 4 segundos.
 ///Se o booleano [isError] for true a cor de background será vermelha.
-showSnackBar(
-    {required BuildContext context,
-    required String message,
-    Duration duration = const Duration(seconds: 4),
-    bool isError = false}) {
+showSnackBar({
+  required BuildContext context,
+  required String message,
+  Duration duration = const Duration(seconds: 4),
+  bool isError = false,
+}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       duration: duration,
-      content: isError
-          ? CustomTextError(
-              textError: message,
-              showIcon: false,
-            )
-          : Text(message),
+      content: isError ? CustomTextError(textError: message, showIcon: false) : Text(message),
       backgroundColor: isError ? Colors.red : null,
     ),
   );
@@ -88,10 +91,5 @@ Future<DateTime?> getDateTime({
   required DateTime firstDate,
   required DateTime lastDate,
 }) async {
-  return await showDatePicker(
-    context: context,
-    initialDate: initialDate,
-    firstDate: firstDate,
-    lastDate: lastDate,
-  );
+  return await showDatePicker(context: context, initialDate: initialDate, firstDate: firstDate, lastDate: lastDate);
 }

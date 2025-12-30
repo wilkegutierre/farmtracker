@@ -88,7 +88,7 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
         hintText: 'Buscar clientes...',
         prefixIcon: const Icon(Icons.search),
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
         contentPadding: const EdgeInsets.symmetric(vertical: 14),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
       ),

@@ -1,4 +1,3 @@
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/models/request/login_user_request_model.dart';
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
 import 'package:farmtracker/domains/models/usuario_model.dart';

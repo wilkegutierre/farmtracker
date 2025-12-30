@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:farmtracker/domains/models/cliente_cultura_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'cliente_cultura_response_model.g.dart';
@@ -13,14 +12,8 @@ class ClienteCulturaResponseModel with EquatableMixin {
 
   ClienteCulturaResponseModel({required this.cliente, required this.cultura});
 
-  ClienteCulturaResponseModel copyWith({
-    String? cliente,
-    String? cultura,
-  }) {
-    return ClienteCulturaResponseModel(
-      cliente: cliente ?? this.cliente,
-      cultura: cultura ?? this.cultura,
-    );
+  ClienteCulturaResponseModel copyWith({String? cliente, String? cultura}) {
+    return ClienteCulturaResponseModel(cliente: cliente ?? this.cliente, cultura: cultura ?? this.cultura);
   }
 
   @override

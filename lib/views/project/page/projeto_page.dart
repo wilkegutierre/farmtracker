@@ -111,7 +111,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surfaceContainerLowest,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.6)),
+                              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6)),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,55 +172,10 @@ class _ProjetoPageState extends State<ProjetoPage> {
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: scheme.surfaceVariant.withOpacity(0.35),
+        fillColor: scheme.surfaceContainerHighest.withValues(alpha: 0.35),
         border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
-  }
-
-  bool _camposInvalidos() {
-    if (_nomeController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informe o nome do projeto')));
-      return true;
-    }
-    if (_descricaoController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informe a descrição do projeto')));
-      return true;
-    }
-    return false;
-  }
-
-  void _limparCampos() {
-    _uuidSelecionado = null;
-    _nomeController.clear();
-    _descricaoController.clear();
-    setState(() {});
-  }
-
-  Future<void> _carregarProjetos() async {
-    await projetoViewmodel.buscarPorCliente(clienteViewmodel.data.clienteSelecinado!.uuid);
-  }
-
-  Future<void> _alterar() async {
-    await projetoViewmodel
-        .alterar(
-          _uuidSelecionado!,
-          clienteViewmodel.data.clienteSelecinado!.uuid,
-          _nomeController.text,
-          _descricaoController.text,
-        )
-        .then((_) async {
-          await projetoViewmodel.buscarPorCliente(clienteViewmodel.data.clienteSelecinado!.uuid);
-        });
-  }
-
-  Future<void> _adicionar() async {
-    _uuidSelecionado = null;
-    await projetoViewmodel
-        .adicionar(clienteViewmodel.data.clienteSelecinado!.uuid, _nomeController.text, _descricaoController.text)
-        .then((_) async {
-          await projetoViewmodel.buscarPorCliente(clienteViewmodel.data.clienteSelecinado!.uuid);
-        });
   }
 }

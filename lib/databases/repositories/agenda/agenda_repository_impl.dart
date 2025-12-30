@@ -1,4 +1,3 @@
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/errors/http_error.dart';
 import 'package:farmtracker/databases/models/request/agenda_request_model.dart';
 import 'package:farmtracker/databases/models/response/agenda_response_model.dart';

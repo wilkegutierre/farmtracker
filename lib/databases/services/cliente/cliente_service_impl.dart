@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/mocks/models/cliente_response_model_mock.dart';
+import 'package:farmtracker/databases/mocks/services/base_service_mock.dart';
 import 'package:farmtracker/databases/models/response/cliente_response_model.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
-import 'package:farmtracker/databases/mocks/services/base_service_mock.dart';
 import 'package:farmtracker/enviroment.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -44,6 +44,9 @@ class ClienteServiceImpl with BaseServiceMockMixin implements ClienteService {
       }).fold(
         (response) {
           final Response(:body) = response;
+          if (kDebugMode) {
+            print(body);
+          }
           // Map<String, dynamic> element = jsonDecode(body);
           // List<ClienteResponseModel> clientesResult = [];
           // for (var item in element as List) {

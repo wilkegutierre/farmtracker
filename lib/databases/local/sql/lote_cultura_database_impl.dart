@@ -1,4 +1,3 @@
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/farmtracker_database.dart';
 import 'package:farmtracker/databases/local/repositories/lote_cultura_local_repository.dart';

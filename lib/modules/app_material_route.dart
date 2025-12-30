@@ -1,8 +1,8 @@
 import 'package:farmtracker/views/core/theme/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class AppMaterialRoute extends StatelessWidget {
   const AppMaterialRoute({super.key});

@@ -1,4 +1,3 @@
-import 'package:farmtracker/databases/errors/app_failure_interface.dart';
 import 'package:farmtracker/databases/errors/http_error.dart';
 import 'package:farmtracker/databases/models/response/motivo_agenda_response_model.dart';
 import 'package:farmtracker/databases/services/motivo_agenda/motivo_agenda_service.dart';
