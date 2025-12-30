@@ -39,7 +39,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   List<AgendaResponseModel> _getAgendaMOck(DateTime? date) {
     if (date == null) return [];
-    final key = _getDateKey(date);
+    _getDateKey(date);
     // Converta a data para o começo do dia em milissegundos para comparar
     final dayStart = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
     return mockAgendaList.where((agenda) {
@@ -278,7 +278,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     }
 
-    final monthName = DateFormat('MMM', 'pt_BR').format(_selectedDate!);
+    //final monthName = DateFormat('MMM', 'pt_BR').format(_selectedDate!);
     final day = _selectedDate!.day;
     final appointments = _getAgendaMOck(_selectedDate);
 

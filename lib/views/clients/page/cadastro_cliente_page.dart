@@ -251,7 +251,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: scheme.surfaceVariant.withOpacity(0.35),
+        fillColor: scheme.surfaceContainerHighest.withValues(alpha: 0.35),
         border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
@@ -265,7 +265,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
   }
 
   Widget _buildCulturasBox(ThemeData theme) {
-    final Color border = theme.colorScheme.outlineVariant.withOpacity(0.6);
+    final Color border = theme.colorScheme.outlineVariant.withValues(alpha: 0.6);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -394,7 +394,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                         ),
                         const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-                          value: culturaSelecionada,
+                          initialValue: culturaSelecionada,
                           decoration: const InputDecoration(
                             hintText: 'Selecione a cultura',
                             border: OutlineInputBorder(),
