@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'project_lot_culture_model.g.dart';
+part 'response_project_lot_culture_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class ProjectLotCultureModel with EquatableMixin {
+class ResponseProjectLotCultureModel with EquatableMixin {
   final String uuid;
   final String costumer;
   final String path;
@@ -15,7 +15,7 @@ class ProjectLotCultureModel with EquatableMixin {
   final String culture;
   final double hectareCulture;
 
-  ProjectLotCultureModel({
+  ResponseProjectLotCultureModel({
     required this.uuid,
     required this.costumer,
     required this.path,
@@ -25,7 +25,7 @@ class ProjectLotCultureModel with EquatableMixin {
     required this.hectareCulture,
   });
 
-  ProjectLotCultureModel copyWith({
+  ResponseProjectLotCultureModel copyWith({
     String? uuid,
     String? costumer,
     String? path,
@@ -34,7 +34,7 @@ class ProjectLotCultureModel with EquatableMixin {
     String? culture,
     double? hectareCulture,
   }) {
-    return ProjectLotCultureModel(
+    return ResponseProjectLotCultureModel(
       uuid: uuid ?? this.uuid,
       costumer: costumer ?? this.costumer,
       path: path ?? this.path,
@@ -51,9 +51,10 @@ class ProjectLotCultureModel with EquatableMixin {
   @override
   bool? get stringify => true;
 
-  Map<String, dynamic> toJson() => _$ProjectLotCultureModelToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseProjectLotCultureModelToJson(this);
 
-  factory ProjectLotCultureModel.fromJson(Map<String, dynamic> json) => _$ProjectLotCultureModelFromJson(json);
+  factory ResponseProjectLotCultureModel.fromJson(Map<String, dynamic> json) =>
+      _$ResponseProjectLotCultureModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 }

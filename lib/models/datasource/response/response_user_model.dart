@@ -3,20 +3,26 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'user_model.g.dart';
+part 'response_user_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class UserModel with EquatableMixin {
+class ResponseUserModel with EquatableMixin {
   final String id;
   final String name;
   final String password;
   final String email;
   final String phone;
 
-  UserModel({required this.id, required this.name, required this.password, required this.email, required this.phone});
+  ResponseUserModel({
+    required this.id,
+    required this.name,
+    required this.password,
+    required this.email,
+    required this.phone,
+  });
 
-  UserModel copyWith({String? id, String? name, String? password, String? email, String? phone}) {
-    return UserModel(
+  ResponseUserModel copyWith({String? id, String? name, String? password, String? email, String? phone}) {
+    return ResponseUserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       password: password ?? this.password,
@@ -31,9 +37,9 @@ class UserModel with EquatableMixin {
   @override
   bool? get stringify => true;
 
-  Map<String, dynamic> toJson() => _$UserModelToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseUserModelToJson(this);
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory ResponseUserModel.fromJson(Map<String, dynamic> json) => _$ResponseUserModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 }

@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'costumer_model.g.dart';
+part 'response_costumer_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class CostumerModel with EquatableMixin {
+class ResponseCostumerModel with EquatableMixin {
   final String uuid;
   final String name;
   final String propertieName;
@@ -14,7 +14,7 @@ class CostumerModel with EquatableMixin {
   final String email;
   final String phone;
 
-  CostumerModel({
+  ResponseCostumerModel({
     required this.uuid,
     required this.name,
     required this.propertieName,
@@ -23,7 +23,7 @@ class CostumerModel with EquatableMixin {
     required this.phone,
   });
 
-  CostumerModel copyWith({
+  ResponseCostumerModel copyWith({
     String? uuid,
     String? name,
     String? propertieName,
@@ -31,7 +31,7 @@ class CostumerModel with EquatableMixin {
     String? email,
     String? phone,
   }) {
-    return CostumerModel(
+    return ResponseCostumerModel(
       uuid: uuid ?? this.uuid,
       name: name ?? this.name,
       propertieName: propertieName ?? this.propertieName,
@@ -47,9 +47,9 @@ class CostumerModel with EquatableMixin {
   @override
   bool? get stringify => true;
 
-  Map<String, dynamic> toJson() => _$CostumerModelToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseCostumerModelToJson(this);
 
-  factory CostumerModel.fromJson(Map<String, dynamic> json) => _$CostumerModelFromJson(json);
+  factory ResponseCostumerModel.fromJson(Map<String, dynamic> json) => _$ResponseCostumerModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 }

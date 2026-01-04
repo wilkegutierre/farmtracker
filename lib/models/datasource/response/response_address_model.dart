@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'address_model.g.dart';
+part 'response_address_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class AddressModel with EquatableMixin {
+class ResponseAddressModel with EquatableMixin {
   final String uuid;
   final String owner;
   final String street;
@@ -18,7 +18,7 @@ class AddressModel with EquatableMixin {
   final String supplement;
   final String referencePoint;
 
-  AddressModel({
+  ResponseAddressModel({
     required this.uuid,
     required this.owner,
     required this.street,
@@ -31,7 +31,7 @@ class AddressModel with EquatableMixin {
     required this.referencePoint,
   });
 
-  AddressModel copyWith({
+  ResponseAddressModel copyWith({
     String? uuid,
     String? owner,
     String? street,
@@ -43,7 +43,7 @@ class AddressModel with EquatableMixin {
     String? supplement,
     String? referencePoint,
   }) {
-    return AddressModel(
+    return ResponseAddressModel(
       uuid: uuid ?? this.uuid,
       owner: owner ?? this.owner,
       street: street ?? this.street,
@@ -74,9 +74,9 @@ class AddressModel with EquatableMixin {
   @override
   bool? get stringify => true;
 
-  Map<String, dynamic> toJson() => _$AddressModelToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseAddressModelToJson(this);
 
-  factory AddressModel.fromJson(Map<String, dynamic> json) => _$AddressModelFromJson(json);
+  factory ResponseAddressModel.fromJson(Map<String, dynamic> json) => _$ResponseAddressModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 }

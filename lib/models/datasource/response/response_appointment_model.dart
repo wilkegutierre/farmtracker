@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'appointment_model.g.dart';
+part 'response_appointment_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class AppointmentModel with EquatableMixin {
+class ResponseAppointmentModel with EquatableMixin {
   final String uuid;
   final String user;
   final String costumer;
@@ -16,7 +16,7 @@ class AppointmentModel with EquatableMixin {
   final String todo;
   final int status;
 
-  AppointmentModel({
+  ResponseAppointmentModel({
     required this.uuid,
     required this.user,
     required this.costumer,
@@ -27,7 +27,7 @@ class AppointmentModel with EquatableMixin {
     required this.status,
   });
 
-  AppointmentModel copyWith({
+  ResponseAppointmentModel copyWith({
     String? uuid,
     String? user,
     String? costumer,
@@ -37,7 +37,7 @@ class AppointmentModel with EquatableMixin {
     String? todo,
     int? status,
   }) {
-    return AppointmentModel(
+    return ResponseAppointmentModel(
       uuid: uuid ?? this.uuid,
       user: user ?? this.user,
       costumer: costumer ?? this.costumer,
@@ -49,9 +49,9 @@ class AppointmentModel with EquatableMixin {
     );
   }
 
-  Map<String, dynamic> toJson() => _$AppointmentModelToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseAppointmentModelToJson(this);
 
-  factory AppointmentModel.fromJson(Map<String, dynamic> json) => _$AppointmentModelFromJson(json);
+  factory ResponseAppointmentModel.fromJson(Map<String, dynamic> json) => _$ResponseAppointmentModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 
