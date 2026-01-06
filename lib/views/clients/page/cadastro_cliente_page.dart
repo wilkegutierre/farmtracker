@@ -125,7 +125,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildTitulo('Rua'),
-                          _buildField(_ruaController, hintText: 'Rua'),
+                          _buildField(_ruaController, hintText: 'Rua', validate: false),
                         ],
                       ),
                     ),
@@ -135,7 +135,12 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildTitulo('Número'),
-                          _buildField(_numeroController, hintText: 'Nº', keyboardType: TextInputType.number),
+                          _buildField(
+                            _numeroController,
+                            hintText: 'Nº',
+                            keyboardType: TextInputType.number,
+                            validate: false,
+                          ),
                         ],
                       ),
                     ),
@@ -149,7 +154,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildTitulo('Bairro'),
-                          _buildField(_bairroController, hintText: 'Bairro'),
+                          _buildField(_bairroController, hintText: 'Bairro', validate: false),
                         ],
                       ),
                     ),
@@ -164,6 +169,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                             hintText: '00000-000',
                             keyboardType: TextInputType.number,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            validate: false,
                           ),
                         ],
                       ),
@@ -178,7 +184,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildTitulo('Cidade'),
-                          _buildField(_cidadeController, hintText: 'Cidade'),
+                          _buildField(_cidadeController, hintText: 'Cidade', validate: false),
                         ],
                       ),
                     ),
@@ -193,6 +199,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                             _estadoController,
                             hintText: 'UF',
                             textCapitalization: TextCapitalization.characters,
+                            validate: false,
                           ),
                         ],
                       ),
@@ -201,10 +208,10 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                 ),
                 const SizedBox(height: 12),
                 _buildTitulo('Complemento'),
-                _buildField(_complementoController, hintText: 'Complemento'),
+                _buildField(_complementoController, hintText: 'Complemento', validate: false),
                 const SizedBox(height: 12),
                 _buildTitulo('Referência'),
-                _buildField(_referenciaController, hintText: 'Ponto de referência'),
+                _buildField(_referenciaController, hintText: 'Ponto de referência', validate: false),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -241,6 +248,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
     TextCapitalization textCapitalization = TextCapitalization.none,
+    bool validate = true,
   }) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return TextFormField(
@@ -256,7 +264,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       validator: (value) {
-        if (value == null || value.trim().isEmpty) {
+        if (validate && (value == null || value.trim().isEmpty)) {
           return 'Campo obrigatório';
         }
         return null;
@@ -270,14 +278,16 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
+        color: _culturas.isEmpty ? AppColors.error : theme.colorScheme.surfaceContainerLowest,
         border: Border.all(color: border, style: BorderStyle.solid),
         borderRadius: BorderRadius.circular(16),
       ),
       child: _culturas.isEmpty
           ? Text(
               'Nenhuma cultura adicionada',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: _culturas.isEmpty ? AppColors.white : AppColors.textSecondary,
+              ),
             )
           : Wrap(
               spacing: 8,

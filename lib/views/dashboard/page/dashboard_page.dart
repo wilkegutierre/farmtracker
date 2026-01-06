@@ -263,12 +263,12 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Compromissos', style: AppTextStyles.headlineSmall),
+            Text('Agenda(s)', style: AppTextStyles.headlineSmall),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Selecione um dia no calendário para ver os compromissos',
+                'Selecione um dia no calendário para ver a agenda',
                 style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
             ),
@@ -286,7 +286,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Compromissos para o dia $day', style: AppTextStyles.headlineSmall),
+          Text('Agenda para o dia $day', style: AppTextStyles.headlineSmall),
           const SizedBox(height: 16),
           if (appointments.isEmpty)
             Padding(
@@ -310,8 +310,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
 
                     time: DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(appointment.dataAgenda)),
-                    title: appointment.descricao,
-                    location: appointment.cliente.nome,
+                    title: appointment.cliente.nome,
+                    location: 'Projeto-lote do cliente',
                     status: appointment.situacao,
                   ),
                 ],

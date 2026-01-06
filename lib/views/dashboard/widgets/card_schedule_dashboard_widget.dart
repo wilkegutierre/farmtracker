@@ -23,15 +23,15 @@ class CardScheduleDashboardWidget extends StatelessWidget {
   String _getStatusText() {
     switch (status) {
       case 0:
-        return 'Confirmado';
+        return 'Realizada';
       case 1:
         return 'Cancelado';
       case 2:
-        return 'Confirmado';
+        return 'Realizada';
       case 3:
         return 'Pendente';
       default:
-        return 'Confirmado';
+        return 'Realizada';
     }
   }
 
@@ -77,15 +77,8 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
+
                     // Title
-                    Text(
-                      title,
-                      style: AppTextStyles.titleMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
                     // Location with icon
                     Row(
                       children: [
@@ -93,12 +86,17 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            location,
-                            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                            title,
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 6),
+                    Text(location, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
                   ],
                 ),
               ),

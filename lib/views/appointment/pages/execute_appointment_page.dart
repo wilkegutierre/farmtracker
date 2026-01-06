@@ -100,7 +100,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Appointment Completed
-                    _buildLabel('Visita Concluída'),
+                    _buildLabel('A visita foi realizada?'),
                     const SizedBox(height: 4),
                     Text(
                       'Marque se a visita foi bem-sucedida',
