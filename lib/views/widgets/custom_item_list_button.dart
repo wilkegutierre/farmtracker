@@ -7,6 +7,7 @@ class CustomItemCardEditDelete extends StatelessWidget {
   final void Function()? onPressedCard;
   final void Function()? onPressedEdit;
   final void Function()? onPressedDelete;
+
   const CustomItemCardEditDelete({
     super.key,
     required this.title,
@@ -19,14 +20,21 @@ class CustomItemCardEditDelete extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+
     return Card(
+      elevation: 0,
+      color: scheme.surfaceContainer,
       child: Row(
         children: [
           Expanded(
             child: ListTile(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text(title), Container()],
+                children: [
+                  Expanded(child: Text(title, style: TextStyle(color: scheme.onSurface))),
+                  Container(),
+                ],
               ),
               subtitle: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -35,29 +43,19 @@ class CustomItemCardEditDelete extends StatelessWidget {
               onTap: onPressedCard,
             ),
           ),
-          showButtons
-              ? Row(
-                  children: [
-                    IconButton(
-                      onPressed: onPressedEdit,
-                      icon: const Icon(
-                        Icons.mode_edit_rounded,
-                        size: 25,
-                      ),
-                      color: Colors.blue,
-                    ),
-                    IconButton(
-                      onPressed: onPressedDelete,
-                      icon: const Icon(
-                        Icons.delete_forever,
-                        color: Colors.red,
-                        size: 25,
-                      ),
-                      color: Colors.blue,
-                    ),
-                  ],
-                )
-              : Container(),
+          if (showButtons)
+            Row(
+              children: [
+                IconButton(
+                  onPressed: onPressedEdit,
+                  icon: Icon(Icons.mode_edit_rounded, size: 25, color: scheme.primary),
+                ),
+                IconButton(
+                  onPressed: onPressedDelete,
+                  icon: Icon(Icons.delete_forever, color: scheme.error, size: 25),
+                ),
+              ],
+            ),
         ],
       ),
     );

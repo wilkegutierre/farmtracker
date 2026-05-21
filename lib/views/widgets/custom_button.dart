@@ -1,4 +1,5 @@
 import 'package:farmtracker/views/core/style/app_colors.dart';
+import 'package:farmtracker/views/core/style/app_spacing.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -7,30 +8,57 @@ class CustomButton extends StatelessWidget {
   final void Function()? onPressed;
   final String textButton;
   final Color? colorBackground;
-  const CustomButton({super.key, this.onPressed, required this.textButton, this.icon, this.colorBackground});
+
+  const CustomButton({
+    super.key,
+    this.onPressed,
+    required this.textButton,
+    this.icon,
+    this.colorBackground,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.pressed)) {
-            return AppColors.primaryTeal.withValues(alpha: 0.5);
-          } else {
-            return colorBackground ?? AppColors.primaryTeal;
-          }
-        }),
-      ),
-      onPressed: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) Icon(icon, color: AppColors.white),
-            if (icon != null) const SizedBox(width: 16),
-            Text(textButton, style: AppTextStyles.button.copyWith(fontSize: 20)),
-          ],
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final bool useGradient = colorBackground == null;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+            gradient: useGradient ? AppColors.primaryCtaGradient : null,
+            color: useGradient ? null : colorBackground,
+            boxShadow: onPressed == null
+                ? null
+                : [
+                    BoxShadow(
+                      color: AppColors.ambientShadow,
+                      offset: const Offset(0, 8),
+                      blurRadius: 24,
+                    ),
+                  ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) Icon(icon, color: scheme.onPrimary),
+                if (icon != null) const SizedBox(width: 16),
+                Text(
+                  textButton,
+                  style: AppTextStyles.button.copyWith(
+                    color: scheme.onPrimary,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

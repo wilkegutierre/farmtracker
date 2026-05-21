@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -120,11 +119,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
               Text(clientName, style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               // Nome da fazenda
-              Text(farmName, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
-              Text(projectTitle, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
+              Text(
+                farmName,
+                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              Text(
+                projectTitle,
+                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
               Text(
                 'Lote #$projectBatch - ${projectArea.toString()} Ha',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
 
               const SizedBox(height: 32),
@@ -168,9 +173,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita agendada!')));
           Modular.to.popUntil((route) => route.settings.name == '/');
         },
-        backgroundColor: AppColors.primaryTealDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Icon(Icons.save, color: AppColors.white),
+        child: const Icon(Icons.save),
       ),
     );
   }
@@ -219,12 +222,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today, size: 20, color: AppColors.textSecondary),
+            Icon(Icons.calendar_today, size: 20, color: colorScheme.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 value ?? 'Select date',
-                style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : AppColors.textSecondary),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: value != null ? null : colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -247,12 +252,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
         ),
         child: Row(
           children: [
-            Icon(Icons.access_time, size: 20, color: AppColors.textSecondary),
+            Icon(Icons.access_time, size: 20, color: colorScheme.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 value ?? 'Select time',
-                style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : AppColors.textSecondary),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: value != null ? null : colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -277,9 +284,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
           isExpanded: true,
           hint: Text(
             'Selecione o tipo de visita',
-            style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant),
           ),
-          icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+          icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
           style: AppTextStyles.bodyLarge,
           dropdownColor: colorScheme.surface,
           onChanged: (String? newValue) {

@@ -60,9 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
       body: SingleChildScrollView(child: Column(children: [_buildCalendarSection(), _buildAppointmentsSection()])),
       floatingActionButton: FloatingActionButton(
         onPressed: _handleFloatingActionButton,
-        backgroundColor: AppColors.primaryTealDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Icon(Icons.add, color: AppColors.white),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -73,17 +71,17 @@ class _DashboardPageState extends State<DashboardPage> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: AppColors.primaryTeal),
+            decoration: const BoxDecoration(gradient: AppColors.primaryCtaGradient),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
                   'FarmTracker',
-                  style: AppTextStyles.headlineMedium.copyWith(color: AppColors.white, fontWeight: FontWeight.bold),
+                  style: AppTextStyles.headlineMedium.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Text('Menu', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.white)),
+                Text('Menu', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.onPrimary)),
               ],
             ),
           ),
@@ -95,7 +93,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Navigator.of(context).pushNamed('/clienteRelacao');
             },
           ),
-          const Divider(),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -205,7 +203,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
-                          ? AppColors.primaryTealDark
+                          ? Theme.of(context).colorScheme.primary
                           : isOverdue
                           ? AppColors.warning.withValues(alpha: 0.2)
                           : hasEvent
@@ -219,7 +217,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           '$dayNumber',
                           style: AppTextStyles.bodySmall.copyWith(
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AppColors.white : Theme.of(context).textTheme.bodySmall?.color,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).textTheme.bodySmall?.color,
                           ),
                         ),
                         if ((hasEvent || isOverdue) && !isSelected)
@@ -269,7 +269,7 @@ class _DashboardPageState extends State<DashboardPage> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Selecione um dia no calendário para ver a agenda',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
           ],
@@ -293,7 +293,7 @@ class _DashboardPageState extends State<DashboardPage> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Nenhum compromisso agendado para este dia',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -335,7 +335,7 @@ class _DayLabel extends StatelessWidget {
       child: Text(
         label,
         textAlign: TextAlign.center,
-        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+        style: AppTextStyles.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:farmtracker/views/core/style/app_spacing.dart';
+import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardClient extends StatelessWidget {
@@ -5,36 +7,49 @@ class CustomCardClient extends StatelessWidget {
   final String city;
   final String coreName;
 
-  const CustomCardClient({super.key, required this.clientName, required this.city, required this.coreName});
+  const CustomCardClient({
+    super.key,
+    required this.clientName,
+    required this.city,
+    required this.coreName,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: GestureDetector(
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: scheme.surfaceContainer,
+      elevation: 0,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: () {},
-        child: Card(
-          elevation: 10,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Row(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.s4 + AppSpacing.s2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(clientName, style: TextStyle(color: Colors.black, fontSize: 16)),
-                          Text(coreName, style: TextStyle(color: Colors.black, fontSize: 16)),
-                        ],
-                      ),
-                      Row(
-                        children: [Text(city, style: TextStyle(color: Colors.grey[700], fontSize: 16))],
-                      ),
-                    ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      clientName,
+                      style: AppTextStyles.titleMedium.copyWith(color: scheme.onSurface),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: AppSpacing.s2),
+                  Text(
+                    coreName,
+                    style: AppTextStyles.labelMedium.copyWith(color: scheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.s2),
+              Text(
+                city,
+                style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),

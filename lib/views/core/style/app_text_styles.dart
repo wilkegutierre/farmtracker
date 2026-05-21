@@ -1,184 +1,167 @@
+import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+/// Typography: Manrope (editorial) + Inter (data). Sizes follow design_system.md.
 class AppTextStyles {
-  static const String _fontFamily = 'Inter';
+  AppTextStyles._();
 
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  // —— Display LG — Manrope 3.5rem Bold — hero metrics ——
+  static TextStyle get displayLarge => GoogleFonts.manrope(
+        fontSize: 56,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+        height: 1.15,
+      );
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  static TextStyle get displayMedium => GoogleFonts.manrope(
+        fontSize: 40,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+        height: 1.15,
+      );
 
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  static TextStyle get displaySmall => GoogleFonts.manrope(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
+        height: 1.2,
+      );
 
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  // —— Headline MD — Manrope 1.75rem Semi-Bold ——
+  static TextStyle get headlineLarge => GoogleFonts.manrope(
+        fontSize: 28,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.25,
+      );
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  static TextStyle get headlineMedium => GoogleFonts.manrope(
+        fontSize: 28,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.25,
+      );
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  static TextStyle get headlineSmall => GoogleFonts.manrope(
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.3,
+      );
 
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  // —— Title LG — Inter 1.375rem Medium — card titles ——
+  static TextStyle get titleLarge => GoogleFonts.inter(
+        fontSize: 22,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface,
+        height: 1.35,
+      );
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  static TextStyle get titleMedium => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface,
+        height: 1.4,
+      );
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  static TextStyle get titleSmall => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onSurface,
+        height: 1.4,
+      );
 
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
+  // —— Body MD — Inter 0.875rem Regular ——
+  static TextStyle get bodyLarge => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface,
+        height: 1.5,
+      );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
+  static TextStyle get bodyMedium => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface,
+        height: 1.5,
+      );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
+  static TextStyle get bodySmall => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onSurface,
+        height: 1.45,
+      );
 
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  // —— Label MD — Inter 0.75rem Semi-Bold — metadata ——
+  static TextStyle get labelLarge => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.35,
+      );
 
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  static TextStyle get labelMedium => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.35,
+      );
 
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  static TextStyle get labelSmall => GoogleFonts.inter(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onSurface,
+        height: 1.35,
+      );
 
-  // Estilos customizados para botões
-  static const TextStyle button = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.white,
-    height: 1.2,
-  );
+  static TextStyle get button => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.onPrimary,
+        height: 1.2,
+      );
 
-  // Estilos customizados para links
-  static const TextStyle link = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: AppColors.primaryTeal,
-    height: 1.4,
-    decoration: TextDecoration.underline,
-  );
+  static TextStyle get link => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primary,
+        height: 1.4,
+        decoration: TextDecoration.underline,
+      );
 
-  // Estilos para o logo
-  static const TextStyle logoTitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: AppColors.primaryTealDark,
-    height: 1.2,
-  );
+  static TextStyle get logoTitle => GoogleFonts.manrope(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        color: AppColors.primary,
+        height: 1.2,
+      );
 
-  static const TextStyle logoSubtitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.primaryTeal,
-    height: 1.2,
-    letterSpacing: 1.2,
-  );
+  static TextStyle get logoSubtitle => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primary,
+        height: 1.2,
+        letterSpacing: 1.2,
+      );
 
-  static const TextStyle appTitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: AppColors.primaryTealDark,
-    height: 1.1,
-  );
+  static TextStyle get appTitle => GoogleFonts.manrope(
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+        color: AppColors.primary,
+        height: 1.1,
+      );
 
-  static const TextStyle appSubtitle = TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
+  static TextStyle get appSubtitle => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        height: 1.4,
+      );
 
   static TextTheme get textTheme {
-    return const TextTheme(
+    return TextTheme(
       displayLarge: displayLarge,
       displayMedium: displayMedium,
       displaySmall: displaySmall,

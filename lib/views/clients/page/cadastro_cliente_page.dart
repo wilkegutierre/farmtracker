@@ -76,9 +76,6 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
       appBar: AppBar(title: const Text('Cadastrar Cliente'), centerTitle: false),
       floatingActionButton: FloatingActionButton(
         onPressed: _onSalvar,
-        backgroundColor: AppColors.primaryTealDark,
-        foregroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.save_outlined),
       ),
       body: SafeArea(
@@ -449,10 +446,6 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                       );
                     }
                   },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primaryTealDark,
-                    foregroundColor: AppColors.white,
-                  ),
                   child: const Text('Adicionar'),
                 ),
               ],

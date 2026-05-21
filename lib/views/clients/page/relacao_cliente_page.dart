@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -71,9 +70,7 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
         onPressed: () {
           Modular.to.pushNamed('/clienteCadastro');
         },
-        backgroundColor: AppColors.primaryTealDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Icon(Icons.add, color: AppColors.white),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -111,7 +108,7 @@ class _ClientCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         leading: CircleAvatar(
@@ -119,7 +116,10 @@ class _ClientCard extends StatelessWidget {
           child: Text(client.name.characters.first),
         ),
         title: Text(client.name, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600)),
-        subtitle: Text(client.address, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
+        subtitle: Text(
+          client.address,
+          style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
         trailing: InkWell(
           child: InkWell(
             onTap: () {

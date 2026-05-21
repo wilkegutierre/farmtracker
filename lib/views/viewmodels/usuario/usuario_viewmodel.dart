@@ -26,20 +26,28 @@ class UsuarioViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String acesso, String senha) async {
+  Future<String?> login(String acesso, String senha) async {
     usuarioData.isLoading = true;
-    final result = await usuarioRepository.login(LoginUserRequestModel(acesso: acesso, senha: senha));
-    await result.fold(
-      (success) async {
-        await usuarioLocalRepository.gravarUsuario(success.toModel()).then((_) {
-          usuarioData.usuarioModel = success.toModel();
-        });
-        usuarioData.isLoading = false;
-      },
-      (failure) {
-        // Handle failure
-      },
-    );
     notifyListeners();
+    final result = await usuarioRepository.login(LoginUserRequestModel(email: acesso, password: senha));
+    final token = result.fold<String?>((success) => success, (failure) => null);
+
+    if (token == null || token.isEmpty) {
+      usuarioData.isLoading = false;
+      notifyListeners();
+      return null;
+    }
+
+    await usuarioLocalRepository.login(LoginUserRequestModel(email: acesso, password: senha));
+    usuarioData.isLoading = false;
+    notifyListeners();
+    return token;
+  }
+
+  Future<String?> setPassword(String acesso, String senha) async {
+    usuarioData.isLoading = true;
+    notifyListeners();
+    final result = await usuarioRepository.setPassword(LoginUserRequestModel(email: acesso, password: senha));
+    return result.fold<String?>((success) => success, (failure) => null);
   }
 }

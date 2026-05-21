@@ -35,7 +35,7 @@ class CardScheduleDashboardWidget extends StatelessWidget {
     }
   }
 
-  Color _getStatusColor() {
+  Color _getStatusColor(ColorScheme scheme) {
     switch (status) {
       case 1: // Cancelado
         return AppColors.error;
@@ -43,7 +43,7 @@ class CardScheduleDashboardWidget extends StatelessWidget {
       case 2: // Concluído
         return AppColors.success;
       case 3: // Pendente
-        return AppColors.textSecondary;
+        return scheme.onSurfaceVariant;
       default: // Agendado
         return AppColors.success;
     }
@@ -51,10 +51,12 @@ class CardScheduleDashboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide.none),
-      color: AppColors.cardBackground,
+      color: scheme.surfaceContainer,
       child: InkWell(
         onTap: onPressedCard,
         borderRadius: BorderRadius.circular(16),
@@ -71,9 +73,9 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                     // Time with icon
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+                        Icon(Icons.access_time, size: 16, color: scheme.onSurfaceVariant),
                         const SizedBox(width: 6),
-                        Text(time, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
+                        Text(time, style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -82,21 +84,21 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                     // Location with icon
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                        Icon(Icons.location_on, size: 16, color: scheme.onSurfaceVariant),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             title,
                             style: AppTextStyles.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: scheme.onSurface,
                             ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(location, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
+                    Text(location, style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant)),
                   ],
                 ),
               ),
@@ -108,7 +110,10 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                   // Status
                   Text(
                     _getStatusText(),
-                    style: AppTextStyles.bodyMedium.copyWith(color: _getStatusColor(), fontWeight: FontWeight.w500),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: _getStatusColor(scheme),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // Ver button
@@ -116,9 +121,7 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                     onPressed: () {
                       Modular.to.pushNamed('/appointment', arguments: {'clientName': 'Cliente', 'farmName': 'Fazenda'});
                     },
-                    borderSideColor: AppColors.primaryTeal,
                     text: 'Ver',
-                    textColor: AppColors.primaryTealDark,
                   ),
                 ],
               ),

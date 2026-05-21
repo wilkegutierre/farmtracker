@@ -104,7 +104,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                     const SizedBox(height: 4),
                     Text(
                       'Marque se a visita foi bem-sucedida',
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                      style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -176,7 +176,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                     const SizedBox(height: 4),
                     Text(
                       'Indique se alguma praga foi encontrada',
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                      style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -204,7 +204,6 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                             icon: const Icon(Icons.add),
                             label: const Text('Adicionar Praga/Lote/Cultura'),
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primaryTealDark,
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             ),
                           ),
@@ -237,9 +236,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita completada com sucesso!')));
           Modular.to.pop();
         },
-        backgroundColor: AppColors.primaryTealDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: const Icon(Icons.save, color: AppColors.white),
+        child: const Icon(Icons.save),
       ),
     );
   }
@@ -266,8 +263,8 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: const Icon(Icons.arrow_drop_down, color: Colors.black54),
-          style: const TextStyle(fontSize: 16, color: Colors.black87),
+          icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
+          style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurface),
           onChanged: onChanged,
           items: items.map<DropdownMenuItem<String>>((String item) {
             return DropdownMenuItem<String>(value: item, child: Text(item));
@@ -430,7 +427,6 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                       ).showSnackBar(const SnackBar(content: Text('Por favor, preencha todos os campos')));
                     }
                   },
-                  style: FilledButton.styleFrom(backgroundColor: AppColors.primaryTealDark),
                   child: const Text('Adicionar'),
                 ),
               ],
@@ -460,8 +456,8 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          hint: Text(hint, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary)),
-          icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+          hint: Text(hint, style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant)),
+          icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
           style: AppTextStyles.bodyLarge,
           onChanged: onChanged,
           items: items.map<DropdownMenuItem<String>>((String item) {
@@ -474,14 +470,11 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
 
   Widget _buildPestLotCropBox() {
     final ThemeData theme = Theme.of(context);
-    final Color border = theme.colorScheme.outlineVariant.withValues(alpha: 0.6);
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
-        border: Border.all(color: border, style: BorderStyle.solid),
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
       ),
       child: _pestLotCropList.isEmpty

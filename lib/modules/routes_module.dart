@@ -1,18 +1,28 @@
+import 'package:farmtracker/core/session/auth_session_controller.dart';
+import 'package:farmtracker/databases/local/repositories/usuario_local_repository.dart';
+import 'package:farmtracker/databases/local/sql/usuario_database_impl.dart';
+import 'package:farmtracker/databases/repositories/usuario/usuario_repository_impl.dart';
+import 'package:farmtracker/databases/services/http/custom_http_client.dart';
+import 'package:farmtracker/databases/services/http/http_interface.dart';
+import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
+import 'package:farmtracker/databases/services/usuario/usuario_service_impl.dart';
+import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
 import 'package:farmtracker/views/appointment/pages/appointment_page.dart';
 import 'package:farmtracker/views/appointment/pages/client_appointment_page.dart';
 import 'package:farmtracker/views/appointment/pages/execute_appointment_page.dart';
 import 'package:farmtracker/views/clients/page/cadastro_cliente_page.dart';
 import 'package:farmtracker/views/clients/page/relacao_cliente_page.dart';
+import 'package:farmtracker/views/core/auth/auth_gate_page.dart';
 import 'package:farmtracker/views/culture/page/cultura_page.dart';
-import 'package:farmtracker/views/dashboard/page/dashboard_page.dart';
 import 'package:farmtracker/views/lot/page/lote_page.dart';
 import 'package:farmtracker/views/project/page/projeto_page.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 class RouteModule extends Module {
   @override
   void routes(RouteManager r) {
-    r.child('/', child: (context) => const DashboardPage()); //LoginPage());
+    r.child('/', child: (context) => const AuthGatePage());
     r.child('/clienteRelacao', child: (context) => const RelacaoClientePage());
     r.child('/clienteCadastro', child: (context) => const CadastroClientePage());
     r.child('/cultura', child: (context) => const CulturaPage());
@@ -43,6 +53,12 @@ class RouteModule extends Module {
 
   @override
   void binds(Injector i) {
+    i.addSingleton(AuthSessionController.new);
+    i.addLazySingleton<HttpClientInterface>(CustomHttpClient.new);
+    i.addLazySingleton<UsuarioService>(UsuarioServiceImpl.new);
+    i.addLazySingleton<UsuarioRepository>(UsuarioRepositoryImpl.new);
+    i.addLazySingleton<UsuarioLocalRepository>(UsuarioDatabaseImpl.new);
+    i.addLazySingleton(UsuarioViewmodel.new);
     super.binds(i);
     // Services
     // i.addLazySingleton<HttpClientInterface>(CustomHttpClient.new);

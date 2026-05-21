@@ -20,9 +20,18 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
   }
 
   @override
-  AsyncResult<UsuarioResponseModel> login(LoginUserRequestModel loginRequest) async {
+  AsyncResult<String> login(LoginUserRequestModel loginRequest) async {
     try {
       return await service.login(loginRequest).fold((success) => Success(success), (failure) => Failure(failure));
+    } catch (e) {
+      return Failure(InternalServerError());
+    }
+  }
+
+  @override
+  AsyncResult<String> setPassword(LoginUserRequestModel loginRequest) async {
+    try {
+      return await service.setPassword(loginRequest).fold((success) => Success(success), (failure) => Failure(failure));
     } catch (e) {
       return Failure(InternalServerError());
     }

@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -172,12 +171,16 @@ class _ClientCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         title: Text(client.name, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600)),
-        subtitle: Text(client.address, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
+        subtitle: Text(
+          client.address,
+          style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant),
+        ),
         trailing: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(24),
@@ -205,12 +208,13 @@ class _ProjectsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Dialog(
       backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
-        decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(color: scheme.surface, borderRadius: BorderRadius.circular(20)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -218,7 +222,7 @@ class _ProjectsDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
+                color: scheme.surface,
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               ),
               child: Row(
@@ -232,24 +236,27 @@ class _ProjectsDialog extends StatelessWidget {
                           client.name,
                           style: AppTextStyles.titleLarge.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(client.address, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                        Text(
+                          client.address,
+                          style: AppTextStyles.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+                        ),
                       ],
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryTeal.withValues(alpha: 0.1),
+                      color: scheme.primaryContainer.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '${client.projects.length} Projetos',
                       style: AppTextStyles.labelMedium.copyWith(
-                        color: AppColors.primaryTeal,
+                        color: scheme.primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -260,18 +267,18 @@ class _ProjectsDialog extends StatelessWidget {
             // Projects List
             Flexible(
               child: Container(
-                color: AppColors.backgroundLight,
+                color: scheme.surfaceContainerLow,
                 child: client.projects.isEmpty
                     ? Padding(
                         padding: const EdgeInsets.all(40),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.inbox_outlined, size: 64, color: AppColors.textSecondary),
+                            Icon(Icons.inbox_outlined, size: 64, color: scheme.onSurfaceVariant),
                             const SizedBox(height: 16),
                             Text(
                               'Nenhum projeto encontrado',
-                              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                              style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant),
                             ),
                           ],
                         ),
@@ -292,7 +299,7 @@ class _ProjectsDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
+                color: scheme.surface,
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -306,7 +313,10 @@ class _ProjectsDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Cancelar', style: AppTextStyles.labelLarge.copyWith(color: AppColors.textSecondary)),
+                  child: Text(
+                    'Cancelar',
+                    style: AppTextStyles.labelLarge.copyWith(color: scheme.onSurfaceVariant),
+                  ),
                 ),
               ),
             ),
@@ -324,10 +334,11 @@ class _ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide.none),
-      color: AppColors.cardBackground,
+      color: scheme.surfaceContainer,
       child: InkWell(
         onTap: () => Navigator.of(context).pop(project),
         borderRadius: BorderRadius.circular(16),
@@ -339,7 +350,7 @@ class _ProjectCard extends StatelessWidget {
               // Title
               Text(
                 project.title,
-                style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600, color: scheme.onSurface),
               ),
               const SizedBox(height: 4),
               // Crop Type
@@ -354,7 +365,7 @@ class _ProjectCard extends StatelessWidget {
                       'Lote #${project.batch}',
                       style: AppTextStyles.labelSmall.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: scheme.onSurface,
                       ),
                     ),
                   ),
@@ -363,19 +374,19 @@ class _ProjectCard extends StatelessWidget {
                   // Area
                   Row(
                     children: [
-                      Icon(Icons.grid_4x4, size: 16, color: AppColors.textSecondary),
+                      Icon(Icons.grid_4x4, size: 16, color: scheme.onSurfaceVariant),
                       const SizedBox(width: 4),
                       Text(
                         '${project.area.toStringAsFixed(0)} Ha',
                         style: AppTextStyles.titleMedium.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: scheme.onSurface,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(width: 8),
-                  Icon(Icons.chevron_right, size: 20, color: AppColors.textSecondary),
+                  Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant),
                 ],
               ),
             ],

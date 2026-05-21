@@ -1,3 +1,4 @@
+import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdownButtom extends StatefulWidget {
@@ -19,31 +20,30 @@ class CustomDropdownButtom extends StatefulWidget {
 class _CustomDropdownButtomState extends State<CustomDropdownButtom> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey, width: 1),
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          value: widget.value,
-          isExpanded: true,
-          icon: const Icon(Icons.arrow_drop_down),
-          elevation: 16,
-          style: const TextStyle(color: Colors.black),
-          underline: Container(
-            height: 2,
-            color: Colors.black,
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: scheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: widget.value,
+            isExpanded: true,
+            icon: Icon(Icons.arrow_drop_down, color: scheme.onSurfaceVariant),
+            elevation: 2,
+            dropdownColor: scheme.surfaceContainerHigh,
+            style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurface),
+            onChanged: widget.onChanged,
+            items: widget.listVisit.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
           ),
-          onChanged: widget.onChanged,
-          items: widget.listVisit.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
         ),
       ),
     );

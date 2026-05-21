@@ -1,3 +1,4 @@
+import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class ItemListCultureClient extends StatelessWidget {
@@ -9,29 +10,30 @@ class ItemListCultureClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Cultura: $description',
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+        Expanded(
+          child: Text(
+            'Cultura: $description',
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+              color: scheme.onSurface,
+            ),
           ),
         ),
         Text(
           'Área: $area',
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurfaceVariant,
           ),
         ),
         IconButton(
           onPressed: onPressed,
-          icon: Icon(
-            Icons.remove_circle_outline_rounded,
-            color: Colors.red.shade600,
-          ),
+          icon: Icon(Icons.remove_circle_outline_rounded, color: scheme.error),
         ),
       ],
     );

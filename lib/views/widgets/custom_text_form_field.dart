@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +23,7 @@ class CustomTextFormField extends StatelessWidget {
 
   const CustomTextFormField({
     super.key,
-    this.fontStyle = AppTextStyles.bodyMedium,
+    this.fontStyle,
     required this.labelText,
     this.prefixIcon,
     this.keyboardType = TextInputType.text,
@@ -45,25 +44,19 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle effectiveStyle = fontStyle ?? AppTextStyles.bodyMedium;
     return TextFormField(
       controller: controller,
       readOnly: readOnly,
-      style: fontStyle,
+      style: effectiveStyle,
       obscureText: isPassword ?? false,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: fontStyle,
+        labelStyle: effectiveStyle,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         contentPadding: const EdgeInsets.all(10),
         suffix: suffix,
-        border: const OutlineInputBorder(),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: AppColors.primaryTeal,
-            width: 2.0,
-          ),
-        ),
       ),
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,

@@ -4,5 +4,6 @@ import 'package:result_dart/result_dart.dart';
 
 abstract interface class UsuarioService {
   AsyncResult<UsuarioResponseModel> getUsuarioById(String uuid);
-  AsyncResult<UsuarioResponseModel> login(LoginUserRequestModel loginRequest);
+  AsyncResult<String> login(LoginUserRequestModel loginRequest);
+  AsyncResult<String> setPassword(LoginUserRequestModel loginRequest);
 }

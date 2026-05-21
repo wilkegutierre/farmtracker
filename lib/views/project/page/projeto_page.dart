@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
 import 'package:farmtracker/views/viewmodels/projeto/projeto_viewmodel.dart';
@@ -58,10 +57,10 @@ class _ProjetoPageState extends State<ProjetoPage> {
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primaryTealLight,
-                      foregroundColor: AppColors.primaryTealDark,
+                      backgroundColor: theme.colorScheme.secondaryContainer,
+                      foregroundColor: theme.colorScheme.onSecondaryContainer,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
                     ),
                     onPressed: () {
                       // Navegação solicitada: abrir a tela de Lote de forma estática
@@ -82,7 +81,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                     child: Center(
                       child: Text(
                         'Adicione o primeiro projeto',
-                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     ),
                   )
@@ -109,9 +108,8 @@ class _ProjetoPageState extends State<ProjetoPage> {
                             width: double.infinity,
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerLowest,
+                              color: theme.colorScheme.surfaceContainerHigh,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6)),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,13 +121,13 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                 const SizedBox(height: 8),
                                 Text(
                                   projeto.descricao,
-                                  style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
+                                  style: AppTextStyles.bodyLarge.copyWith(color: theme.colorScheme.onSurfaceVariant),
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.edit, color: AppColors.primaryTealDark),
+                                      icon: Icon(Icons.edit, color: theme.colorScheme.primary),
                                       tooltip: 'Editar',
                                       onPressed: () {
                                         if (projeto.uuid.isEmpty) return;
@@ -140,7 +138,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete, color: AppColors.error),
+                                      icon: Icon(Icons.delete, color: theme.colorScheme.error),
                                       tooltip: 'Excluir',
                                       onPressed: () {
                                         _uuidSelecionado = null;

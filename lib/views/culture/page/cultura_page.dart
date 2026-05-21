@@ -1,4 +1,3 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -48,10 +47,10 @@ class _CulturaPageState extends State<CulturaPage> {
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryTealLight,
-                  foregroundColor: AppColors.primaryTealDark,
+                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
                 ),
                 onPressed: _adicionarCultura,
                 child: Text(
@@ -91,8 +90,6 @@ class _CulturaPageState extends State<CulturaPage> {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'fab-salvar-cultura',
-        backgroundColor: AppColors.primaryTealLight,
-        foregroundColor: AppColors.primaryTealDark,
         tooltip: 'Salvar e fechar',
         child: const Icon(Icons.save),
         onPressed: () {
@@ -154,9 +151,8 @@ class _CulturaCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerLowest,
+          color: theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,12 +164,12 @@ class _CulturaCard extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, color: AppColors.primaryTealDark),
+                  icon: Icon(Icons.edit, color: theme.colorScheme.primary),
                   tooltip: 'Editar',
                   onPressed: onEdit,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: AppColors.error),
+                  icon: Icon(Icons.delete, color: theme.colorScheme.error),
                   tooltip: 'Excluir',
                   onPressed: onDelete,
                 ),

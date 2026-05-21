@@ -1,6 +1,4 @@
 import 'package:farmtracker/databases/models/request/login_user_request_model.dart';
 
-LoginUserRequestModel getMockLoginRequest() => LoginUserRequestModel(
-      acesso: 'usuario.teste@email.com',
-      senha: 'senha123',
-    );
+LoginUserRequestModel getMockLoginRequest() =>
+    LoginUserRequestModel(email: 'usuario.teste@email.com', password: 'senha123');
