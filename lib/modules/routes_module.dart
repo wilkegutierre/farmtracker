@@ -4,6 +4,8 @@ import 'package:farmtracker/databases/local/sql/usuario_database_impl.dart';
 import 'package:farmtracker/databases/repositories/usuario/usuario_repository_impl.dart';
 import 'package:farmtracker/databases/services/http/custom_http_client.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
+import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
+import 'package:farmtracker/databases/local/auth/session_manager_impl.dart';
 import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
 import 'package:farmtracker/databases/services/usuario/usuario_service_impl.dart';
 import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
@@ -14,6 +16,7 @@ import 'package:farmtracker/views/clients/page/cadastro_cliente_page.dart';
 import 'package:farmtracker/views/clients/page/relacao_cliente_page.dart';
 import 'package:farmtracker/views/core/auth/auth_gate_page.dart';
 import 'package:farmtracker/views/culture/page/cultura_page.dart';
+import 'package:farmtracker/views/dashboard/page/dashboard_page.dart';
 import 'package:farmtracker/views/lot/page/lote_page.dart';
 import 'package:farmtracker/views/project/page/projeto_page.dart';
 import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
@@ -22,42 +25,49 @@ import 'package:flutter_modular/flutter_modular.dart';
 class RouteModule extends Module {
   @override
   void routes(RouteManager r) {
-    r.child('/', child: (context) => const AuthGatePage());
-    r.child('/clienteRelacao', child: (context) => const RelacaoClientePage());
-    r.child('/clienteCadastro', child: (context) => const CadastroClientePage());
-    r.child('/cultura', child: (context) => const CulturaPage());
-    r.child('/projeto', child: (context) => const ProjetoPage());
-    r.child('/lote', child: (context) => const LotePage());
     r.child(
-      '/appointment',
-      child: (context) {
-        final args = r.args.data;
-        return AppointmentPage(
-          clientName: args?['clientName'] as String?,
-          farmName: args?['farmName'] as String?,
-          projectTitle: args?['projectTitle'] as String?,
-          projectBatch: args?['projectBatch'] as String?,
-          projectArea: args?['projectArea'] as double?,
-        );
-      },
+      '/',
+      child: (context) => const AuthGatePage(),
+      children: [
+        ChildRoute('/home', child: (context) => const DashboardPage()),
+        ChildRoute('/clienteRelacao', child: (context) => const RelacaoClientePage()),
+        ChildRoute('/clienteCadastro', child: (context) => const CadastroClientePage()),
+        ChildRoute('/cultura', child: (context) => const CulturaPage()),
+        ChildRoute('/projeto', child: (context) => const ProjetoPage()),
+        ChildRoute('/lote', child: (context) => const LotePage()),
+        ChildRoute(
+          '/appointment',
+          child: (context) {
+            final args = r.args.data;
+            return AppointmentPage(
+              clientName: args?['clientName'] as String?,
+              farmName: args?['farmName'] as String?,
+              projectTitle: args?['projectTitle'] as String?,
+              projectBatch: args?['projectBatch'] as String?,
+              projectArea: args?['projectArea'] as double?,
+            );
+          },
+        ),
+        ChildRoute(
+          '/executeAppointment',
+          child: (context) {
+            final args = r.args.data;
+            return ExecuteAppointmentPage(clientName: args?['clientName'] as String?);
+          },
+        ),
+        ChildRoute('/clientAppointment', child: (context) => const ClientAppointmentPage()),
+      ],
     );
-    r.child(
-      '/executeAppointment',
-      child: (context) {
-        final args = r.args.data;
-        return ExecuteAppointmentPage(clientName: args?['clientName'] as String?);
-      },
-    );
-    r.child('/clientAppointment', child: (context) => const ClientAppointmentPage());
   }
 
   @override
   void binds(Injector i) {
-    i.addSingleton(AuthSessionController.new);
+    i.addSingleton<AuthSessionController>(() => AuthSessionController(i.get<SessionManagerRepository>()));
     i.addLazySingleton<HttpClientInterface>(CustomHttpClient.new);
     i.addLazySingleton<UsuarioService>(UsuarioServiceImpl.new);
     i.addLazySingleton<UsuarioRepository>(UsuarioRepositoryImpl.new);
     i.addLazySingleton<UsuarioLocalRepository>(UsuarioDatabaseImpl.new);
+    i.addLazySingleton<SessionManagerRepository>(SessionManagerImpl.new);
     i.addLazySingleton(UsuarioViewmodel.new);
     super.binds(i);
     // Services

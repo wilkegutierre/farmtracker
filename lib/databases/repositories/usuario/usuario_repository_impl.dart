@@ -2,6 +2,7 @@ import 'package:farmtracker/databases/errors/http_error.dart';
 import 'package:farmtracker/databases/models/request/login_user_request_model.dart';
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
 import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
+import 'package:farmtracker/domains/models/auth_data.dart';
 import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -20,7 +21,7 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
   }
 
   @override
-  AsyncResult<String> login(LoginUserRequestModel loginRequest) async {
+  AsyncResult<AuthData> login(LoginUserRequestModel loginRequest) async {
     try {
       return await service.login(loginRequest).fold((success) => Success(success), (failure) => Failure(failure));
     } catch (e) {
@@ -29,7 +30,7 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
   }
 
   @override
-  AsyncResult<String> setPassword(LoginUserRequestModel loginRequest) async {
+  AsyncResult<AuthData> setPassword(LoginUserRequestModel loginRequest) async {
     try {
       return await service.setPassword(loginRequest).fold((success) => Success(success), (failure) => Failure(failure));
     } catch (e) {

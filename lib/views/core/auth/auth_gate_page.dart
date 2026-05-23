@@ -1,11 +1,10 @@
 import 'package:farmtracker/core/session/auth_session_controller.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
-import 'package:farmtracker/views/dashboard/page/dashboard_page.dart';
 import 'package:farmtracker/views/user/page/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-/// Rota raiz: carrega a sessão uma vez e mostra o dashboard ou o login.
+/// Shell em `/`: exibe login ou o outlet das rotas autenticadas.
 class AuthGatePage extends StatefulWidget {
   const AuthGatePage({super.key});
 
@@ -38,7 +37,7 @@ class _AuthGatePageState extends State<AuthGatePage> {
           );
         }
         if (auth.isAuthenticated) {
-          return const DashboardPage();
+          return const RouterOutlet();
         }
         return const LoginScreen();
       },

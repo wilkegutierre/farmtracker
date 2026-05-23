@@ -107,6 +107,9 @@ dependencies:
   # Sessão / preferências locais
   shared_preferences: ^2.5.3
 
+  # Interceptor
+  dio: ^5.9.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

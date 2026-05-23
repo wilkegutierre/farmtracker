@@ -6,7 +6,9 @@ import 'package:farmtracker/databases/models/request/login_user_request_model.da
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
 import 'package:farmtracker/databases/services/http/base_service.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
+import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
 import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
+import 'package:farmtracker/domains/models/auth_data.dart';
 import 'package:farmtracker/enviroment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -42,7 +44,7 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
   }
 
   @override
-  AsyncResult<String> login(LoginUserRequestModel loginRequest) async {
+  AsyncResult<AuthData> login(LoginUserRequestModel loginRequest) async {
     try {
       final result = await requestService(() async {
         final url = '${Enviroment.apiBaseUrl}/user/auth/login';
@@ -54,8 +56,8 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
         if (kDebugMode) {
           print(body);
         }
-        final String token = _resolveTokenFromBody(body);
-        return Success(token);
+
+        return Success(_resolveAuthDataFromBody(body));
       }, (failure) async => Failure(InternalServerError()));
     } catch (e) {
       return Failure(InternalServerError());
@@ -63,7 +65,7 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
   }
 
   @override
-  AsyncResult<String> setPassword(LoginUserRequestModel loginRequest) async {
+  AsyncResult<AuthData> setPassword(LoginUserRequestModel loginRequest) async {
     try {
       final result = await requestService(() async {
         final url = '${Enviroment.apiBaseUrl}/user/auth/set-password';
@@ -75,22 +77,28 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
         if (kDebugMode) {
           print(body);
         }
-        final String token = _resolveTokenFromBody(body);
-        return Success(token);
+        return Success(_resolveAuthDataFromBody(body));
       }, (failure) async => Failure(InternalServerError()));
     } catch (e) {
       return Failure(InternalServerError());
     }
   }
 
-  String _resolveTokenFromBody(String body) {
+  AuthData _resolveAuthDataFromBody(String body) {
     final dynamic decoded = json.decode(body);
     if (decoded is Map<String, dynamic>) {
-      final Object? token = decoded['token'];
-      if (token is String && token.isNotEmpty) {
-        return token;
+      final token = decoded['token'];
+      final tokenType = decoded['tokenType'] ?? 'Bearer';
+      final expiresAtStr = decoded['expiresAt'];
+
+      if (token is String && token.isNotEmpty && expiresAtStr is String) {
+        return AuthData(
+          token: token,
+          tokenType: tokenType,
+          expiresAt: DateTime.parse(expiresAtStr).toLocal(), // Converte para o fuso horário do celular
+        );
       }
     }
-    return getMockUsuario().tokenAcesso;
+    throw Exception('Falha na autenticação');
   }
 }

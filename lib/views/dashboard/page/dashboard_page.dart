@@ -1,8 +1,10 @@
+import 'package:farmtracker/core/session/auth_navigation.dart';
 import 'package:farmtracker/databases/mocks/models/agenda_response_model_mock.dart';
 import 'package:farmtracker/databases/models/response/agenda_response_model.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? _selectedDate;
   DateTime _currentMonth = DateTime.now();
   final DateTime _today = DateTime.now();
-
+  final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
   // Datas com eventos (verde)
   final Set<int> _eventDates = {5, 15, 24, 26};
   // Datas com compromissos atrasados (vermelho)
@@ -58,10 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       drawer: _buildDrawer(context),
       body: SingleChildScrollView(child: Column(children: [_buildCalendarSection(), _buildAppointmentsSection()])),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _handleFloatingActionButton,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: _handleFloatingActionButton, child: const Icon(Icons.add)),
     );
   }
 
@@ -89,8 +88,8 @@ class _DashboardPageState extends State<DashboardPage> {
             leading: const Icon(Icons.people_outline),
             title: Text('Clientes', style: AppTextStyles.titleMedium),
             onTap: () {
-              Navigator.of(context).pop(); // Fecha o drawer
-              Navigator.of(context).pushNamed('/clienteRelacao');
+              Navigator.of(context).pop();
+              Modular.to.pushNamed('/clienteRelacao');
             },
           ),
           const SizedBox(height: 8),
@@ -99,15 +98,20 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  void _handleFloatingActionButton() {
+  Future<void> _handleFloatingActionButton() async {
+    final bool sessionValid = await usuarioViewmodel.isSessionValid();
+    if (!sessionValid) {
+      await redirectToLoginOnSessionExpired();
+      return;
+    }
+    if (!mounted) return;
     if (_selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Primeiro informe um dia no calendário'), duration: Duration(seconds: 2)),
       );
       return;
     }
-    // Aqui você pode adicionar a lógica para criar um novo compromisso
-    Navigator.of(context).pushNamed('/clientAppointment');
+    Modular.to.pushNamed('/clientAppointment');
   }
 
   Widget _buildCalendarSection() {

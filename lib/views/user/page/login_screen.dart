@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final UsuarioViewmodel _usuarioViewmodel = Modular.get<UsuarioViewmodel>();
+  final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
   bool _obscurePassword = true;
   bool _submitting = false;
 
@@ -50,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final AuthSessionController auth = Modular.get<AuthSessionController>();
     await auth.signIn(token);
+    if (!mounted) return;
+    Modular.to.navigate('/home');
   }
 
   Future<void> _performLogin() async {
@@ -67,8 +69,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (storedToken != null && storedToken.isNotEmpty) {
         await auth.signIn(storedToken);
-        return;
+      } else {
+        final String? token = await usuarioViewmodel.login(user, pass);
+        if (!mounted) return;
+        if (token == null || token.isEmpty) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Nao foi possivel efetuar login. Verifique os dados.')));
+          return;
+        }
+        await auth.signIn(token);
       }
+      if (!mounted) return;
+      Modular.to.navigate('/home');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

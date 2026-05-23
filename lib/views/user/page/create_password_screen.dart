@@ -67,11 +67,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       }
 
       final AuthSessionController auth = Modular.get<AuthSessionController>();
-      await auth.setToken(token);
+      await auth.signIn(token);
 
       if (!mounted) return;
       _showMessage('Senha criada com sucesso.');
-      Navigator.of(context).pop();
+      Modular.to.navigate('/home');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
