@@ -6,7 +6,6 @@ import 'package:farmtracker/databases/models/request/login_user_request_model.da
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
 import 'package:farmtracker/databases/services/http/base_service.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
-import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
 import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
 import 'package:farmtracker/domains/models/auth_data.dart';
 import 'package:farmtracker/enviroment.dart';

@@ -4,4 +4,5 @@ import 'package:result_dart/result_dart.dart';
 abstract interface class ClienteRepository {
   AsyncResult<List<ClienteResponseModel>> getClientes(String usuario);
   AsyncResult<ClienteResponseModel> getClientePorUuid(String uuid);
+  AsyncResult<ClienteResponseModel> syncClients(DateTime referenceDate);
 }

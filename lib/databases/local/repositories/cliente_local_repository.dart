@@ -8,4 +8,7 @@ abstract interface class ClienteLocalRepository {
   AsyncResult<ClienteResponseModel> getClientePorNome(String nome);
   AsyncResult<bool> gravar(ClienteModel cliente);
   AsyncResult<bool> atualizar(ClienteModel cliente);
+  AsyncResult<int> getCount();
+  AsyncResult<bool> hasSyncNearDate(DateTime referenceDate, {int toleranceDays = 0});
+  AsyncResult<bool> registrarSincronizacao(DateTime data);
 }

@@ -53,6 +53,46 @@ class ClienteViewmodel extends ChangeNotifier {
 
   final data = ClienteData();
 
+  /// Verifica na base local se já houve sincronização próxima à [dataReferencia].
+  /// Caso contrário, consome [ClienteRepository.syncClients] e persiste os dados.
+  Future<void> sincronizarClientesSeNecessario(DateTime dataReferencia) async {
+    data.isLoading = true;
+    notifyListeners();
+
+    final bool jaSincronizado = await _hasSyncNearDate(dataReferencia);
+    if (jaSincronizado) {
+      data.isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    final result = await _clienteRepository.syncClients(dataReferencia);
+    await result.fold(
+      (cliente) async {
+        await _gravarCarteiraCliente(cliente);
+        await _gravarCarteiraProjeto(cliente.projetos.toMapModel(), cliente.uuid);
+        await _gravarCarteiraCultura(cliente.uuid);
+        await _gravarCarteiraEnderecoCliente(cliente);
+        await _registrarSincronizacao(dataReferencia);
+        data.isLoading = false;
+        notifyListeners();
+      },
+      (failure) {
+        data.isLoading = false;
+        notifyListeners();
+      },
+    );
+  }
+
+  Future<bool> _hasSyncNearDate(DateTime referenceDate) async {
+    final result = await _clienteLocalRepository.hasSyncNearDate(referenceDate);
+    return result.fold((success) => success, (failure) => false);
+  }
+
+  Future<void> _registrarSincronizacao(DateTime data) async {
+    await _clienteLocalRepository.registrarSincronizacao(data);
+  }
+
   Future<void> baixarCarteira(String usuario) async {
     data.isLoading = true;
     notifyListeners();

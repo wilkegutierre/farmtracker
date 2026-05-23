@@ -26,4 +26,15 @@ class ClienteRepositoryImpl implements ClienteRepository {
       return Failure(InternetConnectionError(message: e.toString()));
     }
   }
+
+  @override
+  AsyncResult<ClienteResponseModel> syncClients(DateTime referenceDate) async {
+    try {
+      return await service
+          .syncClients(referenceDate)
+          .fold((success) => Success(success), (failure) => Failure(failure));
+    } catch (e) {
+      return Failure(InternetConnectionError(message: e.toString()));
+    }
+  }
 }

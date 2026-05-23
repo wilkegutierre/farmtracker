@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:farmtracker/databases/mocks/models/cliente_response_model_mock.dart';
-import 'package:farmtracker/databases/mocks/services/base_service_mock.dart';
 import 'package:farmtracker/databases/models/response/cliente_response_model.dart';
+import 'package:farmtracker/databases/services/http/base_service.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
 import 'package:farmtracker/enviroment.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +12,7 @@ import 'package:result_dart/result_dart.dart';
 import '../../errors/user_error.dart';
 import 'cliente_service.dart';
 
-class ClienteServiceImpl with BaseServiceMockMixin implements ClienteService {
+class ClienteServiceImpl with BaseServiceMixin implements ClienteService {
   final HttpClientInterface _httpClient;
 
   ClienteServiceImpl(this._httpClient);
@@ -20,7 +20,7 @@ class ClienteServiceImpl with BaseServiceMockMixin implements ClienteService {
   @override
   AsyncResult<ClienteResponseModel> getClientePorUuid(String uuid) async {
     try {
-      return requestServiceMock(() async {
+      return requestService(() async {
         return await _httpClient.get('${Enviroment.apiBaseUrl}/cliente/$uuid');
       }).fold(
         (response) {
@@ -39,7 +39,7 @@ class ClienteServiceImpl with BaseServiceMockMixin implements ClienteService {
   @override
   AsyncResult<List<ClienteResponseModel>> getClientes(String userUuid) async {
     try {
-      return requestServiceMock(() async {
+      return requestService(() async {
         return await _httpClient.get('${Enviroment.apiBaseUrl}/carteira/cliente/$userUuid');
       }).fold(
         (response) {
@@ -54,6 +54,31 @@ class ClienteServiceImpl with BaseServiceMockMixin implements ClienteService {
           // }
           // return Success(clientesResult);
           return Success(getMockClientes());
+        },
+        (failure) {
+          return Failure(failure);
+        },
+      );
+    } catch (error) {
+      return Failure(ClienteServiceError(message: error.toString()));
+    }
+  }
+
+  @override
+  AsyncResult<ClienteResponseModel> syncClients(DateTime referenceDate) async {
+    try {
+      return requestService(() async {
+        final String dateParam = referenceDate.toString();
+
+        String url = '${Enviroment.apiBaseUrl}/customer/sync/$dateParam';
+        return await _httpClient.get(url);
+      }).fold(
+        (response) {
+          final Response(:body) = response;
+          if (kDebugMode) {
+            print(body);
+          }
+          return Success(getMockCliente());
         },
         (failure) {
           return Failure(failure);

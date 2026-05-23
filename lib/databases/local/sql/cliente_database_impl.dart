@@ -1,6 +1,7 @@
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/farmtracker_database.dart';
 import 'package:farmtracker/databases/local/repositories/cliente_local_repository.dart';
+import 'package:farmtracker/databases/local/tables/cliente_sincronizacao_table.dart';
 import 'package:farmtracker/databases/local/tables/cliente_table.dart';
 import 'package:farmtracker/databases/mocks/models/cliente_response_model_mock.dart';
 import 'package:farmtracker/databases/models/response/cliente_response_model.dart';
@@ -95,6 +96,56 @@ class ClienteDatabaseImpl implements ClienteLocalRepository {
       return Success(result == 1 ? true : false);
     } catch (e) {
       return Failure(InsertDataBaseError());
+    }
+  }
+
+  @override
+  AsyncResult<bool> hasSyncNearDate(DateTime referenceDate, {int toleranceDays = 0}) async {
+    db = await FarmTrackerDatabase.instance.dataBase;
+    try {
+      final DateTime start = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+          .subtract(Duration(days: toleranceDays));
+      final DateTime end = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+          .add(Duration(days: toleranceDays + 1));
+
+      final result = await db.query(
+        clienteSincronizacaoTable,
+        where: 'data_sincronizacao >= ? AND data_sincronizacao < ?',
+        whereArgs: [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch],
+        limit: 1,
+      );
+      return Success(result.isNotEmpty);
+    } catch (exception) {
+      return Failure(SearchDataBaseError());
+    }
+  }
+
+  @override
+  AsyncResult<bool> registrarSincronizacao(DateTime data) async {
+    db = await FarmTrackerDatabase.instance.dataBase;
+    try {
+      final DateTime normalized = DateTime(data.year, data.month, data.day);
+      await db.insert(clienteSincronizacaoTable, {
+        'data_sincronizacao': normalized.millisecondsSinceEpoch,
+      });
+      return const Success(true);
+    } catch (exception) {
+      return Failure(InsertDataBaseError());
+    }
+  }
+
+  @override
+  AsyncResult<int> getCount() async {
+    db = await FarmTrackerDatabase.instance.dataBase;
+    try {
+      final result = await db.rawQuery('SELECT COUNT(*) as count FROM $clienteTable');
+      if (result.isNotEmpty) {
+        final count = Sqflite.firstIntValue(result) ?? 0;
+        return Success(count);
+      }
+      return Failure(NotFoundDataBaseError());
+    } catch (exception) {
+      return Failure(SearchDataBaseError());
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:farmtracker/databases/local/tables/agenda_execucao_table.dart';
 import 'package:farmtracker/databases/local/tables/agenda_table.dart';
 import 'package:farmtracker/databases/local/tables/cliente_cultura_table.dart';
+import 'package:farmtracker/databases/local/tables/cliente_sincronizacao_table.dart';
 import 'package:farmtracker/databases/local/tables/cliente_table.dart';
 import 'package:farmtracker/databases/local/tables/cultura_table.dart';
 import 'package:farmtracker/databases/local/tables/endereco_table.dart';
@@ -15,7 +16,7 @@ import 'package:sqflite/sqflite.dart';
 class FarmTrackerDatabase {
   FarmTrackerDatabase._();
 
-  final int _version = 1;
+  final int _version = 2;
 
   static final FarmTrackerDatabase instance = FarmTrackerDatabase._();
   static Database? _database;
@@ -32,6 +33,7 @@ class FarmTrackerDatabase {
       join(await getDatabasesPath(), 'farmtracker.db'),
       version: _version,
       onCreate: _onCreateDataBase,
+      onUpgrade: _onUpgradeDataBase,
     );
   }
 
@@ -47,5 +49,12 @@ class FarmTrackerDatabase {
     await db.execute(ProjetoTable().create);
     await db.execute(LoteTable().create);
     await db.execute(LoteCulturaTable().create);
+    await db.execute(ClienteSincronizacaoTable().create);
+  }
+
+  Future<void> _onUpgradeDataBase(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(ClienteSincronizacaoTable().create);
+    }
   }
 }

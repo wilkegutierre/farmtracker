@@ -4,6 +4,7 @@ import 'package:farmtracker/databases/models/response/agenda_response_model.dart
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
 import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -29,6 +30,7 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime _currentMonth = DateTime.now();
   final DateTime _today = DateTime.now();
   final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
+  final ClienteViewmodel _clienteViewmodel = Modular.get<ClienteViewmodel>();
   // Datas com eventos (verde)
   final Set<int> _eventDates = {5, 15, 24, 26};
   // Datas com compromissos atrasados (vermelho)
@@ -48,6 +50,14 @@ class _DashboardPageState extends State<DashboardPage> {
       final agendaDayStart = DateTime(agendaDate.year, agendaDate.month, agendaDate.day).millisecondsSinceEpoch;
       return agendaDayStart == dayStart;
     }).toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clienteViewmodel.sincronizarClientesSeNecessario(DateTime.now());
+    });
   }
 
   @override
