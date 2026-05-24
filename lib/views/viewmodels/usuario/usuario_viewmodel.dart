@@ -7,6 +7,7 @@ import 'package:farmtracker/databases/models/response/usuario_response_model.dar
 import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
 import 'package:farmtracker/views/viewmodels/usuario/usuario_data.dart';
 import 'package:flutter/material.dart';
+import 'package:result_dart/result_dart.dart';
 
 class UsuarioViewmodel extends ChangeNotifier {
   final UsuarioRepository usuarioRepository;
@@ -30,10 +31,10 @@ class UsuarioViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> login(String acesso, String senha) async {
+  Future<String?> login(String email, String senha) async {
     usuarioData.isLoading = true;
     notifyListeners();
-    final result = await usuarioRepository.login(LoginUserRequestModel(login: acesso, password: senha));
+    final result = await usuarioRepository.login(LoginUserRequestModel(null, email, password: senha));
     final AuthData? data = await result.fold((success) async {
       await sessionManagerRepository.saveSession(success);
       await SessionStorage.save(success.token, expiresAt: success.expiresAt);
@@ -46,25 +47,43 @@ class UsuarioViewmodel extends ChangeNotifier {
       return null;
     }
 
-    await usuarioLocalRepository.login(LoginUserRequestModel(login: acesso, password: senha));
+    await usuarioLocalRepository.login(LoginUserRequestModel(null, email, password: senha));
     usuarioData.isLoading = false;
     notifyListeners();
     return data.token;
   }
 
-  Future<String?> setPassword(String acesso, String senha) async {
+  Future<String?> setPassword(String email, String senha) async {
     usuarioData.isLoading = true;
     notifyListeners();
-    final result = await usuarioRepository.setPassword(LoginUserRequestModel(login: acesso, password: senha));
-    final AuthData? data = await result.fold((success) async {
-      await sessionManagerRepository.saveSession(success);
-      await SessionStorage.save(success.token, expiresAt: success.expiresAt);
-      return success;
-    }, (failure) => null);
+    await usuarioRepository
+        .setPassword(LoginUserRequestModel(null, email, password: senha))
+        .fold(
+          (success) async {
+            await sessionManagerRepository.saveSession(success);
+            await SessionStorage.save(success.token, expiresAt: success.expiresAt);
+            return success.token;
+          },
+          (error) {
+            return null;
+          },
+        );
+
+    // final result = await usuarioRepository.setPassword(LoginUserRequestModel(null, email, password: senha));
+    // final AuthData? data = await result.fold(
+    //   (success) async {
+    //     await sessionManagerRepository.saveSession(success);
+    //     await SessionStorage.save(success.token, expiresAt: success.expiresAt);
+    //     return success;
+    //   },
+    //   (failure) {
+    //     return null;
+    //   },
+    // );
 
     usuarioData.isLoading = false;
     notifyListeners();
-    return data?.token;
+    //return data?.token;
   }
 
   Future<bool> isSessionValid() async {

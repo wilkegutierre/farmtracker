@@ -47,12 +47,6 @@ class ClienteServiceImpl with BaseServiceMixin implements ClienteService {
           if (kDebugMode) {
             print(body);
           }
-          // Map<String, dynamic> element = jsonDecode(body);
-          // List<ClienteResponseModel> clientesResult = [];
-          // for (var item in element as List) {
-          //   clientesResult.add(ClienteResponseModel.fromJson(item));
-          // }
-          // return Success(clientesResult);
           return Success(getMockClientes());
         },
         (failure) {
@@ -67,22 +61,21 @@ class ClienteServiceImpl with BaseServiceMixin implements ClienteService {
   @override
   AsyncResult<ClienteResponseModel> syncClients(DateTime referenceDate) async {
     try {
-      return requestService(() async {
+      final result = await requestService(() async {
         final String dateParam = referenceDate.toString();
-
-        String url = '${Enviroment.apiBaseUrl}/customer/sync/$dateParam';
+        final String url = '${Enviroment.apiBaseUrl}/customer/sync/$dateParam';
         return await _httpClient.get(url);
-      }).fold(
-        (response) {
+      });
+
+      return result.fold(
+        (response) async {
           final Response(:body) = response;
           if (kDebugMode) {
             print(body);
           }
           return Success(getMockCliente());
         },
-        (failure) {
-          return Failure(failure);
-        },
+        (failure) async => Failure(failure),
       );
     } catch (error) {
       return Failure(ClienteServiceError(message: error.toString()));

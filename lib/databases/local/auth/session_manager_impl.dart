@@ -42,4 +42,20 @@ class SessionManagerImpl with BaseServiceMixin implements SessionManagerReposito
     await prefs.remove('token_type');
     await prefs.remove('token_expires_at');
   }
+
+  @override
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? jwtToken = prefs.getString('jwt_token');
+    if (jwtToken != null && jwtToken.isNotEmpty) {
+      return jwtToken;
+    }
+    return prefs.getString('session_auth_token');
+  }
+
+  @override
+  Future<String> getTokenType() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token_type') ?? 'Bearer';
+  }
 }

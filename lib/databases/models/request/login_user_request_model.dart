@@ -7,10 +7,11 @@ part 'login_user_request_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class LoginUserRequestModel with EquatableMixin {
-  final String login;
+  final String? login;
+  final String? email;
   final String password;
 
-  LoginUserRequestModel({required this.login, required this.password});
+  LoginUserRequestModel(this.login, this.email, {required this.password});
 
   @override
   List<Object?> get props => [login, password];

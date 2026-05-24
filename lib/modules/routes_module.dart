@@ -28,6 +28,7 @@ import 'package:farmtracker/databases/services/endereco/endereco_service_impl.da
 import 'package:farmtracker/domains/repositories/cliente/cliente_repository.dart';
 import 'package:farmtracker/domains/repositories/cultura/cultura_repository.dart';
 import 'package:farmtracker/domains/repositories/endereco/endereco_repository.dart';
+import 'package:farmtracker/databases/services/http/authenticated_http_client.dart';
 import 'package:farmtracker/databases/services/http/custom_http_client.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
 import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
@@ -90,7 +91,10 @@ class RouteModule extends Module {
   @override
   void binds(Injector i) {
     i.addSingleton<AuthSessionController>(() => AuthSessionController(i.get<SessionManagerRepository>()));
-    i.addLazySingleton<HttpClientInterface>(CustomHttpClient.new);
+    i.addLazySingleton(CustomHttpClient.new);
+    i.addLazySingleton<HttpClientInterface>(
+      () => AuthenticatedHttpClient(i.get<CustomHttpClient>(), i.get<SessionManagerRepository>()),
+    );
     i.addLazySingleton<UsuarioService>(UsuarioServiceImpl.new);
     i.addLazySingleton<UsuarioRepository>(UsuarioRepositoryImpl.new);
     i.addLazySingleton<UsuarioLocalRepository>(UsuarioDatabaseImpl.new);

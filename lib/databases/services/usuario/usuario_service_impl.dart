@@ -50,14 +50,13 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
         return await _httpClient.post(url, loginRequest.toJsonStringfy());
       });
 
-      return result.fold((success) async {
+      return result.fold((success) {
         final Response(:body) = success;
         if (kDebugMode) {
           print(body);
         }
-
-        return Success(_resolveAuthDataFromBody(body));
-      }, (failure) async => Failure(InternalServerError()));
+        return _mapAuthDataResult(body);
+      }, (failure) => Failure(InternalServerError()));
     } catch (e) {
       return Failure(InternalServerError());
     }
@@ -71,15 +70,28 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
         return await _httpClient.post(url, loginRequest.toJsonStringfy());
       });
 
-      return result.fold((success) async {
-        final Response(:body) = success;
-        if (kDebugMode) {
-          print(body);
-        }
-        return Success(_resolveAuthDataFromBody(body));
-      }, (failure) async => Failure(InternalServerError()));
+      return result.fold(
+        (success) {
+          final Response(:body) = success;
+          if (kDebugMode) {
+            print(body);
+          }
+          return _mapAuthDataResult(body);
+        },
+        (failure) {
+          return Failure(InternalServerError());
+        },
+      );
     } catch (e) {
       return Failure(InternalServerError());
+    }
+  }
+
+  Result<AuthData> _mapAuthDataResult(String body) {
+    try {
+      return Success(_resolveAuthDataFromBody(body));
+    } catch (_) {
+      return Failure(InternalServerError(message: 'Resposta de autenticação inválida.'));
     }
   }
 
@@ -98,6 +110,19 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
         );
       }
     }
-    throw Exception('Falha na autenticação');
+    throw FormatException('Corpo de autenticação inválido');
+  }
+
+  DateTime? _parseExpiresAt(Object? value) {
+    if (value is String && value.isNotEmpty) {
+      return DateTime.parse(value).toLocal();
+    }
+    if (value is int) {
+      if (value > 9999999999) {
+        return DateTime.fromMillisecondsSinceEpoch(value).toLocal();
+      }
+      return DateTime.fromMillisecondsSinceEpoch(value * 1000).toLocal();
+    }
+    return null;
   }
 }
