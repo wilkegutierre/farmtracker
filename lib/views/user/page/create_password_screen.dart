@@ -59,19 +59,21 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
     setState(() => _submitting = true);
     try {
-      final String? token = await usuarioViewmodel.setPassword(email, password);
-      if (!mounted) return;
-      if (token == null || token.isEmpty) {
-        _showMessage('Não foi possível criar a senha. Verifique os dados informados.');
-        return;
-      }
+      // final String? token = await usuarioViewmodel.setPassword(email, password);
+      await usuarioViewmodel.setPassword(email, password).then((token) async {
+        if (!mounted) return;
+        if (token == null || token.isEmpty) {
+          _showMessage('Não foi possível criar a senha. Verifique os dados informados.');
+          return;
+        }
 
-      final AuthSessionController auth = Modular.get<AuthSessionController>();
-      await auth.signIn(token);
+        final AuthSessionController auth = Modular.get<AuthSessionController>();
+        await auth.signIn(token);
 
-      if (!mounted) return;
-      _showMessage('Senha criada com sucesso.');
-      Modular.to.navigate('/home');
+        if (!mounted) return;
+        _showMessage('Senha criada com sucesso.');
+        Modular.to.navigate('/home');
+      });
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

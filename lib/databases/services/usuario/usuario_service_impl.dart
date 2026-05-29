@@ -98,9 +98,9 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
   AuthData _resolveAuthDataFromBody(String body) {
     final dynamic decoded = json.decode(body);
     if (decoded is Map<String, dynamic>) {
-      final token = decoded['token'];
-      final tokenType = decoded['tokenType'] ?? 'Bearer';
-      final expiresAtStr = decoded['expiresAt'];
+      final token = decoded['data']['token'];
+      final tokenType = decoded['data']['tokenType'] ?? 'Bearer';
+      final expiresAtStr = decoded['data']['expiresAt'];
 
       if (token is String && token.isNotEmpty && expiresAtStr is String) {
         return AuthData(

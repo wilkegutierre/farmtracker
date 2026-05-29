@@ -31,10 +31,10 @@ class UsuarioViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> login(String email, String senha) async {
+  Future<String?> login(String login, String senha) async {
     usuarioData.isLoading = true;
     notifyListeners();
-    final result = await usuarioRepository.login(LoginUserRequestModel(null, email, password: senha));
+    final result = await usuarioRepository.login(LoginUserRequestModel(login, null, password: senha));
     final AuthData? data = await result.fold((success) async {
       await sessionManagerRepository.saveSession(success);
       await SessionStorage.save(success.token, expiresAt: success.expiresAt);
@@ -47,7 +47,7 @@ class UsuarioViewmodel extends ChangeNotifier {
       return null;
     }
 
-    await usuarioLocalRepository.login(LoginUserRequestModel(null, email, password: senha));
+    await usuarioLocalRepository.login(LoginUserRequestModel(login, null, password: senha));
     usuarioData.isLoading = false;
     notifyListeners();
     return data.token;
