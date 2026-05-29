@@ -2,15 +2,11 @@ import 'package:farmtracker/domains/enums/patterns_enum.dart';
 import 'package:farmtracker/views/utils/custom_text_error.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
-///Retorna um MaterialApp com o widget passado como filho
+/// Retorna um MaterialApp com o widget passado como filho.
 MaterialApp buildTestableWidget(Key testkey, Widget widget) {
-  return MaterialApp(
-    key: testkey,
-    home: RxRoot(child: widget),
-  );
+  return MaterialApp(key: testkey, home: widget);
 }
 
 MultiValidator cpfCnpjPatternValidator(int length, {String? textError}) {

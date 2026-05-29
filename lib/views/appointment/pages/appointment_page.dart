@@ -1,6 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentPage extends StatefulWidget {
@@ -103,7 +103,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Modular.to.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
         title: const Text('Agendar visita', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
@@ -171,7 +171,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           // Aqui você pode adicionar a lógica para salvar o agendamento
           //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Agendamento salvo com sucesso!')));
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita agendada!')));
-          Modular.to.popUntil((route) => route.settings.name == '/');
+          context.go('/home');
         },
         child: const Icon(Icons.save),
       ),

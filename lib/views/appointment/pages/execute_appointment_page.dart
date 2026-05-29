@@ -1,7 +1,7 @@
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 // Modelo para armazenar informações de praga/lote/cultura
 class PestLotCropInfo {
@@ -74,7 +74,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Modular.to.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
         title: const Text('Completar Visita', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
@@ -128,7 +128,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
                               ScaffoldMessenger.of(
                                 context,
                               ).showSnackBar(const SnackBar(content: Text('Visita não realizada!')));
-                              Modular.to.pop();
+                              context.pop();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red.shade50,
@@ -234,7 +234,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
         onPressed: () {
           // Aqui você pode adicionar a lógica para salvar o agendamento
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita completada com sucesso!')));
-          Modular.to.pop();
+          context.pop();
         },
         child: const Icon(Icons.save),
       ),

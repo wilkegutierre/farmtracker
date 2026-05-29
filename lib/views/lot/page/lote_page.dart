@@ -1,6 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 class LotePage extends StatefulWidget {
   const LotePage({super.key});
@@ -86,9 +86,7 @@ class _LotePageState extends State<LotePage> {
                   return _LoteCard(
                     title: item.title,
                     detail: item.detail,
-                    onTap: () {
-                      Modular.to.pushNamed('/cultura');
-                    },
+                    onTap: () => context.push('/cultura'),
                   );
                 },
               ),

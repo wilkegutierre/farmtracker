@@ -2,7 +2,7 @@ import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/outlined_button_dashboard_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 class CardScheduleDashboardWidget extends StatelessWidget {
   final VoidCallback? onPressedCard;
@@ -118,9 +118,10 @@ class CardScheduleDashboardWidget extends StatelessWidget {
                   const SizedBox(height: 12),
                   // Ver button
                   OutlinedButtonDashboardWidget(
-                    onPressed: () {
-                      Modular.to.pushNamed('/appointment', arguments: {'clientName': 'Cliente', 'farmName': 'Fazenda'});
-                    },
+                    onPressed: () => context.push(
+                      '/appointment',
+                      extra: {'clientName': 'Cliente', 'farmName': 'Fazenda'},
+                    ),
                     text: 'Ver',
                   ),
                 ],

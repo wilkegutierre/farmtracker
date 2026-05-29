@@ -1,6 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 class CulturaPage extends StatefulWidget {
   const CulturaPage({super.key});
@@ -92,9 +92,9 @@ class _CulturaPageState extends State<CulturaPage> {
         heroTag: 'fab-salvar-cultura',
         tooltip: 'Salvar e fechar',
         child: const Icon(Icons.save),
-        onPressed: () {
+          onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Culturas salvas')));
-          Modular.to.popUntil((route) => route.settings.name == '/clienteCadastro');
+          context.go('/clienteCadastro');
         },
       ),
     );

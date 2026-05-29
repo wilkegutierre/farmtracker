@@ -2,7 +2,8 @@ import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
 import 'package:farmtracker/views/viewmodels/projeto/projeto_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ProjetoPage extends StatefulWidget {
   const ProjetoPage({super.key});
@@ -12,8 +13,8 @@ class ProjetoPage extends StatefulWidget {
 }
 
 class _ProjetoPageState extends State<ProjetoPage> {
-  final ProjetoViewmodel projetoViewmodel = Modular.get<ProjetoViewmodel>();
-  final ClienteViewmodel clienteViewmodel = Modular.get<ClienteViewmodel>();
+  late final ProjetoViewmodel projetoViewmodel;
+  late final ClienteViewmodel clienteViewmodel;
 
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
@@ -23,7 +24,8 @@ class _ProjetoPageState extends State<ProjetoPage> {
   @override
   void initState() {
     super.initState();
-    //_carregarProjetos();
+    projetoViewmodel = context.read<ProjetoViewmodel>();
+    clienteViewmodel = context.read<ClienteViewmodel>();
   }
 
   @override
@@ -62,10 +64,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
                     ),
-                    onPressed: () {
-                      // Navegação solicitada: abrir a tela de Lote de forma estática
-                      Modular.to.pushNamed('/lote');
-                    },
+                    onPressed: () => context.push('/lote'),
                     child: Text(
                       _uuidSelecionado != null ? 'Salvar Alterações' : 'Adicionar Projeto',
                       style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),

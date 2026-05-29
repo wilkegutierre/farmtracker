@@ -1,19 +1,18 @@
-import 'package:farmtracker/core/session/auth_session_controller.dart';
-import 'package:farmtracker/core/session/session_storage.dart';
+import 'package:farmtracker/core/session/auth_cubit.dart';
+import 'package:farmtracker/core/session/auth_state.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_spacing.dart';
-import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_cubit.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_state.dart';
 import 'package:farmtracker/views/user/widgets/login_credential_fields.dart';
 import 'package:farmtracker/views/user/widgets/login_forgot_password_link.dart';
 import 'package:farmtracker/views/user/widgets/login_header.dart';
 import 'package:farmtracker/views/user/widgets/login_primary_button.dart';
-import 'package:farmtracker/views/user/page/create_password_screen.dart';
 import 'package:farmtracker/views/user/widgets/login_signup_footer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-/// Tela de login.
-/// Após integrar a API, substitua [_performLogin] pela chamada real e use o `tokenAcesso` (e expiração) na [AuthSessionController.signIn].
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -24,15 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
   bool _obscurePassword = true;
-  bool _submitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _tryRestoreStoredToken());
-  }
 
   @override
   void dispose() {
@@ -41,54 +32,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  /// Recupera o token salvo no SharedPreferences e restaura a sessão.
-  Future<void> _tryRestoreStoredToken() async {
-    if (!await SessionStorage.hasValidSession()) return;
-
-    final String? token = await SessionStorage.getToken();
-    if (token == null || token.isEmpty || !mounted) return;
-
-    final AuthSessionController auth = Modular.get<AuthSessionController>();
-    await auth.signIn(token);
-    if (!mounted) return;
-    Modular.to.navigate('/home');
-  }
-
-  Future<void> _performLogin() async {
+  void _performLogin() {
     final String user = _userController.text.trim();
     final String pass = _passwordController.text.trim();
     if (user.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha usuário e senha')));
       return;
     }
-
-    setState(() => _submitting = true);
-    try {
-      final AuthSessionController auth = Modular.get<AuthSessionController>();
-      final String? storedToken = await SessionStorage.getToken();
-
-      if (storedToken != null && storedToken.isNotEmpty) {
-        await auth.signIn(storedToken);
-      } else {
-        final String? token = await usuarioViewmodel.login(user, pass);
-        if (!mounted) return;
-        if (token == null || token.isEmpty) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Nao foi possivel efetuar login. Verifique os dados.')));
-          return;
-        }
-        await auth.signIn(token);
-      }
-      if (!mounted) return;
-      Modular.to.navigate('/home');
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    context.read<UsuarioCubit>().login(user, pass);
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildForm(BuildContext context, bool isLoading) {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
@@ -113,21 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: AppSpacing.s2),
-                    LoginForgotPasswordLink(
-                      onPressed: () {
-                        // Navegação / recuperação — quando existir fluxo
-                      },
-                    ),
+                    LoginForgotPasswordLink(onPressed: () {}),
                     const SizedBox(height: AppSpacing.s6),
-                    LoginPrimaryButton(onPressed: _performLogin, loading: _submitting),
+                    LoginPrimaryButton(onPressed: _performLogin, loading: isLoading),
                     const SizedBox(height: AppSpacing.s10),
-                    LoginSignupFooter(
-                      onCreatePassword: () {
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute<void>(builder: (_) => const CreatePasswordScreen()));
-                      },
-                    ),
+                    LoginSignupFooter(onCreatePassword: () => context.push('/createPassword')),
                     const SizedBox(height: AppSpacing.s6),
                   ],
                 ),
@@ -136,6 +80,39 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthCubit, AuthState>(
+      buildWhen: (_, current) => current is AuthLoading,
+      builder: (context, authState) {
+        // if (authState is AuthLoading) {
+        //   return Scaffold(
+        //     backgroundColor: AppColors.surface,
+        //     body: Center(
+        //       child: CircularProgressIndicator(color: AppColors.primary),
+        //     ),
+        //   );
+        // }
+
+        return BlocConsumer<UsuarioCubit, UsuarioState>(
+          listenWhen: (_, current) => current is UsuarioLoginSuccess || current is UsuarioLoginFailure,
+          listener: (context, state) async {
+            if (state is UsuarioLoginSuccess) {
+              await context.read<AuthCubit>().signIn(state.token);
+            } else if (state is UsuarioLoginFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            }
+          },
+          buildWhen: (_, current) =>
+              current is UsuarioLoading || current is UsuarioInitial || current is UsuarioLoginFailure,
+          builder: (context, state) {
+            return _buildForm(context, state is UsuarioLoading);
+          },
+        );
+      },
     );
   }
 }

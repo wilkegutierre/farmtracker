@@ -1,6 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 class ClientAppointmentPage extends StatefulWidget {
   const ClientAppointmentPage({super.key});
@@ -134,16 +134,13 @@ class _ClientAppointmentPageState extends State<ClientAppointmentPage> {
 
     if (project != null && mounted) {
       // Navega para a tela de agendamento com os dados do cliente e projeto
-      Modular.to.pushNamed(
-        '/appointment',
-        arguments: {
-          'clientName': client.name,
-          'farmName': client.address,
-          'projectTitle': project.title,
-          'projectBatch': project.batch,
-          'projectArea': project.area,
-        },
-      );
+      context.push('/appointment', extra: {
+        'clientName': client.name,
+        'farmName': client.address,
+        'projectTitle': project.title,
+        'projectBatch': project.batch,
+        'projectArea': project.area,
+      });
     }
   }
 }

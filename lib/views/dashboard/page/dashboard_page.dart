@@ -5,9 +5,10 @@ import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
 import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
-import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class Appointment {
@@ -29,8 +30,8 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? _selectedDate;
   DateTime _currentMonth = DateTime.now();
   final DateTime _today = DateTime.now();
-  final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
-  final ClienteViewmodel _clienteViewmodel = Modular.get<ClienteViewmodel>();
+  late final UsuarioCubit _usuarioCubit;
+  late final ClienteViewmodel _clienteViewmodel;
   // Datas com eventos (verde)
   final Set<int> _eventDates = {5, 15, 24, 26};
   // Datas com compromissos atrasados (vermelho)
@@ -55,6 +56,8 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    _usuarioCubit = context.read<UsuarioCubit>();
+    _clienteViewmodel = context.read<ClienteViewmodel>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _clienteViewmodel.sincronizarClientesSeNecessario(DateTime.now());
     });
@@ -99,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
             title: Text('Clientes', style: AppTextStyles.titleMedium),
             onTap: () {
               Navigator.of(context).pop();
-              Modular.to.pushNamed('/clienteRelacao');
+              context.push('/clienteRelacao');
             },
           ),
           const SizedBox(height: 8),
@@ -109,9 +112,10 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _handleFloatingActionButton() async {
-    final bool sessionValid = await usuarioViewmodel.isSessionValid();
+    final bool sessionValid = await _usuarioCubit.isSessionValid();
     if (!sessionValid) {
-      await redirectToLoginOnSessionExpired();
+      if (!mounted) return;
+      await redirectToLoginOnSessionExpired(context);
       return;
     }
     if (!mounted) return;
@@ -121,7 +125,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
       return;
     }
-    Modular.to.pushNamed('/clientAppointment');
+    if (mounted) context.push('/clientAppointment');
   }
 
   Widget _buildCalendarSection() {
@@ -318,9 +322,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   if (index > 0) const SizedBox(height: 12),
                   CardScheduleDashboardWidget(
-                    onPressedCard: () => Modular.to.pushNamed(
+                    onPressedCard: () => context.push(
                       '/executeAppointment',
-                      arguments: {'clientName': appointment.cliente.nome},
+                      extra: {'clientName': appointment.cliente.nome},
                     ),
 
                     time: DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(appointment.dataAgenda)),

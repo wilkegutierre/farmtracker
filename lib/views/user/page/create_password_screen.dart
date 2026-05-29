@@ -1,12 +1,14 @@
-import 'package:farmtracker/core/session/auth_session_controller.dart';
+import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_spacing.dart';
 import 'package:farmtracker/views/user/widgets/create_password_form_card.dart';
 import 'package:farmtracker/views/user/widgets/create_password_login_footer.dart';
 import 'package:farmtracker/views/user/widgets/login_header.dart';
-import 'package:farmtracker/views/viewmodels/usuario/usuario_viewmodel.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_cubit.dart';
+import 'package:farmtracker/views/viewmodels/usuario/usuario_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// Cadastro de senha para usuário que ainda não definiu credenciais de acesso.
 class CreatePasswordScreen extends StatefulWidget {
@@ -20,10 +22,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  final UsuarioViewmodel usuarioViewmodel = Modular.get<UsuarioViewmodel>();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _submitting = false;
 
   static final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
@@ -35,7 +35,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  void _submit() {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text;
     final String confirmPassword = _confirmPasswordController.text;
@@ -57,26 +57,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       return;
     }
 
-    setState(() => _submitting = true);
-    try {
-      // final String? token = await usuarioViewmodel.setPassword(email, password);
-      await usuarioViewmodel.setPassword(email, password).then((token) async {
-        if (!mounted) return;
-        if (token == null || token.isEmpty) {
-          _showMessage('Não foi possível criar a senha. Verifique os dados informados.');
-          return;
-        }
-
-        final AuthSessionController auth = Modular.get<AuthSessionController>();
-        await auth.signIn(token);
-
-        if (!mounted) return;
-        _showMessage('Senha criada com sucesso.');
-        Modular.to.navigate('/home');
-      });
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    context.read<UsuarioCubit>().setPassword(email, password);
   }
 
   void _showMessage(String text) {
@@ -85,46 +66,66 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s6),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: AppSpacing.s10),
-                    const LoginHeader(),
-                    const SizedBox(height: AppSpacing.s10),
-                    CreatePasswordFormCard(
-                      emailController: _emailController,
-                      passwordController: _passwordController,
-                      confirmPasswordController: _confirmPasswordController,
-                      obscurePassword: _obscurePassword,
-                      obscureConfirmPassword: _obscureConfirmPassword,
-                      onTogglePasswordVisibility: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                      onToggleConfirmPasswordVisibility: () {
-                        setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                      },
-                      onSubmit: _submit,
-                      loading: _submitting,
+    return BlocConsumer<UsuarioCubit, UsuarioState>(
+      listenWhen: (_, current) =>
+          current is UsuarioPasswordSuccess || current is UsuarioPasswordFailure,
+      listener: (context, state) async {
+        if (state is UsuarioPasswordSuccess) {
+          _showMessage('Senha criada com sucesso.');
+          await context.read<AuthCubit>().bootstrap();
+        } else if (state is UsuarioPasswordFailure) {
+          _showMessage(state.message);
+        }
+      },
+      buildWhen: (_, current) =>
+          current is UsuarioLoading ||
+          current is UsuarioInitial ||
+          current is UsuarioPasswordSuccess ||
+          current is UsuarioPasswordFailure,
+      builder: (context, state) {
+        final bool isLoading = state is UsuarioLoading;
+        return Scaffold(
+          backgroundColor: AppColors.surface,
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s6),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: AppSpacing.s10),
+                        const LoginHeader(),
+                        const SizedBox(height: AppSpacing.s10),
+                        CreatePasswordFormCard(
+                          emailController: _emailController,
+                          passwordController: _passwordController,
+                          confirmPasswordController: _confirmPasswordController,
+                          obscurePassword: _obscurePassword,
+                          obscureConfirmPassword: _obscureConfirmPassword,
+                          onTogglePasswordVisibility: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
+                          onToggleConfirmPasswordVisibility: () {
+                            setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                          },
+                          onSubmit: _submit,
+                          loading: isLoading,
+                        ),
+                        const SizedBox(height: AppSpacing.s10),
+                        CreatePasswordLoginFooter(onLogin: () => context.pop()),
+                        const SizedBox(height: AppSpacing.s6),
+                      ],
                     ),
-                    const SizedBox(height: AppSpacing.s10),
-                    CreatePasswordLoginFooter(onLogin: () => Navigator.of(context).pop()),
-                    const SizedBox(height: AppSpacing.s6),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

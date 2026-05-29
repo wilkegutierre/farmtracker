@@ -30,13 +30,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
-# Injeção de dependência 
-  get_it: ^9.0.5
+  # Gerenciamento de estado (BLoC/Cubit)
+  flutter_bloc: ^9.1.1
 
   # Equatable é uma biblioteca para comparação de objetos
   equatable: ^2.0.7
@@ -88,11 +90,8 @@ dependencies:
   #A Flutter plugin for opening iOS and Android phone settings from an app.
   app_settings: ^6.1.1
 
-  #Injeção de dependências e rotas
-  flutter_modular: ^6.4.1
-
-  #gerenciamento de estado
-  flutter_triple: ^3.0.0
+  # Roteamento declarativo
+  go_router: ^14.6.2
 
   #mock implementation
   mocktail: ^1.0.4
@@ -113,6 +112,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  bloc_test: ^10.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

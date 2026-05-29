@@ -1,6 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
 
 class RelacaoClientePage extends StatefulWidget {
   const RelacaoClientePage({super.key});
@@ -67,9 +67,7 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Modular.to.pushNamed('/clienteCadastro');
-        },
+        onPressed: () => context.push('/clienteCadastro'),
         child: const Icon(Icons.add),
       ),
     );
@@ -122,10 +120,7 @@ class _ClientCard extends StatelessWidget {
         ),
         trailing: InkWell(
           child: InkWell(
-            onTap: () {
-              // Navega para a tela de cadastro/edição do cliente
-              Modular.to.pushNamed('/clienteCadastro');
-            },
+            onTap: () => context.push('/clienteCadastro'),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               width: 36,
@@ -140,10 +135,7 @@ class _ClientCard extends StatelessWidget {
           ),
           //child: const Icon(Icons.chevron_right),
         ),
-        onTap: () {
-          // Navega para a tela de agendamento
-          Modular.to.pushNamed('/clienteCadastro');
-        },
+        onTap: () => context.push('/clienteCadastro'),
       ),
     );
   }

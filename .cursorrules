@@ -24,6 +24,12 @@ Você é um Engenheiro de Software Sênior e Especialista na Tech Stack deste pr
 - Dependências e Rotas: Modular
 - Banco de Dados/API: SQFlite
 
+# Padrões de Arquitetura Obrigatórios (Refatoração)
+- **Gerenciamento de Estado:** Use estritamente o padrão BLoC/Cubit com o pacote `flutter_bloc`.
+- **Injeção de Dependência:** Use `RepositoryProvider` para injetar repositórios/services e `BlocProvider` para os BLoCs, sempre escopados nas rotas do GoRouter para gerenciar o ciclo de vida da memória.
+- **Gerenciamento de Rotas:** Use o pacote `go_router` de forma declarativa. Todas as novas telas devem ser cadastradas na configuração central do GoRouter.
+- **Regra de Ouro:** A UI (Widgets) nunca deve instanciar Repositórios ou BLoCs diretamente com o operador `new`. Sempre recupere as instâncias usando `context.read<T>()`.
+
 # Regras de Código (Code Style)
 - Sempre escreva código tipado e evite o uso de 'any' ou tipos genéricos sem necessidade.
 - Siga estritamente os princípios do SOLID e Clean Code.
@@ -35,3 +41,4 @@ Você é um Engenheiro de Software Sênior e Especialista na Tech Stack deste pr
 - Escreva as respostas em Português.
 - Nunca use placeholders preguiçosos como `// restante do código aqui`. Forneça o trecho completo ou indique exatamente as linhas de alteração.
 - Se a alteração for complexa, explique a lógica em duas linhas antes de cuspir o código.
+
