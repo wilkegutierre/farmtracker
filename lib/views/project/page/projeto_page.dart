@@ -1,5 +1,6 @@
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
-import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_cubit.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_state.dart';
 import 'package:farmtracker/views/viewmodels/projeto/projeto_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,7 @@ class ProjetoPage extends StatefulWidget {
 
 class _ProjetoPageState extends State<ProjetoPage> {
   late final ProjetoViewmodel projetoViewmodel;
-  late final ClienteViewmodel clienteViewmodel;
+  late final ClienteCubit _clienteCubit;
 
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
@@ -25,7 +26,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
   void initState() {
     super.initState();
     projetoViewmodel = context.read<ProjetoViewmodel>();
-    clienteViewmodel = context.read<ClienteViewmodel>();
+    _clienteCubit = context.read<ClienteCubit>();
   }
 
   @override
@@ -100,8 +101,10 @@ class _ProjetoPageState extends State<ProjetoPage> {
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
                             projetoViewmodel.data.projeto = projeto;
-                            clienteViewmodel.data.projeto = projeto.nome;
-                            clienteViewmodel.changeState(ProjectoStateFlow.lote);
+                            _clienteCubit.atualizarFluxo(
+                              ProjectoStateFlow.lote,
+                              projeto: projeto.nome,
+                            );
                           },
                           child: Container(
                             width: double.infinity,

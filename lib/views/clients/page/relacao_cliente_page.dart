@@ -1,5 +1,9 @@
+import 'package:farmtracker/domains/models/cliente_model.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_cubit.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class RelacaoClientePage extends StatefulWidget {
@@ -13,11 +17,11 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
-  final List<_Client> _clients = const [
-    _Client(name: 'Maria Garcia', address: '456 Harvest Rd, Meadowbrook'),
-    _Client(name: 'John Appleseed', address: "123 Farmer's Lane, Greenfield"),
-    _Client(name: 'Samuel Jones', address: '789 Orchard Ave, Sunnyside'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    context.read<ClienteCubit>().obterRelacaoClientes();
+  }
 
   @override
   void dispose() {
@@ -28,22 +32,14 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final List<_Client> filteredClients = _clients
-        .where(
-          (c) =>
-              c.name.toLowerCase().contains(_query.toLowerCase()) ||
-              c.address.toLowerCase().contains(_query.toLowerCase()),
-        )
-        .toList();
 
     return Scaffold(
       appBar: AppBar(
-        // Título solicitado: "Cliente"
         title: const Text('Cliente'),
         centerTitle: false,
         elevation: 0,
-        // Sem actions -> remove o menu de três pontos
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
       ),
       body: SafeArea(
         child: Padding(
@@ -53,12 +49,55 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
               _buildSearchField(colorScheme),
               const SizedBox(height: 12),
               Expanded(
-                child: ListView.separated(
-                  itemCount: filteredClients.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final client = filteredClients[index];
-                    return _ClientCard(client: client);
+                child: BlocBuilder<ClienteCubit, ClienteState>(
+                  builder: (context, state) {
+                    if (state is ClienteLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (state is ClienteErro) {
+                      return Center(
+                        child: Text(
+                          state.mensagem,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final clientes = state is ClienteRelacaoCarregada ? state.clientes : <ClienteModel>[];
+                    final filtrados = clientes
+                        .where(
+                          (c) =>
+                              c.nome.toLowerCase().contains(_query.toLowerCase()) ||
+                              (c.enderecos?.any(
+                                    (e) =>
+                                        e.logradouro.toLowerCase().contains(_query.toLowerCase()) ||
+                                        e.cidade.toLowerCase().contains(_query.toLowerCase()),
+                                  ) ??
+                                  false),
+                        )
+                        .toList();
+
+                    if (filtrados.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Nenhum cliente encontrado',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return ListView.separated(
+                      itemCount: filtrados.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        return _ClientCard(cliente: filtrados[index]);
+                      },
+                    );
                   },
                 ),
               ),
@@ -76,9 +115,7 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
   Widget _buildSearchField(ColorScheme colorScheme) {
     return TextField(
       controller: _searchController,
-      onChanged: (value) => setState(() {
-        _query = value;
-      }),
+      onChanged: (value) => setState(() => _query = value),
       decoration: InputDecoration(
         hintText: 'Buscar clientes...',
         prefixIcon: const Icon(Icons.search),
@@ -92,48 +129,44 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
   }
 }
 
-class _Client {
-  final String name;
-  final String address;
-  const _Client({required this.name, required this.address});
-}
-
 class _ClientCard extends StatelessWidget {
-  final _Client client;
-  const _ClientCard({required this.client});
+  final ClienteModel cliente;
+
+  const _ClientCard({required this.cliente});
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final String endereco = cliente.enderecos?.isNotEmpty == true
+        ? '${cliente.enderecos!.first.logradouro}, ${cliente.enderecos!.first.cidade}'
+        : 'Sem endereço cadastrado';
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: theme.colorScheme.surfaceContainerHighest,
-          child: Text(client.name.characters.first),
+          child: Text(cliente.nome.characters.first),
         ),
-        title: Text(client.name, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600)),
+        title: Text(cliente.nome, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600)),
         subtitle: Text(
-          client.address,
+          endereco,
           style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
         trailing: InkWell(
-          child: InkWell(
-            onTap: () => context.push('/clienteCadastro'),
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.chevron_right),
+          onTap: () => context.push('/clienteCadastro'),
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.chevron_right),
           ),
-          //child: const Icon(Icons.chevron_right),
         ),
         onTap: () => context.push('/clienteCadastro'),
       ),

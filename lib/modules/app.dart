@@ -38,7 +38,7 @@ import 'package:farmtracker/domains/repositories/cultura/cultura_repository.dart
 import 'package:farmtracker/domains/repositories/endereco/endereco_repository.dart';
 import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
 import 'package:farmtracker/modules/app_material_route.dart';
-import 'package:farmtracker/views/viewmodels/cliente/cliente_viewmodel.dart';
+import 'package:farmtracker/views/viewmodels/cliente/cliente_cubit.dart';
 import 'package:farmtracker/views/viewmodels/usuario/usuario_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -118,21 +118,6 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<LoteCulturaLocalRepository>(create: (_) => LoteCulturaDatabaseImpl()),
         RepositoryProvider<CulturaLocalRepository>(create: (_) => CulturaDatabaseImpl()),
 
-        // ViewModels globais (usados em múltiplas rotas)
-        RepositoryProvider<ClienteViewmodel>(
-          create: (ctx) => ClienteViewmodel(
-            ctx.read<ClienteRepository>(),
-            ctx.read<CulturaRepository>(),
-            ctx.read<CulturaLocalRepository>(),
-            ctx.read<ClienteCulturaLocalRepository>(),
-            ctx.read<ClienteLocalRepository>(),
-            ctx.read<EnderecoLocalRepository>(),
-            ctx.read<EnderecoRepository>(),
-            ctx.read<ProjetoLocalRepository>(),
-            ctx.read<LoteLocalRepository>(),
-            ctx.read<LoteCulturaLocalRepository>(),
-          ),
-        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -144,6 +129,20 @@ class FarmTrackerApp extends StatelessWidget {
               ctx.read<UsuarioRepository>(),
               ctx.read<UsuarioLocalRepository>(),
               ctx.read<SessionManagerRepository>(),
+            ),
+          ),
+          BlocProvider<ClienteCubit>(
+            create: (ctx) => ClienteCubit(
+              ctx.read<ClienteRepository>(),
+              ctx.read<CulturaRepository>(),
+              ctx.read<CulturaLocalRepository>(),
+              ctx.read<ClienteCulturaLocalRepository>(),
+              ctx.read<ClienteLocalRepository>(),
+              ctx.read<EnderecoLocalRepository>(),
+              ctx.read<EnderecoRepository>(),
+              ctx.read<ProjetoLocalRepository>(),
+              ctx.read<LoteLocalRepository>(),
+              ctx.read<LoteCulturaLocalRepository>(),
             ),
           ),
         ],
