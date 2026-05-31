@@ -32,14 +32,28 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _performLogin() {
-    final String user = _userController.text.trim();
-    final String pass = _passwordController.text.trim();
-    if (user.isEmpty || pass.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha usuário e senha')));
-      return;
-    }
-    context.read<UsuarioCubit>().login(user, pass);
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthCubit, AuthState>(
+      buildWhen: (_, current) => current is AuthLoading,
+      builder: (context, authState) {
+        return BlocConsumer<UsuarioCubit, UsuarioState>(
+          listenWhen: (_, current) => current is UsuarioLoginSuccess || current is UsuarioLoginFailure,
+          listener: (context, state) async {
+            if (state is UsuarioLoginSuccess) {
+              await context.read<AuthCubit>().signIn(state.token);
+            } else if (state is UsuarioLoginFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+            }
+          },
+          buildWhen: (_, current) =>
+              current is UsuarioLoading || current is UsuarioInitial || current is UsuarioLoginFailure,
+          builder: (context, state) {
+            return _buildForm(context, state is UsuarioLoading);
+          },
+        );
+      },
+    );
   }
 
   Widget _buildForm(BuildContext context, bool isLoading) {
@@ -83,36 +97,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      buildWhen: (_, current) => current is AuthLoading,
-      builder: (context, authState) {
-        // if (authState is AuthLoading) {
-        //   return Scaffold(
-        //     backgroundColor: AppColors.surface,
-        //     body: Center(
-        //       child: CircularProgressIndicator(color: AppColors.primary),
-        //     ),
-        //   );
-        // }
-
-        return BlocConsumer<UsuarioCubit, UsuarioState>(
-          listenWhen: (_, current) => current is UsuarioLoginSuccess || current is UsuarioLoginFailure,
-          listener: (context, state) async {
-            if (state is UsuarioLoginSuccess) {
-              await context.read<AuthCubit>().signIn(state.token);
-            } else if (state is UsuarioLoginFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-            }
-          },
-          buildWhen: (_, current) =>
-              current is UsuarioLoading || current is UsuarioInitial || current is UsuarioLoginFailure,
-          builder: (context, state) {
-            return _buildForm(context, state is UsuarioLoading);
-          },
-        );
-      },
-    );
+  void _performLogin() {
+    final String user = _userController.text.trim();
+    final String pass = _passwordController.text.trim();
+    if (user.isEmpty || pass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha usuário e senha')));
+      return;
+    }
+    context.read<UsuarioCubit>().login(user, pass);
   }
 }

@@ -98,11 +98,13 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
   AuthData _resolveAuthDataFromBody(String body) {
     final dynamic decoded = json.decode(body);
     if (decoded is Map<String, dynamic>) {
-      final token = decoded['data']['token'];
-      final tokenType = decoded['data']['tokenType'] ?? 'Bearer';
-      final expiresAtStr = decoded['data']['expiresAt'];
+      final token = decoded.containsKey('data') ? decoded['data']['token'] : decoded['token'];
+      final tokenType = decoded.containsKey('data')
+          ? decoded['data']['tokenType'] ?? 'Bearer'
+          : decoded['tokenType'] ?? 'Bearer';
+      final expiresAtStr = decoded.containsKey('data') ? decoded['data']['expiresAt'] : decoded['expiresAt'];
 
-      if (token is String && token.isNotEmpty && expiresAtStr is String) {
+      if (token is String && token.isNotEmpty && expiresAtStr is String && tokenType is String) {
         return AuthData(
           token: token,
           tokenType: tokenType,
@@ -111,18 +113,5 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
       }
     }
     throw FormatException('Corpo de autenticação inválido');
-  }
-
-  DateTime? _parseExpiresAt(Object? value) {
-    if (value is String && value.isNotEmpty) {
-      return DateTime.parse(value).toLocal();
-    }
-    if (value is int) {
-      if (value > 9999999999) {
-        return DateTime.fromMillisecondsSinceEpoch(value).toLocal();
-      }
-      return DateTime.fromMillisecondsSinceEpoch(value * 1000).toLocal();
-    }
-    return null;
   }
 }

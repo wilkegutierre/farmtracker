@@ -55,10 +55,7 @@ void _configGlobals() {
   WidgetsFlutterBinding.ensureInitialized();
   Intl.defaultLocale = 'pt_BR';
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   EquatableConfig.stringify = true;
 }
@@ -68,45 +65,29 @@ class FarmTrackerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Data layer
     return MultiRepositoryProvider(
       providers: [
         // HTTP
         RepositoryProvider<CustomHttpClient>(create: (_) => CustomHttpClient()),
         RepositoryProvider<SessionManagerRepository>(create: (_) => SessionManagerImpl()),
         RepositoryProvider<HttpClientInterface>(
-          create: (ctx) => AuthenticatedHttpClient(
-            ctx.read<CustomHttpClient>(),
-            ctx.read<SessionManagerRepository>(),
-          ),
+          create: (ctx) => AuthenticatedHttpClient(ctx.read<CustomHttpClient>(), ctx.read<SessionManagerRepository>()),
         ),
 
         // Services
-        RepositoryProvider<UsuarioService>(
-          create: (ctx) => UsuarioServiceImpl(ctx.read<HttpClientInterface>()),
-        ),
-        RepositoryProvider<ClienteService>(
-          create: (ctx) => ClienteServiceImpl(ctx.read<HttpClientInterface>()),
-        ),
-        RepositoryProvider<CulturaService>(
-          create: (ctx) => CutluraServiceImpl(ctx.read<HttpClientInterface>()),
-        ),
-        RepositoryProvider<EnderecoService>(
-          create: (ctx) => EnderecoServiceImpl(ctx.read<HttpClientInterface>()),
-        ),
+        RepositoryProvider<UsuarioService>(create: (ctx) => UsuarioServiceImpl(ctx.read<HttpClientInterface>())),
+        RepositoryProvider<ClienteService>(create: (ctx) => ClienteServiceImpl(ctx.read<HttpClientInterface>())),
+        RepositoryProvider<CulturaService>(create: (ctx) => CutluraServiceImpl(ctx.read<HttpClientInterface>())),
+        RepositoryProvider<EnderecoService>(create: (ctx) => EnderecoServiceImpl(ctx.read<HttpClientInterface>())),
 
         // Remote repositories
         RepositoryProvider<UsuarioRepository>(
           create: (ctx) => UsuarioRepositoryImpl(service: ctx.read<UsuarioService>()),
         ),
-        RepositoryProvider<ClienteRepository>(
-          create: (ctx) => ClienteRepositoryImpl(ctx.read<ClienteService>()),
-        ),
-        RepositoryProvider<CulturaRepository>(
-          create: (ctx) => CulturaRepositoryImpl(ctx.read<CulturaService>()),
-        ),
-        RepositoryProvider<EnderecoRepository>(
-          create: (ctx) => EnderecoRepositoryImpl(ctx.read<EnderecoService>()),
-        ),
+        RepositoryProvider<ClienteRepository>(create: (ctx) => ClienteRepositoryImpl(ctx.read<ClienteService>())),
+        RepositoryProvider<CulturaRepository>(create: (ctx) => CulturaRepositoryImpl(ctx.read<CulturaService>())),
+        RepositoryProvider<EnderecoRepository>(create: (ctx) => EnderecoRepositoryImpl(ctx.read<EnderecoService>())),
 
         // Local repositories
         RepositoryProvider<UsuarioLocalRepository>(create: (_) => UsuarioDatabaseImpl()),
@@ -117,13 +98,11 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<LoteLocalRepository>(create: (_) => LoteDatabaseImpl()),
         RepositoryProvider<LoteCulturaLocalRepository>(create: (_) => LoteCulturaDatabaseImpl()),
         RepositoryProvider<CulturaLocalRepository>(create: (_) => CulturaDatabaseImpl()),
-
       ],
+      // Business layer
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<AuthCubit>(
-            create: (ctx) => AuthCubit(ctx.read<SessionManagerRepository>()),
-          ),
+          BlocProvider<AuthCubit>(create: (ctx) => AuthCubit(ctx.read<SessionManagerRepository>())),
           BlocProvider<UsuarioCubit>(
             create: (ctx) => UsuarioCubit(
               ctx.read<UsuarioRepository>(),

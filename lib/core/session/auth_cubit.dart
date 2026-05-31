@@ -10,10 +10,14 @@ class AuthCubit extends Cubit<AuthState> {
     bootstrap();
   }
 
-  Future<void> bootstrap() async {
+  Future<bool> isSessionValid() async {
     final bool sessionManagerValid = await _sessionManager.isSessionValid();
     final bool storageValid = await SessionStorage.hasValidSession();
-    if (sessionManagerValid || storageValid) {
+    return sessionManagerValid || storageValid;
+  }
+
+  Future<void> bootstrap() async {
+    if (await isSessionValid()) {
       emit(const AuthAuthenticated());
     } else {
       emit(const AuthUnauthenticated());

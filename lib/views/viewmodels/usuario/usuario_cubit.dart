@@ -81,5 +81,9 @@ class UsuarioCubit extends Cubit<UsuarioState> {
     );
   }
 
-  Future<bool> isSessionValid() => _sessionManagerRepository.isSessionValid();
+  Future<bool> isSessionValid() async {
+    final bool sessionManagerValid = await _sessionManagerRepository.isSessionValid();
+    final bool storageValid = await SessionStorage.hasValidSession();
+    return sessionManagerValid || storageValid;
+  }
 }

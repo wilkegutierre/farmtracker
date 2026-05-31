@@ -6,10 +6,7 @@ import 'package:farmtracker/databases/local/repositories/endereco_local_reposito
 import 'package:farmtracker/databases/local/repositories/lote_cultura_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/lote_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/projeto_local_repository.dart';
-import 'package:farmtracker/databases/models/response/cliente_response_model.dart';
-import 'package:farmtracker/databases/models/response/projeto_response_model.dart';
 import 'package:farmtracker/domains/models/cliente_cultura_model.dart';
-import 'package:farmtracker/domains/models/cliente_cultura_relacao_model.dart';
 import 'package:farmtracker/domains/models/cliente_model.dart';
 import 'package:farmtracker/domains/models/cultura_model.dart';
 import 'package:farmtracker/domains/models/endereco_model.dart';
@@ -109,17 +106,17 @@ void main() {
   });
 
   ClienteCubit buildCubit() => ClienteCubit(
-        mockClienteRepo,
-        mockCulturaRepo,
-        mockCulturaLocalRepo,
-        mockClienteCulturaLocalRepo,
-        mockClienteLocalRepo,
-        mockEnderecoLocalRepo,
-        mockEnderecoRepo,
-        mockProjetoLocalRepo,
-        mockLoteLocalRepo,
-        mockLoteCulturaLocalRepo,
-      );
+    mockClienteRepo,
+    mockCulturaRepo,
+    mockCulturaLocalRepo,
+    mockClienteCulturaLocalRepo,
+    mockClienteLocalRepo,
+    mockEnderecoLocalRepo,
+    mockEnderecoRepo,
+    mockProjetoLocalRepo,
+    mockLoteLocalRepo,
+    mockLoteCulturaLocalRepo,
+  );
 
   group('ClienteCubit —', () {
     test('estado inicial é ClienteInitial', () {
@@ -132,15 +129,11 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteLoading, ClienteSincronizado] quando já está sincronizado',
         setUp: () {
-          when(() => mockClienteLocalRepo.hasSyncNearDate(any()))
-              .thenAnswer((_) async => const Success(true));
+          when(() => mockClienteLocalRepo.hasSyncNearDate(any())).thenAnswer((_) async => const Success(true));
         },
         build: buildCubit,
         act: (cubit) => cubit.sincronizarClientesSeNecessario(DateTime.now()),
-        expect: () => [
-          const ClienteLoading(),
-          const ClienteSincronizado(),
-        ],
+        expect: () => [const ClienteLoading(), const ClienteSincronizado()],
         verify: (_) {
           verify(() => mockClienteLocalRepo.hasSyncNearDate(any())).called(1);
           verifyNever(() => mockClienteRepo.syncClients(any()));
@@ -150,17 +143,12 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteLoading, ClienteErro] quando sincronização falha',
         setUp: () {
-          when(() => mockClienteLocalRepo.hasSyncNearDate(any()))
-              .thenAnswer((_) async => const Success(false));
-          when(() => mockClienteRepo.syncClients(any()))
-              .thenAnswer((_) async => Failure(Exception('Erro de rede')));
+          when(() => mockClienteLocalRepo.hasSyncNearDate(any())).thenAnswer((_) async => const Success(false));
+          when(() => mockClienteRepo.syncClients(any())).thenAnswer((_) async => Failure(Exception('Erro de rede')));
         },
         build: buildCubit,
         act: (cubit) => cubit.sincronizarClientesSeNecessario(DateTime.now()),
-        expect: () => [
-          const ClienteLoading(),
-          isA<ClienteErro>(),
-        ],
+        expect: () => [const ClienteLoading(), isA<ClienteErro>()],
       );
     });
 
@@ -170,17 +158,12 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteLoading, ClienteRelacaoCarregada] com clientes e endereços',
         setUp: () {
-          when(() => mockClienteLocalRepo.getClientes())
-              .thenAnswer((_) async => Success([_clienteFixture]));
-          when(() => mockEnderecoLocalRepo.obterPorCliente(any()))
-              .thenAnswer((_) async => Success([_enderecoFixture]));
+          when(() => mockClienteLocalRepo.getClientes()).thenAnswer((_) async => Success([_clienteFixture]));
+          when(() => mockEnderecoLocalRepo.obterPorCliente(any())).thenAnswer((_) async => Success([_enderecoFixture]));
         },
         build: buildCubit,
         act: (cubit) => cubit.obterRelacaoClientes(),
-        expect: () => [
-          const ClienteLoading(),
-          isA<ClienteRelacaoCarregada>(),
-        ],
+        expect: () => [const ClienteLoading(), isA<ClienteRelacaoCarregada>()],
         verify: (cubit) {
           final state = cubit.state as ClienteRelacaoCarregada;
           expect(state.clientes, hasLength(1));
@@ -192,29 +175,21 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteLoading, ClienteRelacaoCarregada] com lista vazia quando sem clientes',
         setUp: () {
-          when(() => mockClienteLocalRepo.getClientes())
-              .thenAnswer((_) async => const Success([]));
+          when(() => mockClienteLocalRepo.getClientes()).thenAnswer((_) async => const Success([]));
         },
         build: buildCubit,
         act: (cubit) => cubit.obterRelacaoClientes(),
-        expect: () => [
-          const ClienteLoading(),
-          const ClienteRelacaoCarregada([]),
-        ],
+        expect: () => [const ClienteLoading(), const ClienteRelacaoCarregada([])],
       );
 
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteLoading, ClienteErro] quando repositório falha',
         setUp: () {
-          when(() => mockClienteLocalRepo.getClientes())
-              .thenAnswer((_) async => Failure(Exception('DB error')));
+          when(() => mockClienteLocalRepo.getClientes()).thenAnswer((_) async => Failure(Exception('DB error')));
         },
         build: buildCubit,
         act: (cubit) => cubit.obterRelacaoClientes(),
-        expect: () => [
-          const ClienteLoading(),
-          isA<ClienteErro>(),
-        ],
+        expect: () => [const ClienteLoading(), isA<ClienteErro>()],
       );
     });
 
@@ -224,8 +199,7 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteGravadoSucesso] quando novo cliente é gravado com sucesso',
         setUp: () {
-          when(() => mockClienteLocalRepo.gravar(any()))
-              .thenAnswer((_) async => const Success(true));
+          when(() => mockClienteLocalRepo.gravar(any())).thenAnswer((_) async => const Success(true));
         },
         build: buildCubit,
         act: (cubit) => cubit.gravarCliente(_clienteFixture, novoCliente: true),
@@ -238,8 +212,7 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteErro] quando gravação de novo cliente falha',
         setUp: () {
-          when(() => mockClienteLocalRepo.gravar(any()))
-              .thenAnswer((_) async => Failure(Exception('DB write error')));
+          when(() => mockClienteLocalRepo.gravar(any())).thenAnswer((_) async => Failure(Exception('DB write error')));
         },
         build: buildCubit,
         act: (cubit) => cubit.gravarCliente(_clienteFixture, novoCliente: true),
@@ -249,8 +222,7 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteGravadoSucesso] quando cliente existente é atualizado',
         setUp: () {
-          when(() => mockClienteLocalRepo.atualizar(any()))
-              .thenAnswer((_) async => const Success(true));
+          when(() => mockClienteLocalRepo.atualizar(any())).thenAnswer((_) async => const Success(true));
         },
         build: buildCubit,
         act: (cubit) => cubit.gravarCliente(_clienteFixture),
@@ -268,25 +240,15 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteFluxoAtualizado] com fluxo lote e nome do projeto',
         build: buildCubit,
-        act: (cubit) => cubit.atualizarFluxo(
-          ProjectoStateFlow.lote,
-          projeto: 'Plantio de Milho',
-        ),
-        expect: () => [
-          const ClienteFluxoAtualizado(
-            fluxo: ProjectoStateFlow.lote,
-            projeto: 'Plantio de Milho',
-          ),
-        ],
+        act: (cubit) => cubit.atualizarFluxo(ProjectoStateFlow.lote, projeto: 'Plantio de Milho'),
+        expect: () => [const ClienteFluxoAtualizado(fluxo: ProjectoStateFlow.lote, projeto: 'Plantio de Milho')],
       );
 
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteFluxoAtualizado] com fluxo projeto ao inicializar',
         build: buildCubit,
         act: (cubit) => cubit.inicializarFluxo(),
-        expect: () => [
-          const ClienteFluxoAtualizado(fluxo: ProjectoStateFlow.projeto),
-        ],
+        expect: () => [const ClienteFluxoAtualizado(fluxo: ProjectoStateFlow.projeto)],
       );
     });
 
@@ -335,8 +297,9 @@ void main() {
             projeto: 'uuid-projeto-01',
             lote: 'uuid-lote-01',
           );
-          when(() => mockClienteCulturaLocalRepo.obterCulturasPorCliente(any()))
-              .thenAnswer((_) async => Success([cultura]));
+          when(
+            () => mockClienteCulturaLocalRepo.obterCulturasPorCliente(any()),
+          ).thenAnswer((_) async => Success([cultura]));
         },
         build: buildCubit,
         act: (cubit) => cubit.obterClienteCulturas(cliente: 'uuid-cliente-01'),
@@ -350,8 +313,9 @@ void main() {
       blocTest<ClienteCubit, ClienteState>(
         'emite [ClienteCulturasCarregadas] com lista vazia quando falha',
         setUp: () {
-          when(() => mockClienteCulturaLocalRepo.obterCulturasPorCliente(any()))
-              .thenAnswer((_) async => Failure(Exception('not found')));
+          when(
+            () => mockClienteCulturaLocalRepo.obterCulturasPorCliente(any()),
+          ).thenAnswer((_) async => Failure(Exception('not found')));
         },
         build: buildCubit,
         act: (cubit) => cubit.obterClienteCulturas(cliente: 'uuid-cliente-01'),

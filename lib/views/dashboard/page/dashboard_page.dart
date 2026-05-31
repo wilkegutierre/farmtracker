@@ -1,3 +1,4 @@
+import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/core/session/auth_navigation.dart';
 import 'package:farmtracker/databases/mocks/models/agenda_response_model_mock.dart';
 import 'package:farmtracker/databases/models/response/agenda_response_model.dart';
@@ -5,7 +6,6 @@ import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
 import 'package:farmtracker/views/viewmodels/cliente/cliente_cubit.dart';
-import 'package:farmtracker/views/viewmodels/usuario/usuario_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +30,6 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? _selectedDate;
   DateTime _currentMonth = DateTime.now();
   final DateTime _today = DateTime.now();
-  late final UsuarioCubit _usuarioCubit;
   late final ClienteCubit _clienteCubit;
   // Datas com eventos (verde)
   final Set<int> _eventDates = {5, 15, 24, 26};
@@ -56,7 +55,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _usuarioCubit = context.read<UsuarioCubit>();
     _clienteCubit = context.read<ClienteCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _clienteCubit.sincronizarClientesSeNecessario(DateTime.now());
@@ -112,9 +110,15 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _handleFloatingActionButton() async {
-    final bool sessionValid = await _usuarioCubit.isSessionValid();
+    final bool sessionValid = await context.read<AuthCubit>().isSessionValid();
     if (!sessionValid) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sessão expirada. Faça login novamente.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
       await redirectToLoginOnSessionExpired(context);
       return;
     }
