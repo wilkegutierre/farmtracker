@@ -74,10 +74,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Cadastrar Cliente'), centerTitle: false),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onSalvar,
-        child: const Icon(Icons.save_outlined),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: _onSalvar, child: const Icon(Icons.save_outlined)),
       body: SafeArea(
         child: Form(
           key: _formKey,

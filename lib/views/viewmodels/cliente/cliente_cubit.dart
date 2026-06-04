@@ -97,59 +97,44 @@ class ClienteCubit extends Cubit<ClienteState> {
     emit(const ClienteLoading());
 
     final result = await _clienteLocalRepository.getClientes();
-    result.fold(
-      (clientes) async {
-        final List<ClienteModel> clientesComEndereco = [];
-        for (final cliente in clientes) {
-          final enderecoResult = await _enderecoLocalRepository.obterPorCliente(cliente.uuid);
-          enderecoResult.fold(
-            (enderecos) {
-              if (enderecos.isNotEmpty) {
-                clientesComEndereco.add(cliente.copyWith(enderecos: enderecos));
-              } else {
-                clientesComEndereco.add(cliente);
-              }
-            },
-            (_) => clientesComEndereco.add(cliente),
-          );
-        }
-        emit(ClienteRelacaoCarregada(clientesComEndereco));
-      },
-      (_) => emit(const ClienteErro('Falha ao carregar relação de clientes.')),
-    );
+    result.fold((clientes) async {
+      final List<ClienteModel> clientesComEndereco = [];
+      for (final cliente in clientes) {
+        final enderecoResult = await _enderecoLocalRepository.obterPorCliente(cliente.uuid);
+        enderecoResult.fold((enderecos) {
+          if (enderecos.isNotEmpty) {
+            clientesComEndereco.add(cliente.copyWith(enderecos: enderecos));
+          } else {
+            clientesComEndereco.add(cliente);
+          }
+        }, (_) => clientesComEndereco.add(cliente));
+      }
+      emit(ClienteRelacaoCarregada(clientesComEndereco));
+    }, (_) => emit(const ClienteErro('Falha ao carregar relação de clientes.')));
   }
 
   Future<void> obterClientePorUuid(String uuid) async {
     final result = await _clienteLocalRepository.getClientePorUuid(uuid);
-    result.fold(
-      (response) async {
-        if (response.uuid.isNotEmpty) {
-          ClienteModel cliente = response.toModel();
-          final enderecoResult = await _enderecoLocalRepository.obterPorCliente(cliente.uuid);
-          enderecoResult.fold(
-            (enderecos) {
-              if (enderecos.isNotEmpty) {
-                cliente = cliente.copyWith(enderecos: enderecos);
-              }
-            },
-            (_) {},
-          );
-          emit(ClienteCarregado(cliente));
-        }
-      },
-      (_) => emit(const ClienteErro('Falha ao carregar cliente.')),
-    );
+    result.fold((response) async {
+      if (response.uuid.isNotEmpty) {
+        ClienteModel cliente = response.toModel();
+        final enderecoResult = await _enderecoLocalRepository.obterPorCliente(cliente.uuid);
+        enderecoResult.fold((enderecos) {
+          if (enderecos.isNotEmpty) {
+            cliente = cliente.copyWith(enderecos: enderecos);
+          }
+        }, (_) {});
+        emit(ClienteCarregado(cliente));
+      }
+    }, (_) => emit(const ClienteErro('Falha ao carregar cliente.')));
   }
 
   Future<void> gravarCliente(ClienteModel cliente, {bool novoCliente = false}) async {
     if (novoCliente) {
       final result = await _clienteLocalRepository.gravar(cliente);
-      result.fold(
-        (success) {
-          if (success) emit(ClienteGravadoSucesso(cliente));
-        },
-        (_) => emit(const ClienteErro('Falha ao gravar cliente.')),
-      );
+      result.fold((success) {
+        if (success) emit(ClienteGravadoSucesso(cliente));
+      }, (_) => emit(const ClienteErro('Falha ao gravar cliente.')));
     } else {
       final result = await _clienteLocalRepository.atualizar(cliente);
       result.fold(
@@ -243,7 +228,7 @@ class ClienteCubit extends Cubit<ClienteState> {
 
   Future<void> _gravarCarteiraProjeto(List<ProjetoModel> projetos, String clienteId) async {
     for (final projeto in projetos) {
-      await _gravarCarteiraLote(projeto.lotes ?? [], projeto.uuid);
+      await _gravarCarteiraLote(projeto.lotes ?? [], projeto.id);
       await _projetoLocalRepository.gravar(projeto.copyWith(clienteId: clienteId));
     }
   }
@@ -255,10 +240,7 @@ class ClienteCubit extends Cubit<ClienteState> {
     }
   }
 
-  Future<void> _gravarCarteiraLoteCultura(
-    List<LoteCulturaModel> loteCulturas,
-    String loteId,
-  ) async {
+  Future<void> _gravarCarteiraLoteCultura(List<LoteCulturaModel> loteCulturas, String loteId) async {
     for (final loteCultura in loteCulturas) {
       await _loteCulturaLocalRepository.gravar(loteCultura.copyWith(lote: loteId));
     }
@@ -266,25 +248,19 @@ class ClienteCubit extends Cubit<ClienteState> {
 
   Future<void> _gravarCarteiraCultura(String clienteId) async {
     final result = await _culturaRepository.baixarCulturas(clienteId);
-    await result.fold(
-      (culturas) async {
-        for (final cultura in culturas) {
-          await _culturaLocalRepository.gravar(cultura.toModel());
-        }
-      },
-      (_) async {},
-    );
+    await result.fold((culturas) async {
+      for (final cultura in culturas) {
+        await _culturaLocalRepository.gravar(cultura.toModel());
+      }
+    }, (_) async {});
   }
 
   Future<void> _gravarCarteiraEnderecoCliente(ClienteResponseModel cliente) async {
     final result = await _enderecoRepository.obterPorCliente(cliente.uuid);
-    await result.fold(
-      (enderecos) async {
-        for (final endereco in enderecos) {
-          await _enderecoLocalRepository.gravar(endereco.toModel());
-        }
-      },
-      (_) async {},
-    );
+    await result.fold((enderecos) async {
+      for (final endereco in enderecos) {
+        await _enderecoLocalRepository.gravar(endereco.toModel());
+      }
+    }, (_) async {});
   }
 }

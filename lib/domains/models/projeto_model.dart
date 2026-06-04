@@ -7,8 +7,8 @@ part 'projeto_model.g.dart';
 
 @JsonSerializable(explicitToJson: true, ignoreUnannotated: true)
 class ProjetoModel with EquatableMixin {
-  @JsonKey(name: 'uuid')
-  final String uuid;
+  @JsonKey(name: 'id')
+  final String id;
   @JsonKey(name: 'clienteId')
   final String? clienteId;
   @JsonKey(name: 'nome')
@@ -17,14 +17,14 @@ class ProjetoModel with EquatableMixin {
   final String descricao;
   final List<LoteModel>? lotes;
 
-  ProjetoModel({required this.uuid, this.clienteId, required this.nome, required this.descricao, this.lotes});
+  ProjetoModel({required this.id, this.clienteId, required this.nome, required this.descricao, this.lotes});
 
   @override
-  List<Object> get props => [uuid, nome, descricao];
+  List<Object> get props => [id, nome, descricao];
 
-  ProjetoModel copyWith({String? uuid, String? clienteId, String? nome, String? descricao, List<LoteModel>? lotes}) {
+  ProjetoModel copyWith({String? id, String? clienteId, String? nome, String? descricao, List<LoteModel>? lotes}) {
     return ProjetoModel(
-      uuid: uuid ?? this.uuid,
+      id: id ?? this.id,
       clienteId: clienteId ?? this.clienteId,
       nome: nome ?? this.nome,
       descricao: descricao ?? this.descricao,

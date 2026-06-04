@@ -1,7 +1,8 @@
 const loteTable = 'lote_table';
 
 class LoteTable {
-  String get create => '''
+  String get create =>
+      '''
   create table $loteTable (
   uuid text not null,
   projetoId text not null,

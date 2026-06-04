@@ -53,12 +53,12 @@ class ProjetoViewmodel extends ChangeNotifier {
   }
 
   Future<void> adicionar(String cliente, String nome, String descricao) async {
-    final projeto = ProjetoModel(uuid: const Uuid().v4(), clienteId: cliente, nome: nome, descricao: descricao);
+    final projeto = ProjetoModel(id: const Uuid().v4(), clienteId: cliente, nome: nome, descricao: descricao);
     await _projetoRepository.gravar(projeto);
   }
 
   Future<void> alterar(String uuid, String cliente, String nome, String descricao) async {
-    final projeto = ProjetoModel(uuid: uuid, clienteId: cliente, nome: nome, descricao: descricao);
+    final projeto = ProjetoModel(id: uuid, clienteId: cliente, nome: nome, descricao: descricao);
     await _projetoRepository.alterar(projeto).then((result) {
       result.fold(
         (success) {
@@ -83,7 +83,7 @@ class ProjetoViewmodel extends ChangeNotifier {
   }
 
   Future<void> removerItem(int index) async {
-    await _projetoRepository.apagar(data.projetos![index].uuid);
+    await _projetoRepository.apagar(data.projetos![index].id);
     data.projetos!.removeAt(index);
     notifyListeners();
   }

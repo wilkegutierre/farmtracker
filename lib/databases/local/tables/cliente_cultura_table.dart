@@ -1,7 +1,8 @@
 const clienteCulturaTable = 'cliente_cultura_table';
 
 class ClienteCulturaTable {
-  String get create => '''
+  String get create =>
+      '''
   create table $clienteCulturaTable (
     cliente text not null,
     cultura text not null,

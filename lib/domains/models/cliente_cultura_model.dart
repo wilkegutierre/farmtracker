@@ -19,13 +19,7 @@ class ClienteCulturaModel with EquatableMixin {
     required this.lote,
   });
 
-  ClienteCulturaModel copyWith({
-    String? cliente,
-    String? cultura,
-    double? area,
-    String? projeto,
-    String? lote,
-  }) {
+  ClienteCulturaModel copyWith({String? cliente, String? cultura, double? area, String? projeto, String? lote}) {
     return ClienteCulturaModel(
       cliente: cliente ?? this.cliente,
       cultura: cultura ?? this.cultura,

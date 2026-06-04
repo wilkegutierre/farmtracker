@@ -114,10 +114,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!sessionValid) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sessão expirada. Faça login novamente.'),
-          duration: Duration(seconds: 3),
-        ),
+        const SnackBar(content: Text('Sessão expirada. Faça login novamente.'), duration: Duration(seconds: 3)),
       );
       await redirectToLoginOnSessionExpired(context);
       return;
@@ -326,10 +323,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   if (index > 0) const SizedBox(height: 12),
                   CardScheduleDashboardWidget(
-                    onPressedCard: () => context.push(
-                      '/executeAppointment',
-                      extra: {'clientName': appointment.cliente.nome},
-                    ),
+                    onPressedCard: () =>
+                        context.push('/executeAppointment', extra: {'clientName': appointment.cliente.nome}),
 
                     time: DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(appointment.dataAgenda)),
                     title: appointment.cliente.nome,

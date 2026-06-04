@@ -42,26 +42,11 @@ GoRouter createAppRouter(AuthCubit authCubit) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/createPassword',
-        builder: (context, state) => const CreatePasswordScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const DashboardPage(),
-      ),
-      GoRoute(
-        path: '/clienteRelacao',
-        builder: (context, state) => const RelacaoClientePage(),
-      ),
-      GoRoute(
-        path: '/clienteCadastro',
-        builder: (context, state) => const CadastroClientePage(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/createPassword', builder: (context, state) => const CreatePasswordScreen()),
+      GoRoute(path: '/home', builder: (context, state) => const DashboardPage()),
+      GoRoute(path: '/clienteRelacao', builder: (context, state) => const RelacaoClientePage()),
+      GoRoute(path: '/clienteCadastro', builder: (context, state) => const CadastroClientePage()),
       GoRoute(
         path: '/projeto',
         builder: (context, state) => RepositoryProvider<ProjetoViewmodel>(
@@ -79,10 +64,7 @@ GoRouter createAppRouter(AuthCubit authCubit) {
       GoRoute(
         path: '/cultura',
         builder: (context, state) => RepositoryProvider<CulturaViewmodel>(
-          create: (ctx) => CulturaViewmodel(
-            ctx.read<CulturaRepository>(),
-            ctx.read<CulturaLocalRepository>(),
-          ),
+          create: (ctx) => CulturaViewmodel(ctx.read<CulturaRepository>(), ctx.read<CulturaLocalRepository>()),
           child: const CulturaPage(),
         ),
       ),
@@ -103,15 +85,10 @@ GoRouter createAppRouter(AuthCubit authCubit) {
         path: '/executeAppointment',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
-          return ExecuteAppointmentPage(
-            clientName: extra?['clientName'] as String?,
-          );
+          return ExecuteAppointmentPage(clientName: extra?['clientName'] as String?);
         },
       ),
-      GoRoute(
-        path: '/clientAppointment',
-        builder: (context, state) => const ClientAppointmentPage(),
-      ),
+      GoRoute(path: '/clientAppointment', builder: (context, state) => const ClientAppointmentPage()),
     ],
   );
 }

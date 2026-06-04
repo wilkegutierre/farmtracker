@@ -83,11 +83,7 @@ class _LotePageState extends State<LotePage> {
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final item = _lotes[index];
-                  return _LoteCard(
-                    title: item.title,
-                    detail: item.detail,
-                    onTap: () => context.push('/cultura'),
-                  );
+                  return _LoteCard(title: item.title, detail: item.detail, onTap: () => context.push('/cultura'));
                 },
               ),
             ),

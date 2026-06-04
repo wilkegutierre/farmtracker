@@ -473,10 +473,7 @@ class _ExecuteAppointmentPageState extends State<ExecuteAppointmentPage> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
       child: _pestLotCropList.isEmpty
           ? Text(
               'Nenhuma informação adicionada',

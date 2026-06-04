@@ -13,12 +13,7 @@ class LoteResponseModel with EquatableMixin {
   final String descricao;
   final List<LoteCulturaResponseModel> culturas;
 
-  LoteResponseModel({
-    required this.uuid,
-    required this.nome,
-    required this.descricao,
-    required this.culturas,
-  });
+  LoteResponseModel({required this.uuid, required this.nome, required this.descricao, required this.culturas});
 
   @override
   List<Object> get props => [uuid, nome, descricao, culturas];

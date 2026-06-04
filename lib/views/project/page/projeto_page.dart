@@ -101,10 +101,7 @@ class _ProjetoPageState extends State<ProjetoPage> {
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
                             projetoViewmodel.data.projeto = projeto;
-                            _clienteCubit.atualizarFluxo(
-                              ProjectoStateFlow.lote,
-                              projeto: projeto.nome,
-                            );
+                            _clienteCubit.atualizarFluxo(ProjectoStateFlow.lote, projeto: projeto.nome);
                           },
                           child: Container(
                             width: double.infinity,
@@ -132,8 +129,8 @@ class _ProjetoPageState extends State<ProjetoPage> {
                                       icon: Icon(Icons.edit, color: theme.colorScheme.primary),
                                       tooltip: 'Editar',
                                       onPressed: () {
-                                        if (projeto.uuid.isEmpty) return;
-                                        _uuidSelecionado = projeto.uuid;
+                                        if (projeto.id.isEmpty) return;
+                                        _uuidSelecionado = projeto.id;
                                         _nomeController.text = projeto.nome;
                                         _descricaoController.text = projeto.descricao;
                                         setState(() {});

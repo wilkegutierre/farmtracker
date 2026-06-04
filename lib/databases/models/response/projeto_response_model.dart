@@ -14,12 +14,7 @@ class ProjetoResponseModel with EquatableMixin {
   final String descricao;
   final List<LoteResponseModel> lotes;
 
-  ProjetoResponseModel({
-    required this.uuid,
-    required this.nome,
-    required this.descricao,
-    required this.lotes,
-  });
+  ProjetoResponseModel({required this.uuid, required this.nome, required this.descricao, required this.lotes});
 
   @override
   List<Object?> get props => [uuid, nome, descricao, lotes];
@@ -27,12 +22,7 @@ class ProjetoResponseModel with EquatableMixin {
   @override
   bool? get stringify => true;
 
-  ProjetoResponseModel copyWith({
-    String? uuid,
-    String? nome,
-    String? descricao,
-    List<LoteResponseModel>? lotes,
-  }) {
+  ProjetoResponseModel copyWith({String? uuid, String? nome, String? descricao, List<LoteResponseModel>? lotes}) {
     return ProjetoResponseModel(
       uuid: uuid ?? this.uuid,
       nome: nome ?? this.nome,
@@ -49,7 +39,7 @@ class ProjetoResponseModel with EquatableMixin {
 extension ProjetoResponseModelMapper on ProjetoResponseModel {
   ProjetoModel toModel() {
     return ProjetoModel(
-      uuid: uuid,
+      id: uuid,
       nome: nome,
       descricao: descricao,
       lotes: lotes.map((lote) => lote.toModel()).toList(),

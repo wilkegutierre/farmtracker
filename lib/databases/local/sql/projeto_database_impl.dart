@@ -28,7 +28,7 @@ class ProjetoDatabaseImpl implements ProjetoLocalRepository {
         projetoTable,
         projeto.toJson(),
         where: 'uuid = ? and clienteId = ?',
-        whereArgs: [projeto.uuid, projeto.clienteId],
+        whereArgs: [projeto.id, projeto.clienteId],
       );
       return Success(result == 1 ? true : false);
     } catch (e) {
