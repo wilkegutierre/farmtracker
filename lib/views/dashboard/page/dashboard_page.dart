@@ -1,11 +1,8 @@
 import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/core/session/auth_navigation.dart';
-import 'package:farmtracker/databases/mocks/models/agenda_response_model_mock.dart';
-import 'package:farmtracker/databases/models/response/agenda_response_model.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
-import 'package:farmtracker/views/viewmodels/cliente/cliente_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +27,6 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? _selectedDate;
   DateTime _currentMonth = DateTime.now();
   final DateTime _today = DateTime.now();
-  late final ClienteCubit _clienteCubit;
   // Datas com eventos (verde)
   final Set<int> _eventDates = {5, 15, 24, 26};
   // Datas com compromissos atrasados (vermelho)
@@ -40,25 +36,22 @@ class _DashboardPageState extends State<DashboardPage> {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  List<AgendaResponseModel> _getAgendaMOck(DateTime? date) {
+  List<dynamic> _getAgendaMOck(DateTime? date) {
     if (date == null) return [];
     _getDateKey(date);
     // Converta a data para o começo do dia em milissegundos para comparar
     final dayStart = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
-    return mockAgendaList.where((agenda) {
-      final agendaDate = DateTime.fromMillisecondsSinceEpoch(agenda.dataAgenda);
-      final agendaDayStart = DateTime(agendaDate.year, agendaDate.month, agendaDate.day).millisecondsSinceEpoch;
-      return agendaDayStart == dayStart;
-    }).toList();
+
+    return [];
   }
 
   @override
   void initState() {
     super.initState();
-    _clienteCubit = context.read<ClienteCubit>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clienteCubit.sincronizarClientesSeNecessario(DateTime.now());
-    });
+    // _clienteCubit = context.read<ClienteCubit>();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _clienteCubit.sincronizarClientesSeNecessario(DateTime.now());
+    // });
   }
 
   @override

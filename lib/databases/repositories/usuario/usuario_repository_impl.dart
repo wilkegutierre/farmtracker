@@ -1,9 +1,9 @@
 import 'package:farmtracker/databases/errors/http_error.dart';
 import 'package:farmtracker/databases/models/request/login_user_request_model.dart';
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
-import 'package:farmtracker/databases/services/usuario/usuario_service.dart';
+import 'package:farmtracker/databases/services/user/usuario_service.dart';
 import 'package:farmtracker/domains/models/auth_data.dart';
-import 'package:farmtracker/domains/repositories/usuario/usuario_repository.dart';
+import 'package:farmtracker/domains/repositories/user/usuario_repository.dart';
 import 'package:result_dart/result_dart.dart';
 
 class UsuarioRepositoryImpl implements UsuarioRepository {

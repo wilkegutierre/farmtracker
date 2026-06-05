@@ -1,6 +1,6 @@
 const cropTable = 'crop_table';
 
-class ProjetoTable {
+class CropTable {
   String get create =>
       '''
     CREATE TABLE $cropTable (
