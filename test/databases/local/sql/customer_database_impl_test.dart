@@ -1,6 +1,5 @@
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/sql/customer_database_impl.dart';
-import 'package:farmtracker/databases/local/tables/cliente_table.dart';
 import 'package:farmtracker/databases/models/response/customer_response_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite/sqflite.dart';
@@ -116,7 +115,7 @@ class _InMemoryCustomerDatabase implements Database {
     int? limit,
     int? offset,
   }) async {
-    expect(table, clienteTable);
+    expect(table, 'customer');
 
     Iterable<Map<String, Object?>> filtered = rows;
 

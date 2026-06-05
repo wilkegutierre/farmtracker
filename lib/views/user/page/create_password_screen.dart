@@ -20,6 +20,7 @@ class CreatePasswordScreen extends StatefulWidget {
 
 class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -30,6 +31,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _loginController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -37,11 +39,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
   void _submit() {
     final String email = _emailController.text.trim();
+    final String login = _loginController.text.trim();
     final String password = _passwordController.text;
     final String confirmPassword = _confirmPasswordController.text;
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      _showMessage('Preencha e-mail, senha e confirmação.');
+    if (email.isEmpty || login.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      _showMessage('Preencha e-mail, login, senha e confirmação.');
       return;
     }
     if (!_emailPattern.hasMatch(email)) {
@@ -57,7 +60,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       return;
     }
 
-    context.read<UsuarioCubit>().setPassword(email, password);
+    context.read<UsuarioCubit>().setPassword(login, email, password);
   }
 
   void _showMessage(String text) {
@@ -67,8 +70,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<UsuarioCubit, UsuarioState>(
-      listenWhen: (_, current) =>
-          current is UsuarioPasswordSuccess || current is UsuarioPasswordFailure,
+      listenWhen: (_, current) => current is UsuarioPasswordSuccess || current is UsuarioPasswordFailure,
       listener: (context, state) async {
         if (state is UsuarioPasswordSuccess) {
           _showMessage('Senha criada com sucesso.');
@@ -98,9 +100,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       children: [
                         SizedBox(height: AppSpacing.s10),
                         const LoginHeader(),
-                        const SizedBox(height: AppSpacing.s10),
+                        const SizedBox(height: AppSpacing.s4),
                         CreatePasswordFormCard(
                           emailController: _emailController,
+                          loginController: _loginController,
                           passwordController: _passwordController,
                           confirmPasswordController: _confirmPasswordController,
                           obscurePassword: _obscurePassword,

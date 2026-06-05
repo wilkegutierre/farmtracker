@@ -31,12 +31,12 @@ class UsuarioCubit extends Cubit<UsuarioState> {
     emit(UsuarioLoginSuccess(authData.token));
   }
 
-  Future<void> setPassword(String email, String senha) async {
+  Future<void> setPassword(String login, String email, String password) async {
     emit(const UsuarioLoading());
 
     bool success = false;
 
-    final result = await _usuarioRepository.setPassword(LoginUserRequestModel(null, email, password: senha));
+    final result = await _usuarioRepository.setPassword(LoginUserRequestModel(login, email, password: password));
 
     await result.fold((data) async {
       await _sessionManagerRepository.saveSession(data);

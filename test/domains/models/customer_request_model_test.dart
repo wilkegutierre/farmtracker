@@ -33,9 +33,6 @@ void main() {
     address: 'address-001',
     orgOwner: 'org-001',
     walletId: 'wallet-001',
-    createdBy: 'user-001',
-    createdAt: '2026-01-01T00:00:00.000',
-    updatedAt: '2026-01-02T00:00:00.000',
   );
 
   group('CustomerRequestModel', () {
@@ -54,9 +51,6 @@ void main() {
       expect(customer.address, 'address-001');
       expect(customer.orgOwner, 'org-001');
       expect(customer.walletId, 'wallet-001');
-      expect(customer.createdBy, 'user-001');
-      expect(customer.createdAt, '2026-01-01T00:00:00.000');
-      expect(customer.updatedAt, '2026-01-02T00:00:00.000');
     });
 
     test('toJson serializa com snake_case das colunas', () {

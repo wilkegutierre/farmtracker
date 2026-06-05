@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 class CreatePasswordFormCard extends StatelessWidget {
   final TextEditingController emailController;
+  final TextEditingController loginController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final bool obscurePassword;
@@ -19,6 +20,7 @@ class CreatePasswordFormCard extends StatelessWidget {
   const CreatePasswordFormCard({
     super.key,
     required this.emailController,
+    required this.loginController,
     required this.passwordController,
     required this.confirmPasswordController,
     required this.obscurePassword,
@@ -36,21 +38,12 @@ class CreatePasswordFormCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ambientShadow,
-            offset: Offset(0, 8),
-            blurRadius: 24,
-          ),
-        ],
+        boxShadow: const [BoxShadow(color: AppColors.ambientShadow, offset: Offset(0, 8), blurRadius: 24)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Crie sua senha',
-            style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w700),
-          ),
+          Text('Crie sua senha', style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.s6),
           AuthLabeledField(
             label: 'E-MAIL',
@@ -59,6 +52,14 @@ class CreatePasswordFormCard extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             prefixIcon: Icons.mail_outline_rounded,
+          ),
+          const SizedBox(height: AppSpacing.s4),
+          AuthLabeledField(
+            label: 'LOGIN',
+            controller: loginController,
+            hint: 'login',
+            textInputAction: TextInputAction.next,
+            prefixIcon: Icons.person_outline_rounded,
           ),
           const SizedBox(height: AppSpacing.s4),
           AuthLabeledField(
@@ -81,11 +82,7 @@ class CreatePasswordFormCard extends StatelessWidget {
             prefixIcon: Icons.lock_outline_rounded,
           ),
           const SizedBox(height: AppSpacing.s6),
-          LoginPrimaryButton(
-            onPressed: onSubmit,
-            loading: loading,
-            label: 'CRIAR SENHA',
-          ),
+          LoginPrimaryButton(onPressed: onSubmit, loading: loading, label: 'CRIAR SENHA'),
         ],
       ),
     );
