@@ -1,23 +1,19 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'organization_response_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class OrganizationResponseModel with EquatableMixin {
   final String id;
   final String? description;
   final String addressId;
 
-  OrganizationResponseModel({
-    required this.id,
-    this.description,
-    required this.addressId,
-  });
+  OrganizationResponseModel({required this.id, this.description, required this.addressId});
 
-  OrganizationResponseModel copyWith({
-    String? id,
-    String? description,
-    String? addressId,
-  }) {
+  OrganizationResponseModel copyWith({String? id, String? description, String? addressId}) {
     return OrganizationResponseModel(
       id: id ?? this.id,
       description: description ?? this.description,
@@ -33,17 +29,7 @@ class OrganizationResponseModel with EquatableMixin {
 
   String toJsonStringfy() => json.encode(toJson());
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'description': description,
-        'address_id': addressId,
-      };
+  Map<String, dynamic> toJson() => _$OrganizationResponseModelToJson(this);
 
-  factory OrganizationResponseModel.fromJson(Map<String, dynamic> json) {
-    return OrganizationResponseModel(
-      id: json['id'] as String,
-      description: json['description'] as String?,
-      addressId: json['address_id'] as String,
-    );
-  }
+  factory OrganizationResponseModel.fromJson(Map<String, dynamic> json) => _$OrganizationResponseModelFromJson(json);
 }

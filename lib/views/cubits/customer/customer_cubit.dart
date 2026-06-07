@@ -1,12 +1,60 @@
 import 'package:farmtracker/databases/local/repositories/customer_local_repository.dart';
 import 'package:farmtracker/databases/models/response/customer_response_model.dart';
-import 'package:farmtracker/views/viewmodels/customer/customer_state.dart';
+import 'package:farmtracker/domains/models/wallet_model.dart';
+import 'package:farmtracker/domains/repositories/customer/customer_repository.dart';
+import 'package:farmtracker/views/cubits/customer/customer_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomerCubit extends Cubit<CustomerState> {
+  final CustomerRepository _customerRepository;
   final CustomerLocalRepository _customerLocalRepository;
 
-  CustomerCubit(this._customerLocalRepository) : super(const CustomerInitial());
+  CustomerCubit(this._customerRepository, this._customerLocalRepository) : super(const CustomerInitial());
+
+  Future<void> syncCustomersByWallet(List<WalletModel> wallets) async {
+    emit(const CustomerLoading());
+
+    final results = wallets.map((wallet) => _customerRepository.getCustomersByWalletId(wallet.id)).toList();
+    final customers = await Future.wait(results);
+
+    final List<CustomerResponseModel> allCustomers = [];
+    for (final customer in customers) {
+      final bool failed = customer.fold((item) {
+        allCustomers.addAll(item);
+        return false;
+      }, (_) => true);
+
+      if (failed) {
+        emit(const CustomerErro('Falha ao carregar customers da carteira.'));
+        return;
+      }
+    }
+
+    if (allCustomers.isNotEmpty) {
+      final bool saved = await _persistCustomersLocally(allCustomers);
+      if (!saved) {
+        emit(const CustomerErro('Falha ao gravar customers localmente.'));
+        return;
+      }
+    }
+
+    emit(CustomerListLoaded(allCustomers));
+  }
+
+  Future<bool> _persistCustomersLocally(List<CustomerResponseModel> customers) async {
+    for (final CustomerResponseModel customer in customers) {
+      final existsResult = await _customerLocalRepository.obterPorId(customer.id);
+      final saveResult = await existsResult.fold(
+        (_) async => _customerLocalRepository.alterar(customer),
+        (_) async => _customerLocalRepository.gravar(customer),
+      );
+
+      final bool success = saveResult.fold((value) => value, (_) => false);
+      if (!success) return false;
+    }
+
+    return true;
+  }
 
   Future<void> carregarCustomers() async {
     emit(const CustomerLoading());

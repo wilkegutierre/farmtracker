@@ -98,6 +98,7 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
   AuthData _resolveAuthDataFromBody(String body) {
     final dynamic decoded = json.decode(body);
     if (decoded is Map<String, dynamic>) {
+      final userId = decoded.containsKey('data') ? decoded['data']['id'] : decoded['id'];
       final token = decoded.containsKey('data') ? decoded['data']['token'] : decoded['token'];
       final tokenType = decoded.containsKey('data')
           ? decoded['data']['tokenType'] ?? 'Bearer'
@@ -106,6 +107,7 @@ class UsuarioServiceImpl with BaseServiceMixin implements UsuarioService {
 
       if (token is String && token.isNotEmpty && expiresAtStr is String && tokenType is String) {
         return AuthData(
+          userId: userId,
           token: token,
           tokenType: tokenType,
           expiresAt: DateTime.parse(expiresAtStr).toLocal(), // Converte para o fuso horário do celular

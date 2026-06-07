@@ -9,6 +9,7 @@ class SessionStorage {
 
   static const String _keyToken = 'session_auth_token';
   static const String _keyExpiresMs = 'session_auth_expires_at_ms';
+  static const String _keyUserId = 'session_auth_user_id';
 
   /// Há sessão válida: token presente e, se houver [exp], ainda não passou.
   static Future<bool> hasValidSession() async {
@@ -24,9 +25,13 @@ class SessionStorage {
   }
 
   /// Salva o token. Se [expiresAt] for nulo, tenta obter `exp` de um JWT.
-  static Future<void> save(String token, {DateTime? expiresAt}) async {
+  static Future<void> save(String token, {DateTime? expiresAt, String? userId}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyToken, token);
+
+    if (userId != null && userId.isNotEmpty) {
+      await prefs.setString(_keyUserId, userId);
+    }
 
     final DateTime? exp = expiresAt ?? _tryParseJwtExpiry(token);
     if (exp != null) {
@@ -41,19 +46,44 @@ class SessionStorage {
     return prefs.getString(_keyToken);
   }
 
+  static Future<String?> getUserId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? storedUserId = prefs.getString(_keyUserId);
+    if (storedUserId != null && storedUserId.isNotEmpty) {
+      return storedUserId;
+    }
+
+    final String? sessionManagerUserId = prefs.getString('user_id');
+    if (sessionManagerUserId != null && sessionManagerUserId.isNotEmpty) {
+      return sessionManagerUserId;
+    }
+
+    return null;
+  }
+
   static Future<void> clear() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyToken);
     await prefs.remove(_keyExpiresMs);
+    await prefs.remove(_keyUserId);
   }
 
-  static DateTime? _tryParseJwtExpiry(String token) {
+  static Map<String, dynamic>? _decodeJwtPayload(String token) {
     try {
       final List<String> parts = token.split('.');
       if (parts.length != 3) return null;
       final String normalized = base64Url.normalize(parts[1]);
       final String payload = utf8.decode(base64Url.decode(normalized));
-      final Map<String, dynamic> map = jsonDecode(payload) as Map<String, dynamic>;
+      return jsonDecode(payload) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static DateTime? _tryParseJwtExpiry(String token) {
+    try {
+      final Map<String, dynamic>? map = _decodeJwtPayload(token);
+      if (map == null) return null;
       final Object? exp = map['exp'];
       if (exp is int) {
         return DateTime.fromMillisecondsSinceEpoch(exp * 1000);

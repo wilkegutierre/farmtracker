@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'address_response_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class AddressResponseModel with EquatableMixin {
   final String id;
   final String? orgOwner;
@@ -87,72 +91,32 @@ class AddressResponseModel with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        id,
-        orgOwner,
-        owner,
-        street,
-        number,
-        district,
-        city,
-        state,
-        uf,
-        zipCode,
-        country,
-        reference,
-        complement,
-        lat,
-        longitude,
-        createdAt,
-        updatedAt,
-        createdBy,
-      ];
+    id,
+    orgOwner,
+    owner,
+    street,
+    number,
+    district,
+    city,
+    state,
+    uf,
+    zipCode,
+    country,
+    reference,
+    complement,
+    lat,
+    longitude,
+    createdAt,
+    updatedAt,
+    createdBy,
+  ];
 
   @override
   bool? get stringify => true;
 
   String toJsonStringfy() => json.encode(toJson());
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'org_owner': orgOwner,
-        'owner': owner,
-        'street': street,
-        'number': number,
-        'district': district,
-        'city': city,
-        'state': state,
-        'uf': uf,
-        'zip_code': zipCode,
-        'country': country,
-        'reference': reference,
-        'complement': complement,
-        'lat': lat,
-        'longitude': longitude,
-        'created_at': createdAt,
-        'updated_at': updatedAt,
-        'created_by': createdBy,
-      };
+  Map<String, dynamic> toJson() => _$AddressResponseModelToJson(this);
 
-  factory AddressResponseModel.fromJson(Map<String, dynamic> json) {
-    return AddressResponseModel(
-      id: json['id'] as String,
-      orgOwner: json['org_owner'] as String?,
-      owner: json['owner'] as String?,
-      street: json['street'] as String?,
-      number: json['number'] as String?,
-      district: json['district'] as String?,
-      city: json['city'] as String?,
-      state: json['state'] as String?,
-      uf: json['uf'] as String?,
-      zipCode: json['zip_code'] as String?,
-      country: json['country'] as String?,
-      reference: json['reference'] as String?,
-      complement: json['complement'] as String?,
-      lat: (json['lat'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      createdBy: json['created_by'] as String?,
-    );
-  }
+  factory AddressResponseModel.fromJson(Map<String, dynamic> json) => _$AddressResponseModelFromJson(json);
 }

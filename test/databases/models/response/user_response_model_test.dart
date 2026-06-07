@@ -6,7 +6,7 @@ void main() {
     'id': 'user-001',
     'email': 'usuario@test.com',
     'phone': '11999990000',
-    'address_id': 'address-001',
+    'addressId': 'address-001',
   };
 
   final userFixture = UserResponseModel(
@@ -26,7 +26,7 @@ void main() {
       expect(user.addressId, 'address-001');
     });
 
-    test('toJson serializa com snake_case das colunas', () {
+    test('toJson serializa os campos corretamente', () {
       expect(userFixture.toJson(), userJson);
     });
 

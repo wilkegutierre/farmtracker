@@ -7,22 +7,12 @@ import 'package:result_dart/result_dart.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CropDatabaseImpl implements CropLocalRepository {
-  final Future<Database> Function()? _databaseProvider;
-
-  CropDatabaseImpl({Future<Database> Function()? databaseProvider}) : _databaseProvider = databaseProvider;
-
-  Future<Database> _getDatabase() async {
-    final provider = _databaseProvider;
-    if (provider != null) {
-      return provider();
-    }
-    return FarmTrackerDatabase.instance.dataBase;
-  }
+  late Database db;
 
   @override
   AsyncResult<List<CropModel>> obterPorName(String name) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(cropTable, where: 'name like ?', whereArgs: ['$name%']);
       return Success(_mapRows(data));
     } catch (_) {
@@ -33,12 +23,8 @@ class CropDatabaseImpl implements CropLocalRepository {
   @override
   AsyncResult<CropModel> obterPorId(String id, String orgOwner) async {
     try {
-      final Database db = await _getDatabase();
-      final data = await db.query(
-        cropTable,
-        where: 'id = ? and org_owner = ?',
-        whereArgs: [id, orgOwner],
-      );
+      db = await FarmTrackerDatabase.instance.dataBase;
+      final data = await db.query(cropTable, where: 'id = ? and org_owner = ?', whereArgs: [id, orgOwner]);
       if (data.isNotEmpty) {
         return Success(CropModel.fromJson(Map<String, dynamic>.from(data.first)));
       }
@@ -51,7 +37,7 @@ class CropDatabaseImpl implements CropLocalRepository {
   @override
   AsyncResult<bool> gravar(CropModel crop) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       await db.insert(cropTable, crop.toJson());
       return const Success(true);
     } catch (_) {
@@ -62,7 +48,7 @@ class CropDatabaseImpl implements CropLocalRepository {
   @override
   AsyncResult<bool> alterar(CropModel crop) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final result = await db.update(
         cropTable,
         crop.toJson(),
@@ -78,7 +64,7 @@ class CropDatabaseImpl implements CropLocalRepository {
   @override
   AsyncResult<List<CropModel>> crops() async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(cropTable, orderBy: 'name');
       return Success(_mapRows(data));
     } catch (_) {

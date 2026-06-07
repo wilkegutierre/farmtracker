@@ -4,13 +4,13 @@ class CropTable {
   String get create =>
       '''
     CREATE TABLE $cropTable (
-      id TEXT PRIMARY KEY,
+      id TEXT,
       name TEXT NOT NULL,
-      org_owner TEXT NOT NULL,
-      created_at TEXT,
-      updated_at TEXT,
-      created_by TEXT,
-      PRIMARY KEY (id, org_owner)
+      orgOwner TEXT NOT NULL,
+      createdAt TEXT,
+      updatedAt TEXT,
+      createdBy TEXT,
+      PRIMARY KEY (id, orgOwner)
     )
   ''';
 }

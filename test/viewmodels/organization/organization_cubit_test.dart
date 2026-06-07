@@ -2,8 +2,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/repositories/organization_local_repository.dart';
 import 'package:farmtracker/databases/models/response/organization_response_model.dart';
-import 'package:farmtracker/views/viewmodels/organization/organization_cubit.dart';
-import 'package:farmtracker/views/viewmodels/organization/organization_state.dart';
+import 'package:farmtracker/views/cubits/organization/organization_cubit.dart';
+import 'package:farmtracker/views/cubits/organization/organization_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:result_dart/result_dart.dart';
@@ -56,16 +56,15 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.carregarOrganizations(),
-      expect: () => [
-        const OrganizationLoading(),
-        const OrganizationErro('Falha ao carregar organizations.'),
-      ],
+      expect: () => [const OrganizationLoading(), const OrganizationErro('Falha ao carregar organizations.')],
     );
 
     blocTest<OrganizationCubit, OrganizationState>(
       'obterPorAddressId emite [OrganizationLoading, OrganizationListLoaded] quando encontra organizations',
       setUp: () {
-        when(() => mockRepository.obterPorAddressId('address-001')).thenAnswer((_) async => Success([organizationFixture]));
+        when(
+          () => mockRepository.obterPorAddressId('address-001'),
+        ).thenAnswer((_) async => Success([organizationFixture]));
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorAddressId('address-001'),
@@ -82,10 +81,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorId('org-001'),
-      expect: () => [
-        const OrganizationLoading(),
-        OrganizationLoaded(organizationFixture),
-      ],
+      expect: () => [const OrganizationLoading(), OrganizationLoaded(organizationFixture)],
     );
 
     blocTest<OrganizationCubit, OrganizationState>(
@@ -95,10 +91,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorId('org-999'),
-      expect: () => [
-        const OrganizationLoading(),
-        const OrganizationErro('Organization não encontrada.'),
-      ],
+      expect: () => [const OrganizationLoading(), const OrganizationErro('Organization não encontrada.')],
     );
 
     blocTest<OrganizationCubit, OrganizationState>(
@@ -108,10 +101,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.gravar(organizationFixture),
-      expect: () => [
-        const OrganizationLoading(),
-        const OrganizationGravadoSucesso(),
-      ],
+      expect: () => [const OrganizationLoading(), const OrganizationGravadoSucesso()],
     );
 
     blocTest<OrganizationCubit, OrganizationState>(
@@ -121,10 +111,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.alterar(organizationFixture),
-      expect: () => [
-        const OrganizationLoading(),
-        const OrganizationAlteradoSucesso(),
-      ],
+      expect: () => [const OrganizationLoading(), const OrganizationAlteradoSucesso()],
     );
   });
 }

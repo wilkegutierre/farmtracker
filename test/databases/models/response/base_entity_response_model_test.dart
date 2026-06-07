@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final baseEntityJson = {
     'id': 'entity-001',
-    'org_owner': 'org-001',
+    'orgOwner': 'org-001',
     'name': 'Fazenda Boa Vista',
     'type': 'PJ',
-    'doc_number': '12345678000199',
-    'created_at': '2026-01-01T00:00:00.000',
-    'updated_at': '2026-01-02T00:00:00.000',
-    'created_by': 'user-001',
+    'docNumber': '12345678000199',
+    'createdAt': '2026-01-01T00:00:00.000',
+    'updatedAt': '2026-01-02T00:00:00.000',
+    'createdBy': 'user-001',
   };
 
   final baseEntityFixture = BaseEntityResponseModel(
@@ -38,7 +38,7 @@ void main() {
       expect(baseEntity.createdBy, 'user-001');
     });
 
-    test('toJson serializa com snake_case das colunas', () {
+    test('toJson serializa os campos corretamente', () {
       expect(baseEntityFixture.toJson(), baseEntityJson);
     });
 

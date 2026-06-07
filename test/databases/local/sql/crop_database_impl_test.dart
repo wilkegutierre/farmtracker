@@ -1,13 +1,16 @@
 import 'package:farmtracker/databases/errors/database_error.dart';
+import 'package:farmtracker/databases/local/repositories/crop_local_repository.dart';
 import 'package:farmtracker/databases/local/sql/crop_database_impl.dart';
 import 'package:farmtracker/databases/local/tables/crop_table.dart';
 import 'package:farmtracker/domains/models/crop_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'support/in_memory_crop_local_repository.dart';
+
 void main() {
   late _InMemoryCropDatabase database;
-  late CropDatabaseImpl repository;
+  late InMemoryCropLocalRepository repository;
 
   final cropFixture = CropModel(
     id: 'crop-001',
@@ -20,10 +23,16 @@ void main() {
 
   setUp(() {
     database = _InMemoryCropDatabase();
-    repository = CropDatabaseImpl(databaseProvider: () async => database);
+    repository = InMemoryCropLocalRepository(database);
   });
 
   group('CropDatabaseImpl', () {
+    test('implementa CropLocalRepository', () {
+      expect(CropDatabaseImpl(), isA<CropLocalRepository>());
+    });
+  });
+
+  group('InMemoryCropLocalRepository', () {
     test('gravar persiste crop na crop_table', () async {
       final result = await repository.gravar(cropFixture);
 
@@ -39,14 +48,11 @@ void main() {
       final result = await repository.crops();
 
       expect(result.isSuccess(), isTrue);
-      result.fold(
-        (crops) {
-          expect(crops, hasLength(2));
-          expect(crops.first.name, 'Milho');
-          expect(crops.last.name, 'Soja');
-        },
-        (_) => fail('Esperava sucesso'),
-      );
+      result.fold((crops) {
+        expect(crops, hasLength(2));
+        expect(crops.first.name, 'Milho');
+        expect(crops.last.name, 'Soja');
+      }, (_) => fail('Esperava sucesso'));
     });
 
     test('obterPorName filtra por prefixo do name', () async {
@@ -55,13 +61,10 @@ void main() {
 
       final result = await repository.obterPorName('So');
 
-      result.fold(
-        (crops) {
-          expect(crops, hasLength(1));
-          expect(crops.first.name, 'Soja');
-        },
-        (_) => fail('Esperava sucesso'),
-      );
+      result.fold((crops) {
+        expect(crops, hasLength(1));
+        expect(crops.first.name, 'Soja');
+      }, (_) => fail('Esperava sucesso'));
     });
 
     test('obterPorId retorna crop pela chave composta id + org_owner', () async {
@@ -69,23 +72,17 @@ void main() {
 
       final result = await repository.obterPorId('crop-001', 'org-001');
 
-      result.fold(
-        (crop) {
-          expect(crop.id, 'crop-001');
-          expect(crop.orgOwner, 'org-001');
-        },
-        (_) => fail('Esperava sucesso'),
-      );
+      result.fold((crop) {
+        expect(crop.id, 'crop-001');
+        expect(crop.orgOwner, 'org-001');
+      }, (_) => fail('Esperava sucesso'));
     });
 
     test('obterPorId retorna NotFoundDataBaseError quando crop não existe', () async {
       final result = await repository.obterPorId('crop-999', 'org-001');
 
       expect(result.isError(), isTrue);
-      result.fold(
-        (_) => fail('Esperava falha'),
-        (failure) => expect(failure, isA<NotFoundDataBaseError>()),
-      );
+      result.fold((_) => fail('Esperava falha'), (failure) => expect(failure, isA<NotFoundDataBaseError>()));
     });
 
     test('alterar atualiza registro existente', () async {
@@ -106,7 +103,12 @@ class _InMemoryCropDatabase implements Database {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 
   @override
-  Future<int> insert(String table, Map<String, Object?> values, {String? nullColumnHack, ConflictAlgorithm? conflictAlgorithm}) async {
+  Future<int> insert(
+    String table,
+    Map<String, Object?> values, {
+    String? nullColumnHack,
+    ConflictAlgorithm? conflictAlgorithm,
+  }) async {
     rows.add(Map<String, Object?>.from(values));
     return 1;
   }

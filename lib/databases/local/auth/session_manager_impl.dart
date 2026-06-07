@@ -11,6 +11,7 @@ class SessionManagerImpl with BaseServiceMixin implements SessionManagerReposito
     await prefs.setString('jwt_token', authData.token);
     await prefs.setString('token_type', authData.tokenType);
     await prefs.setString('token_expires_at', authData.expiresAt.toIso8601String());
+    await prefs.setString('user_id', authData.userId);
   }
 
   // Recupera os dados salvos e já valida se a sessão ainda está ativa
@@ -41,6 +42,7 @@ class SessionManagerImpl with BaseServiceMixin implements SessionManagerReposito
     await prefs.remove('jwt_token');
     await prefs.remove('token_type');
     await prefs.remove('token_expires_at');
+    await prefs.remove('user_id');
   }
 
   @override

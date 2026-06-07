@@ -11,18 +11,12 @@ class AddressDatabaseImpl implements AddressLocalRepository {
 
   AddressDatabaseImpl({Future<Database> Function()? databaseProvider}) : _databaseProvider = databaseProvider;
 
-  Future<Database> _getDatabase() async {
-    final provider = _databaseProvider;
-    if (provider != null) {
-      return provider();
-    }
-    return FarmTrackerDatabase.instance.dataBase;
-  }
+  late Database db;
 
   @override
   AsyncResult<List<AddressResponseModel>> addresses() async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(addressTable, orderBy: 'city');
       return Success(_mapRows(data));
     } catch (_) {
@@ -33,7 +27,7 @@ class AddressDatabaseImpl implements AddressLocalRepository {
   @override
   AsyncResult<AddressResponseModel> obterPorId(String id) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(addressTable, where: 'id = ?', whereArgs: [id]);
       if (data.isNotEmpty) {
         return Success(AddressResponseModel.fromJson(Map<String, dynamic>.from(data.first)));
@@ -47,7 +41,7 @@ class AddressDatabaseImpl implements AddressLocalRepository {
   @override
   AsyncResult<List<AddressResponseModel>> obterPorOwner(String owner) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(addressTable, where: 'owner = ?', whereArgs: [owner], orderBy: 'city');
       return Success(_mapRows(data));
     } catch (_) {
@@ -58,7 +52,7 @@ class AddressDatabaseImpl implements AddressLocalRepository {
   @override
   AsyncResult<List<AddressResponseModel>> obterPorOrgOwner(String orgOwner) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(addressTable, where: 'org_owner = ?', whereArgs: [orgOwner], orderBy: 'city');
       return Success(_mapRows(data));
     } catch (_) {
@@ -69,7 +63,7 @@ class AddressDatabaseImpl implements AddressLocalRepository {
   @override
   AsyncResult<bool> gravar(AddressResponseModel address) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       await db.insert(addressTable, address.toJson());
       return const Success(true);
     } catch (_) {
@@ -80,13 +74,8 @@ class AddressDatabaseImpl implements AddressLocalRepository {
   @override
   AsyncResult<bool> alterar(AddressResponseModel address) async {
     try {
-      final Database db = await _getDatabase();
-      final result = await db.update(
-        addressTable,
-        address.toJson(),
-        where: 'id = ?',
-        whereArgs: [address.id],
-      );
+      db = await FarmTrackerDatabase.instance.dataBase;
+      final result = await db.update(addressTable, address.toJson(), where: 'id = ?', whereArgs: [address.id]);
       return Success(result == 1);
     } catch (_) {
       return Failure(InsertDataBaseError());

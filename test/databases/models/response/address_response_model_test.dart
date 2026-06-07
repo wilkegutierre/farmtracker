@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final addressJson = {
     'id': 'address-001',
-    'org_owner': 'org-001',
+    'orgOwner': 'org-001',
     'owner': 'customer-001',
     'street': 'Rua das Flores',
     'number': '100',
@@ -12,15 +12,15 @@ void main() {
     'city': 'Ribeirão Preto',
     'state': 'São Paulo',
     'uf': 'SP',
-    'zip_code': '14000000',
+    'zipCode': '14000000',
     'country': 'Brasil',
     'reference': 'Próximo ao mercado',
     'complement': 'Sala 2',
     'lat': -21.1775,
     'longitude': -47.8103,
-    'created_at': '2026-01-01T00:00:00.000',
-    'updated_at': '2026-01-02T00:00:00.000',
-    'created_by': 'user-001',
+    'createdAt': '2026-01-01T00:00:00.000',
+    'updatedAt': '2026-01-02T00:00:00.000',
+    'createdBy': 'user-001',
   };
 
   final addressFixture = AddressResponseModel(
@@ -68,7 +68,7 @@ void main() {
       expect(address.createdBy, 'user-001');
     });
 
-    test('toJson serializa com snake_case das colunas', () {
+    test('toJson serializa os campos corretamente', () {
       expect(addressFixture.toJson(), addressJson);
     });
 

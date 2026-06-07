@@ -2,8 +2,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:farmtracker/databases/errors/database_error.dart';
 import 'package:farmtracker/databases/local/repositories/user_local_repository.dart';
 import 'package:farmtracker/databases/models/response/user_response_model.dart';
-import 'package:farmtracker/views/viewmodels/user/user_cubit.dart';
-import 'package:farmtracker/views/viewmodels/user/user_state.dart';
+import 'package:farmtracker/views/cubits/user/user_cubit.dart';
+import 'package:farmtracker/views/cubits/user/user_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:result_dart/result_dart.dart';
@@ -57,10 +57,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.carregarUsers(),
-      expect: () => [
-        const UserLoading(),
-        const UserErro('Falha ao carregar users.'),
-      ],
+      expect: () => [const UserLoading(), const UserErro('Falha ao carregar users.')],
     );
 
     blocTest<UserCubit, UserState>(
@@ -83,10 +80,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorId('user-001'),
-      expect: () => [
-        const UserLoading(),
-        UserLoaded(userFixture),
-      ],
+      expect: () => [const UserLoading(), UserLoaded(userFixture)],
     );
 
     blocTest<UserCubit, UserState>(
@@ -96,10 +90,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorEmail('usuario@test.com'),
-      expect: () => [
-        const UserLoading(),
-        UserLoaded(userFixture),
-      ],
+      expect: () => [const UserLoading(), UserLoaded(userFixture)],
     );
 
     blocTest<UserCubit, UserState>(
@@ -109,10 +100,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.obterPorId('user-999'),
-      expect: () => [
-        const UserLoading(),
-        const UserErro('User não encontrado.'),
-      ],
+      expect: () => [const UserLoading(), const UserErro('User não encontrado.')],
     );
 
     blocTest<UserCubit, UserState>(
@@ -122,10 +110,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.gravar(userFixture),
-      expect: () => [
-        const UserLoading(),
-        const UserGravadoSucesso(),
-      ],
+      expect: () => [const UserLoading(), const UserGravadoSucesso()],
     );
 
     blocTest<UserCubit, UserState>(
@@ -135,10 +120,7 @@ void main() {
       },
       build: buildCubit,
       act: (cubit) => cubit.alterar(userFixture),
-      expect: () => [
-        const UserLoading(),
-        const UserAlteradoSucesso(),
-      ],
+      expect: () => [const UserLoading(), const UserAlteradoSucesso()],
     );
   });
 }

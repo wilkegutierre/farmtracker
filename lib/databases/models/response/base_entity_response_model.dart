@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'base_entity_response_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class BaseEntityResponseModel with EquatableMixin {
   final String id;
   final String orgOwner;
@@ -53,27 +57,7 @@ class BaseEntityResponseModel with EquatableMixin {
 
   String toJsonStringfy() => json.encode(toJson());
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'org_owner': orgOwner,
-        'name': name,
-        'type': type,
-        'doc_number': docNumber,
-        'created_at': createdAt,
-        'updated_at': updatedAt,
-        'created_by': createdBy,
-      };
+  Map<String, dynamic> toJson() => _$BaseEntityResponseModelToJson(this);
 
-  factory BaseEntityResponseModel.fromJson(Map<String, dynamic> json) {
-    return BaseEntityResponseModel(
-      id: json['id'] as String,
-      orgOwner: json['org_owner'] as String,
-      name: json['name'] as String?,
-      type: json['type'] as String?,
-      docNumber: json['doc_number'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      createdBy: json['created_by'] as String?,
-    );
-  }
+  factory BaseEntityResponseModel.fromJson(Map<String, dynamic> json) => _$BaseEntityResponseModelFromJson(json);
 }

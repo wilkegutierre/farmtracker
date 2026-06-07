@@ -4,8 +4,8 @@ class AddressTable {
   String get create =>
       '''
     CREATE TABLE $addressTable (
-      id TEXT PRIMARY KEY NOT NULL,
-      org_owner TEXT,
+      id TEXT,
+      orgOwner TEXT,
       owner TEXT,
       street TEXT,
       number TEXT,
@@ -13,15 +13,16 @@ class AddressTable {
       city TEXT,
       state TEXT,
       uf TEXT,
-      zip_code TEXT,
+      zipCode TEXT,
       country TEXT,
       reference TEXT,
       complement TEXT,
       lat REAL,
       longitude REAL,
-      created_at TEXT,
-      updated_at TEXT,
-      created_by TEXT
+      createdAt TEXT,
+      updatedAt TEXT,
+      createdBy TEXT,
+      PRIMARY KEY (id, orgOwner)
     );
   ''';
 }

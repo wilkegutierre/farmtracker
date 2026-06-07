@@ -11,7 +11,7 @@ CustomerResponseModel _$CustomerResponseModelFromJson(
 ) => CustomerResponseModel(
   id: json['id'] as String,
   proprietario: json['proprietario'] as String?,
-  responsavelTechnico: json['responsavelTechnico'] as String?,
+  responsavelTecnico: json['responsavelTecnico'] as String?,
   projeto: json['projeto'] as String?,
   email: json['email'] as String?,
   primaryPhone: json['primaryPhone'] as String?,
@@ -28,7 +28,7 @@ Map<String, dynamic> _$CustomerResponseModelToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'proprietario': instance.proprietario,
-  'responsavelTechnico': instance.responsavelTechnico,
+  'responsavelTecnico': instance.responsavelTecnico,
   'projeto': instance.projeto,
   'email': instance.email,
   'primaryPhone': instance.primaryPhone,

@@ -5,7 +5,7 @@ void main() {
   final organizationJson = {
     'id': 'org-001',
     'description': 'Organização Agrícola Sul',
-    'address_id': 'address-001',
+    'addressId': 'address-001',
   };
 
   final organizationFixture = OrganizationResponseModel(
@@ -23,7 +23,7 @@ void main() {
       expect(organization.addressId, 'address-001');
     });
 
-    test('toJson serializa com snake_case das colunas', () {
+    test('toJson serializa os campos corretamente', () {
       expect(organizationFixture.toJson(), organizationJson);
     });
 

@@ -3,7 +3,7 @@ import 'package:farmtracker/databases/local/repositories/session_manager_reposit
 import 'package:farmtracker/databases/models/request/login_user_request_model.dart';
 import 'package:farmtracker/databases/models/response/usuario_response_model.dart';
 import 'package:farmtracker/domains/repositories/user/usuario_repository.dart';
-import 'package:farmtracker/views/viewmodels/usuario/usuario_state.dart';
+import 'package:farmtracker/views/cubits/usuario/usuario_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UsuarioCubit extends Cubit<UsuarioState> {
@@ -19,7 +19,7 @@ class UsuarioCubit extends Cubit<UsuarioState> {
 
     final authData = await result.fold((success) async {
       await _sessionManagerRepository.saveSession(success);
-      await SessionStorage.save(success.token, expiresAt: success.expiresAt);
+      await SessionStorage.save(success.token, expiresAt: success.expiresAt, userId: success.userId);
       return success;
     }, (failure) => null);
 
@@ -40,7 +40,7 @@ class UsuarioCubit extends Cubit<UsuarioState> {
 
     await result.fold((data) async {
       await _sessionManagerRepository.saveSession(data);
-      await SessionStorage.save(data.token, expiresAt: data.expiresAt);
+      await SessionStorage.save(data.token, expiresAt: data.expiresAt, userId: data.userId);
       success = true;
     }, (error) {});
 

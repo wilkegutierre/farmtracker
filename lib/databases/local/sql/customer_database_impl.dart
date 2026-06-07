@@ -3,6 +3,7 @@ import 'package:farmtracker/databases/local/farmtracker_database.dart';
 import 'package:farmtracker/databases/local/repositories/customer_local_repository.dart';
 import 'package:farmtracker/databases/local/tables/customer_table.dart';
 import 'package:farmtracker/databases/models/response/customer_response_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,19 +11,12 @@ class CustomerDatabaseImpl implements CustomerLocalRepository {
   final Future<Database> Function()? _databaseProvider;
 
   CustomerDatabaseImpl({Future<Database> Function()? databaseProvider}) : _databaseProvider = databaseProvider;
-
-  Future<Database> _getDatabase() async {
-    final provider = _databaseProvider;
-    if (provider != null) {
-      return provider();
-    }
-    return FarmTrackerDatabase.instance.dataBase;
-  }
+  late Database db;
 
   @override
   AsyncResult<List<CustomerResponseModel>> customers() async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(customerTable, orderBy: 'email');
       return Success(_mapRows(data));
     } catch (_) {
@@ -33,7 +27,7 @@ class CustomerDatabaseImpl implements CustomerLocalRepository {
   @override
   AsyncResult<CustomerResponseModel> obterPorId(String id) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(customerTable, where: 'id = ?', whereArgs: [id]);
       if (data.isNotEmpty) {
         return Success(CustomerResponseModel.fromJson(Map<String, dynamic>.from(data.first)));
@@ -47,7 +41,7 @@ class CustomerDatabaseImpl implements CustomerLocalRepository {
   @override
   AsyncResult<List<CustomerResponseModel>> obterPorOrgOwner(String orgOwner) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final data = await db.query(customerTable, where: 'org_owner = ?', whereArgs: [orgOwner], orderBy: 'email');
       return Success(_mapRows(data));
     } catch (_) {
@@ -58,10 +52,13 @@ class CustomerDatabaseImpl implements CustomerLocalRepository {
   @override
   AsyncResult<bool> gravar(CustomerResponseModel customer) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       await db.insert(customerTable, customer.toJson());
       return const Success(true);
-    } catch (_) {
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
       return Failure(InsertDataBaseError());
     }
   }
@@ -69,7 +66,7 @@ class CustomerDatabaseImpl implements CustomerLocalRepository {
   @override
   AsyncResult<bool> alterar(CustomerResponseModel customer) async {
     try {
-      final Database db = await _getDatabase();
+      db = await FarmTrackerDatabase.instance.dataBase;
       final result = await db.update(customerTable, customer.toJson(), where: 'id = ?', whereArgs: [customer.id]);
       return Success(result == 1);
     } catch (_) {

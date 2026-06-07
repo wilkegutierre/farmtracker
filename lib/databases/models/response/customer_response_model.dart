@@ -9,7 +9,7 @@ part 'customer_response_model.g.dart';
 class CustomerResponseModel with EquatableMixin {
   final String id;
   final String? proprietario;
-  final String? responsavelTechnico;
+  final String? responsavelTecnico;
   final String? projeto;
   final String? email;
   final String? primaryPhone;
@@ -23,7 +23,7 @@ class CustomerResponseModel with EquatableMixin {
   CustomerResponseModel({
     required this.id,
     this.proprietario,
-    this.responsavelTechnico,
+    this.responsavelTecnico,
     this.projeto,
     this.email,
     this.primaryPhone,
@@ -38,7 +38,7 @@ class CustomerResponseModel with EquatableMixin {
   CustomerResponseModel copyWith({
     String? id,
     String? proprietario,
-    String? responsavelTechnico,
+    String? responsavelTecnico,
     String? projeto,
     String? email,
     String? primaryPhone,
@@ -52,7 +52,7 @@ class CustomerResponseModel with EquatableMixin {
     return CustomerResponseModel(
       id: id ?? this.id,
       proprietario: proprietario ?? this.proprietario,
-      responsavelTechnico: responsavelTechnico ?? this.responsavelTechnico,
+      responsavelTecnico: responsavelTecnico ?? this.responsavelTecnico,
       projeto: projeto ?? this.projeto,
       email: email ?? this.email,
       primaryPhone: primaryPhone ?? this.primaryPhone,
@@ -69,7 +69,7 @@ class CustomerResponseModel with EquatableMixin {
   List<Object?> get props => [
     id,
     proprietario,
-    responsavelTechnico,
+    responsavelTecnico,
     projeto,
     email,
     primaryPhone,

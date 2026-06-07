@@ -4,9 +4,10 @@ class OrganizationTable {
   String get create =>
       '''
     CREATE TABLE $organizationTable (
-  id TEXT PRIMARY KEY,
+  id TEXT,
   description TEXT,
-  address_id TEXT NOT NULL
+  addressId TEXT NOT NULL,
+  PRIMARY KEY (id)
 );
 ''';
 }

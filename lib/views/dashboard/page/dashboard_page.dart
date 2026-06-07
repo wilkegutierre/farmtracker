@@ -1,7 +1,16 @@
 import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/core/session/auth_navigation.dart';
+import 'package:farmtracker/core/session/session_storage.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
+import 'package:farmtracker/views/cubits/address/address_cubit.dart';
+import 'package:farmtracker/views/cubits/address/address_state.dart';
+import 'package:farmtracker/views/cubits/base_entity/base_entity_cubit.dart';
+import 'package:farmtracker/views/cubits/base_entity/base_entity_state.dart';
+import 'package:farmtracker/views/cubits/customer/customer_cubit.dart';
+import 'package:farmtracker/views/cubits/customer/customer_state.dart';
+import 'package:farmtracker/views/cubits/wallet/wallet_cubit.dart';
+import 'package:farmtracker/views/cubits/wallet/wallet_state.dart';
 import 'package:farmtracker/views/dashboard/widgets/card_schedule_dashboard_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,10 +57,46 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    // _clienteCubit = context.read<ClienteCubit>();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _clienteCubit.sincronizarClientesSeNecessario(DateTime.now());
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncRemoteData());
+  }
+
+  Future<void> _syncRemoteData() async {
+    final String? userId = await SessionStorage.getUserId();
+    if (userId == null || !mounted) return;
+
+    // Sync wallets
+    final WalletCubit walletCubit = context.read<WalletCubit>();
+    await walletCubit.syncWallets(userId);
+    if (!mounted) return;
+
+    final WalletState walletState = walletCubit.state;
+    if (walletState is! WalletListLoaded || walletState.wallets.isEmpty) return;
+
+    // Sync customers
+    final CustomerCubit customerCubit = context.read<CustomerCubit>();
+    await customerCubit.syncCustomersByWallet(walletState.wallets);
+    if (!mounted) return;
+
+    final CustomerState customerState = customerCubit.state;
+    if (customerState is! CustomerListLoaded || customerState.customers.isEmpty) return;
+
+    // Sync base entities
+    final BaseEntityCubit baseEntityCubit = context.read<BaseEntityCubit>();
+    await baseEntityCubit.syncBaseEntitiesByCustomers(customerState.customers);
+    if (!mounted) return;
+
+    final BaseEntityState baseEntityState = baseEntityCubit.state;
+    if (baseEntityState is! BaseEntityListLoaded || baseEntityState.baseEntities.isEmpty) return;
+
+    // Sync addresses
+    final AddressCubit addressCubit = context.read<AddressCubit>();
+    await addressCubit.syncAddressesByCustomers(customerState.customers);
+    if (!mounted) return;
+
+    final AddressState addressState = addressCubit.state;
+    if (addressState is! AddressListLoaded || addressState.addresses.isEmpty) return;
+
+    //await context.read<CustomerCubit>().download(walletState.wallets);
   }
 
   @override
