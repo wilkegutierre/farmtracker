@@ -19,16 +19,24 @@ class AddressServiceImpl with BaseServiceMixin implements AddressService {
   AsyncResult<List<AddressResponseModel>> getByOwner(String addressId) async {
     try {
       return requestService(() async {
-        final url = '${Enviroment.apiBaseUrl}/addresses/$addressId';
+        final url = '${Enviroment.apiBaseUrl}/address/$addressId';
         return await _httpClient.get(url);
-      }).fold((success) {
-        final Response(:body) = success;
-        if (kDebugMode) {
-          print(body);
-        }
-        return Success(_parseAddressesFromBody(body));
-      }, (failure) => Failure(failure));
-    } catch (_) {
+      }).fold(
+        (success) {
+          final Response(:body) = success;
+          if (kDebugMode) {
+            print(body);
+          }
+          return Success(_parseAddressesFromBody(body));
+        },
+        (failure) {
+          return Failure(failure);
+        },
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
       return Failure(InternalServerError());
     }
   }

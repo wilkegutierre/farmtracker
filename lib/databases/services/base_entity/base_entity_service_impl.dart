@@ -23,18 +23,22 @@ class BaseEntityServiceImpl with BaseServiceMixin implements BaseEntityService {
         return await _httpClient.get(url);
       }).fold((success) {
         final Response(:body) = success;
+        final dynamic decoded = json.decode(body);
         if (kDebugMode) {
           print(body);
         }
-        return Success(_parseBaseEntitiesFromBody(body));
+        if (decoded['data'] is List) {
+          return Success(_parseBaseEntitiesFromBody(decoded));
+        } else {
+          return Success(List<BaseEntityResponseModel>.from([_parseBaseEntitie(decoded)]));
+        }
       }, (failure) => Failure(failure));
     } catch (_) {
       return Failure(InternalServerError());
     }
   }
 
-  List<BaseEntityResponseModel> _parseBaseEntitiesFromBody(String body) {
-    final dynamic decoded = json.decode(body);
+  List<BaseEntityResponseModel> _parseBaseEntitiesFromBody(dynamic decoded) {
     final List<dynamic> items;
 
     if (decoded is List) {
@@ -59,5 +63,13 @@ class BaseEntityServiceImpl with BaseServiceMixin implements BaseEntityService {
     if (items.isEmpty) return [];
 
     return items.map((item) => BaseEntityResponseModel.fromJson(item as Map<String, dynamic>)).toList();
+  }
+
+  BaseEntityResponseModel _parseBaseEntitie(dynamic decoded) {
+    if (decoded['data'] is Map<String, dynamic>) {
+      return BaseEntityResponseModel.fromJson(decoded['data'] as Map<String, dynamic>);
+    } else {
+      throw const FormatException('Resposta de base entities inválida.');
+    }
   }
 }
