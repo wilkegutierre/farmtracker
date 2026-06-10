@@ -24,10 +24,15 @@ class AddressServiceImpl with BaseServiceMixin implements AddressService {
       }).fold(
         (success) {
           final Response(:body) = success;
+          final dynamic decoded = json.decode(body);
           if (kDebugMode) {
             print(body);
           }
-          return Success(_parseAddressesFromBody(body));
+          if (decoded['data'] is List) {
+            return Success(_parseAddressesFromBody(body));
+          } else {
+            return Success(List<AddressResponseModel>.from([_parseAddress(decoded)]));
+          }
         },
         (failure) {
           return Failure(failure);
@@ -65,5 +70,13 @@ class AddressServiceImpl with BaseServiceMixin implements AddressService {
     if (items.isEmpty) return [];
 
     return items.map((item) => AddressResponseModel.fromJson(item as Map<String, dynamic>)).toList();
+  }
+
+  AddressResponseModel _parseAddress(dynamic decoded) {
+    if (decoded['data'] is Map<String, dynamic>) {
+      return AddressResponseModel.fromJson(decoded['data'] as Map<String, dynamic>);
+    } else {
+      throw const FormatException('Resposta de base entities inválida.');
+    }
   }
 }

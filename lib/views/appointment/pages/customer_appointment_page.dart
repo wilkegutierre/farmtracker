@@ -1,4 +1,5 @@
 import 'package:farmtracker/databases/models/response/customer_response_model.dart';
+import 'package:farmtracker/views/appointment/widgets/customer_culturas_dialog.dart';
 import 'package:farmtracker/views/clients/models/cultura_item.dart';
 import 'package:farmtracker/views/core/style/app_spacing.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
@@ -9,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class RelacaoClientePage extends StatefulWidget {
-  const RelacaoClientePage({super.key});
+class CustomerAppointmentPage extends StatefulWidget {
+  const CustomerAppointmentPage({super.key});
 
   @override
-  State<RelacaoClientePage> createState() => _RelacaoClientePageState();
+  State<CustomerAppointmentPage> createState() => _CustomerAppointmentPageState();
 }
 
-class _RelacaoClientePageState extends State<RelacaoClientePage> {
+class _CustomerAppointmentPageState extends State<CustomerAppointmentPage> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
@@ -35,12 +36,6 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
   }
 
   Future<void> _onRefresh() async {
-    await context.read<CustomerCubit>().carregarCustomers();
-  }
-
-  Future<void> _abrirCliente(CustomerResponseModel customer) async {
-    await context.push('/customer/${customer.id}');
-    if (!mounted) return;
     await context.read<CustomerCubit>().carregarCustomers();
   }
 
@@ -71,13 +66,36 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
     return culturas.map((cultura) => cultura.projeto).join(', ');
   }
 
+  List<CulturaItem> _culturasDoCustomer(CustomerResponseModel customer) {
+    return CulturaItem.listFromProjetoCampo(customer.projeto);
+  }
+
+  Future<void> _selecionarCustomer(CustomerResponseModel customer) async {
+    final List<CulturaItem> culturas = _culturasDoCustomer(customer);
+    final CulturaItem? culturaSelecionada = await showCustomerCulturasDialog(
+      context,
+      customerName: _nomeDoCustomer(customer),
+      culturas: culturas,
+    );
+
+    if (culturaSelecionada == null || !mounted) return;
+
+    context.push('/appointment', extra: {
+      'clientName': _nomeDoCustomer(customer),
+      'farmName': culturaSelecionada.projeto,
+      'projectTitle': culturaSelecionada.projeto,
+      'projectBatch': culturaSelecionada.lote,
+      'projectArea': culturaSelecionada.tamanhoHectare,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clientes'),
+        title: const Text('Cliente'),
         centerTitle: false,
         elevation: 0,
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
@@ -149,7 +167,7 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
                                 return CustomCardClient(
                                   clientName: _nomeDoCustomer(customer),
                                   project: _formatarProjeto(customer),
-                                  onTap: () => _abrirCliente(customer),
+                                  onTap: () => _selecionarCustomer(customer),
                                 );
                               },
                             ),
@@ -160,10 +178,6 @@ class _RelacaoClientePageState extends State<RelacaoClientePage> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/clienteCadastro'),
-        child: const Icon(Icons.add),
       ),
     );
   }

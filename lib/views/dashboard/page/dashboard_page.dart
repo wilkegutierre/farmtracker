@@ -67,32 +67,32 @@ class _DashboardPageState extends State<DashboardPage> {
     // Sync wallets
     final WalletCubit walletCubit = context.read<WalletCubit>();
     await walletCubit.syncWallets(userId);
-    if (!mounted) return;
 
+    if (!mounted) return;
     final WalletState walletState = walletCubit.state;
     if (walletState is! WalletListLoaded || walletState.wallets.isEmpty) return;
 
     // Sync customers
     final CustomerCubit customerCubit = context.read<CustomerCubit>();
     await customerCubit.syncCustomersByWallet(walletState.wallets);
-    if (!mounted) return;
 
+    if (!mounted) return;
     final CustomerState customerState = customerCubit.state;
     if (customerState is! CustomerListLoaded || customerState.customers.isEmpty) return;
 
     // Sync base entities
     final BaseEntityCubit baseEntityCubit = context.read<BaseEntityCubit>();
     await baseEntityCubit.syncBaseEntitiesByCustomers(customerState.customers);
-    if (!mounted) return;
 
+    if (!mounted) return;
     final BaseEntityState baseEntityState = baseEntityCubit.state;
     if (baseEntityState is! BaseEntityListLoaded || baseEntityState.baseEntities.isEmpty) return;
 
     // Sync addresses
     final AddressCubit addressCubit = context.read<AddressCubit>();
     await addressCubit.syncAddressesByCustomers(customerState.customers);
-    if (!mounted) return;
 
+    if (!mounted) return;
     final AddressState addressState = addressCubit.state;
     if (addressState is! AddressListLoaded || addressState.addresses.isEmpty) return;
 
@@ -164,7 +164,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
       return;
     }
-    if (mounted) context.push('/clientAppointment');
+    if (mounted) context.push('/customerAppointment');
   }
 
   Widget _buildCalendarSection() {

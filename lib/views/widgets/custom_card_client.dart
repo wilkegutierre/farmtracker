@@ -4,15 +4,10 @@ import 'package:flutter/material.dart';
 
 class CustomCardClient extends StatelessWidget {
   final String clientName;
-  final String city;
-  final String coreName;
+  final String project;
+  final VoidCallback? onTap;
 
-  const CustomCardClient({
-    super.key,
-    required this.clientName,
-    required this.city,
-    required this.coreName,
-  });
+  const CustomCardClient({super.key, required this.clientName, required this.project, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -24,33 +19,15 @@ class CustomCardClient extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.s4 + AppSpacing.s2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      clientName,
-                      style: AppTextStyles.titleMedium.copyWith(color: scheme.onSurface),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.s2),
-                  Text(
-                    coreName,
-                    style: AppTextStyles.labelMedium.copyWith(color: scheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
+              Text(clientName, style: AppTextStyles.titleMedium.copyWith(color: scheme.onSurface)),
               const SizedBox(height: AppSpacing.s2),
-              Text(
-                city,
-                style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant),
-              ),
+              Text('Projeto: $project', style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant)),
             ],
           ),
         ),

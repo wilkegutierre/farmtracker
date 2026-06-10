@@ -1,20 +1,8 @@
-import 'package:farmtracker/views/core/style/app_colors.dart';
+import 'package:farmtracker/views/clients/models/cultura_item.dart';
+import 'package:farmtracker/views/clients/widgets/adicionar_cultura_dialog.dart';
+import 'package:farmtracker/views/clients/widgets/culturas_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-class CulturaItem {
-  final String projeto;
-  final String lote;
-  final double tamanhoHectare;
-  final String cultura;
-
-  CulturaItem({required this.projeto, required this.lote, required this.tamanhoHectare, required this.cultura});
-
-  @override
-  String toString() {
-    return '$cultura - $projeto (Lote: $lote, ${tamanhoHectare}ha)';
-  }
-}
 
 class CadastroClientePage extends StatefulWidget {
   const CadastroClientePage({super.key});
@@ -45,11 +33,7 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
   final TextEditingController _complementoController = TextEditingController();
   final TextEditingController _referenciaController = TextEditingController();
 
-  // Culturas
   final List<CulturaItem> _culturas = <CulturaItem>[];
-
-  // Opções de culturas disponíveis
-  final List<String> _opcoesCulturas = ['Manga', 'Goiaba', 'Laranja', 'Limão', 'Melancia', 'Mamão'];
 
   @override
   void dispose() {
@@ -71,7 +55,6 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Cadastrar Cliente'), centerTitle: false),
       floatingActionButton: FloatingActionButton(onPressed: _onSalvar, child: const Icon(Icons.save_outlined)),
@@ -218,7 +201,11 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
                     ),
                   ],
                 ),
-                _buildCulturasBox(theme),
+                CulturasBox(
+                  culturas: _culturas,
+                  onRemover: (cultura) => setState(() => _culturas.remove(cultura)),
+                  onEditar: _onEditarCultura,
+                ),
                 const SizedBox(height: 84), // espaço para o FAB
               ],
             ),
@@ -266,193 +253,24 @@ class _CadastroClientePageState extends State<CadastroClientePage> {
     );
   }
 
-  Widget _buildCulturasBox(ThemeData theme) {
-    final Color border = theme.colorScheme.outlineVariant.withValues(alpha: 0.6);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: _culturas.isEmpty ? AppColors.error : theme.colorScheme.surfaceContainerLowest,
-        border: Border.all(color: border, style: BorderStyle.solid),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: _culturas.isEmpty
-          ? Text(
-              'Nenhuma cultura adicionada',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: _culturas.isEmpty ? AppColors.white : AppColors.textSecondary,
-              ),
-            )
-          : Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _culturas
-                  .map(
-                    (c) => Chip(
-                      label: Text(c.cultura),
-                      onDeleted: () {
-                        setState(() => _culturas.remove(c));
-                      },
-                      deleteIcon: const Icon(Icons.close),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    ),
-                  )
-                  .toList(),
-            ),
-    );
-  }
-
   Future<void> _onAdicionarCultura() async {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final TextEditingController projetoController = TextEditingController();
-    final TextEditingController loteController = TextEditingController();
-    final TextEditingController tamanhoController = TextEditingController();
-    String? culturaSelecionada;
-
-    final CulturaItem? result = await showDialog<CulturaItem>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Adicionar cultura'),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Form(
-                  key: formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Projeto',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: projetoController,
-                          autofocus: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Informe o projeto',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Campo obrigatório';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Lote',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: loteController,
-                          decoration: const InputDecoration(
-                            hintText: 'Informe o lote',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Campo obrigatório';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Tamanho do lote (hectare)',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: tamanhoController,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-                          decoration: const InputDecoration(
-                            hintText: 'Ex.: 10.5',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Campo obrigatório';
-                            }
-                            final double? tamanho = double.tryParse(value);
-                            if (tamanho == null || tamanho <= 0) {
-                              return 'Valor inválido';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Cultura',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        DropdownButtonFormField<String>(
-                          initialValue: culturaSelecionada,
-                          decoration: const InputDecoration(
-                            hintText: 'Selecione a cultura',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          ),
-                          items: _opcoesCulturas.map((cultura) {
-                            return DropdownMenuItem<String>(value: cultura, child: Text(cultura));
-                          }).toList(),
-                          onChanged: (value) {
-                            setDialogState(() {
-                              culturaSelecionada = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Selecione uma cultura';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancelar', style: TextStyle(color: AppColors.error)),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (formKey.currentState?.validate() ?? false) {
-                      final double tamanho = double.parse(tamanhoController.text.trim());
-                      Navigator.of(context).pop(
-                        CulturaItem(
-                          projeto: projetoController.text.trim(),
-                          lote: loteController.text.trim(),
-                          tamanhoHectare: tamanho,
-                          cultura: 'Nilo Coelho da Silva Oliveria - Lote 35 - Feijão de Corda',
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text('Adicionar'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+    final CulturaItem? result = await showAdicionarCulturaDialog(context);
     if (result != null) {
       setState(() => _culturas.add(result));
+    }
+  }
+
+  Future<void> _onEditarCultura(CulturaItem cultura) async {
+    final int index = _culturas.indexOf(cultura);
+    if (index == -1) return;
+
+    final CulturaItem? result = await showAdicionarCulturaDialog(
+      context,
+      culturaInicial: cultura,
+    );
+
+    if (result != null) {
+      setState(() => _culturas[index] = result);
     }
   }
 
