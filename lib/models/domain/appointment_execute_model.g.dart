@@ -9,31 +9,31 @@ part of 'appointment_execute_model.dart';
 AppointmentExecutedModel _$AppointmentExecutedModelFromJson(
   Map<String, dynamic> json,
 ) => AppointmentExecutedModel(
-  uuid: json['uuid'] as String,
+  id: json['id'] as String,
   completed: (json['completed'] as num).toInt(),
   reason: (json['reason'] as num).toInt(),
   submotive: (json['submotive'] as num).toInt(),
   hasPest: (json['hasPest'] as num).toInt(),
   pest: (json['pest'] as num).toInt(),
-  projectLotCult: (json['projectLotCult'] as List<dynamic>)
+  projects: (json['projects'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
-  datetimeAppointment: json['datetimeAppointment'] as String,
-  hectares: (json['hectares'] as num).toDouble(),
+  datetime: json['datetime'] as String,
   todo: json['todo'] as String,
+  appointmentId: json['appointmentId'] as String,
 );
 
 Map<String, dynamic> _$AppointmentExecutedModelToJson(
   AppointmentExecutedModel instance,
 ) => <String, dynamic>{
-  'uuid': instance.uuid,
+  'id': instance.id,
   'completed': instance.completed,
   'reason': instance.reason,
   'submotive': instance.submotive,
   'hasPest': instance.hasPest,
   'pest': instance.pest,
-  'datetimeAppointment': instance.datetimeAppointment,
-  'projectLotCult': instance.projectLotCult,
-  'hectares': instance.hectares,
+  'datetime': instance.datetime,
+  'projects': instance.projects,
   'todo': instance.todo,
+  'appointmentId': instance.appointmentId,
 };

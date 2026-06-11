@@ -8,11 +8,11 @@ part of 'appointment_model.dart';
 
 AppointmentModel _$AppointmentModelFromJson(Map<String, dynamic> json) =>
     AppointmentModel(
-      uuid: json['uuid'] as String,
+      id: json['id'] as String,
       user: json['user'] as String,
-      costumer: json['costumer'] as String,
-      projectLotCulture: json['projectLotCulture'] as String,
-      appointmentDatetime: json['appointmentDatetime'] as String,
+      customer: json['customer'] as String,
+      project: json['project'] as String,
+      datetime: json['datetime'] as String,
       type: json['type'] as String,
       todo: json['todo'] as String,
       status: (json['status'] as num).toInt(),
@@ -20,11 +20,11 @@ AppointmentModel _$AppointmentModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AppointmentModelToJson(AppointmentModel instance) =>
     <String, dynamic>{
-      'uuid': instance.uuid,
+      'id': instance.id,
       'user': instance.user,
-      'costumer': instance.costumer,
-      'projectLotCulture': instance.projectLotCulture,
-      'appointmentDatetime': instance.appointmentDatetime,
+      'customer': instance.customer,
+      'project': instance.project,
+      'datetime': instance.datetime,
       'type': instance.type,
       'todo': instance.todo,
       'status': instance.status,

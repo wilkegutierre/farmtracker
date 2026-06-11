@@ -7,42 +7,42 @@ part 'appointment_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AppointmentModel with EquatableMixin {
-  final String uuid;
+  final String id;
   final String user;
-  final String costumer;
-  final String projectLotCulture;
-  final String appointmentDatetime;
+  final String customer;
+  final String project;
+  final String datetime;
   final String type;
   final String todo;
   final int status;
 
   AppointmentModel({
-    required this.uuid,
+    required this.id,
     required this.user,
-    required this.costumer,
-    required this.projectLotCulture,
-    required this.appointmentDatetime,
+    required this.customer,
+    required this.project,
+    required this.datetime,
     required this.type,
     required this.todo,
     required this.status,
   });
 
   AppointmentModel copyWith({
-    String? uuid,
+    String? id,
     String? user,
-    String? costumer,
-    String? projectLotCulture,
-    String? appointmentDatetime,
+    String? customer,
+    String? project,
+    String? datetime,
     String? type,
     String? todo,
     int? status,
   }) {
     return AppointmentModel(
-      uuid: uuid ?? this.uuid,
+      id: id ?? this.id,
       user: user ?? this.user,
-      costumer: costumer ?? this.costumer,
-      projectLotCulture: projectLotCulture ?? this.projectLotCulture,
-      appointmentDatetime: appointmentDatetime ?? this.appointmentDatetime,
+      customer: customer ?? this.customer,
+      project: project ?? this.project,
+      datetime: datetime ?? this.datetime,
       type: type ?? this.type,
       todo: todo ?? this.todo,
       status: status ?? this.status,
@@ -56,7 +56,7 @@ class AppointmentModel with EquatableMixin {
   String toJsonStringfy() => json.encode(toJson());
 
   @override
-  List<Object?> get props => [uuid, user, costumer, projectLotCulture, appointmentDatetime, type, todo, status];
+  List<Object?> get props => [id, user, customer, project, datetime, type, todo, status];
 
   @override
   bool? get stringify => true;

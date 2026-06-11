@@ -1,22 +1,32 @@
+import 'package:farmtracker/core/session/session_storage.dart';
+import 'package:farmtracker/models/domain/appointment_model.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
+import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
+import 'package:farmtracker/views/cubits/appointment/appointment_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AppointmentPage extends StatefulWidget {
   final String? clientName;
+  final String? customerId;
   final String? farmName;
   final String? projectTitle;
   final String? projectBatch;
   final double? projectArea;
+  final String? project;
 
   const AppointmentPage({
     super.key,
     this.clientName,
+    this.customerId,
     this.farmName,
     this.projectTitle,
     this.projectBatch,
     this.projectArea,
+    this.project,
   });
 
   @override
@@ -28,6 +38,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedVisitType;
+  bool _isSaving = false;
 
   final List<String> _visitTypes = [
     'Monitoramento',
@@ -49,9 +60,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   @override
   void initState() {
     super.initState();
-    // Define a data inicial como hoje
     _selectedDate = DateTime.now();
-    // Define o horário inicial como 10:30 AM
     _selectedTime = const TimeOfDay(hour: 10, minute: 30);
   }
 
@@ -90,90 +99,158 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
+  String? _validarFormulario() {
+    if (_selectedVisitType == null || _selectedVisitType!.isEmpty) {
+      return 'Selecione o tipo de visita.';
+    }
+    if (_selectedDate == null) {
+      return 'Selecione a data da visita.';
+    }
+    if (_selectedTime == null) {
+      return 'Selecione o horário da visita.';
+    }
+    if (widget.customerId == null || widget.customerId!.isEmpty) {
+      return 'Cliente não identificado. Selecione um cliente antes de agendar.';
+    }
+    if (widget.project == null || widget.project!.isEmpty) {
+      return 'Projeto não identificado. Selecione um projeto antes de agendar.';
+    }
+    return null;
+  }
+
+  Future<void> _salvarAgendamento() async {
+    if (_isSaving) return;
+
+    final String? erroValidacao = _validarFormulario();
+    if (erroValidacao != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(erroValidacao)));
+      return;
+    }
+
+    final String? userId = await SessionStorage.getUserId();
+    if (userId == null || userId.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuário não autenticado. Faça login novamente.')),
+      );
+      return;
+    }
+
+    final DateTime dataHora = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+
+    final AppointmentModel appointment = AppointmentModel(
+      id: const Uuid().v4(),
+      user: userId,
+      customer: widget.customerId!,
+      project: widget.project!,
+      datetime: dataHora.toIso8601String(),
+      type: _selectedVisitType!,
+      todo: _descriptionController.text.trim(),
+      status: 3,
+    );
+
+    if (!mounted) return;
+
+    final AppointmentCubit appointmentCubit = context.read<AppointmentCubit>();
+
+    setState(() => _isSaving = true);
+    await appointmentCubit.gravar(appointment);
+    if (mounted) {
+      setState(() => _isSaving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
-    // Obtém o nome do cliente dos argumentos ou usa um valor padrão
     final clientName = widget.clientName ?? 'Eleanor Pena';
     final farmName = widget.farmName ?? 'Green Valley Farm';
-    final projectTitle = widget.projectTitle ?? 'Project Title';
     final projectBatch = widget.projectBatch ?? 'Project Batch';
-    final projectArea = widget.projectArea ?? 0.0;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: const Text('Agendar visita', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: theme.scaffoldBackgroundColor,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Avatar circular
-              Text(clientName, style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              // Nome da fazenda
-              Text(
-                farmName,
-                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
-              Text(
-                projectTitle,
-                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
-              Text(
-                'Lote #$projectBatch - ${projectArea.toString()} Ha',
-                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
+    return BlocListener<AppointmentCubit, AppointmentState>(
+      listener: (context, state) {
+        if (state is AppointmentGravadoSucesso) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Visita agendada!')),
+          );
+          context.go('/home');
+        }
 
-              const SizedBox(height: 32),
-              // Appointment Type
-              _buildLabel('Tipo de visita'),
-              const SizedBox(height: 8),
-              _buildDropdownField(),
-              const SizedBox(height: 20),
-              // Description
-              _buildLabel('Descrição'),
-              const SizedBox(height: 8),
-              _buildTextField(
-                controller: _descriptionController,
-                hintText: 'Informe uma breve descrição...',
-                icon: null,
-                maxLines: 4,
-              ),
-              const SizedBox(height: 20),
-              _buildLabel('Data'),
-              const SizedBox(height: 8),
-              _buildDateField(
-                onTap: () => _selectDate(context),
-                value: _selectedDate != null ? _formatDate(_selectedDate!) : null,
-              ),
-              const SizedBox(height: 20),
-              // Time
-              _buildLabel('Hora'),
-              const SizedBox(height: 8),
-              _buildTimeField(
-                onTap: () => _selectTime(context),
-                value: _selectedTime != null ? _formatTime(_selectedTime!) : null,
-              ),
-            ],
+        if (state is AppointmentErro) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.mensagem)),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+          title: const Text('Agendar visita', style: TextStyle(fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(clientName, style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(farmName, style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  'Lote #$projectBatch ',
+                  style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 32),
+                _buildLabel('Tipo de visita'),
+                const SizedBox(height: 8),
+                _buildDropdownField(),
+                const SizedBox(height: 20),
+                _buildLabel('Descrição'),
+                const SizedBox(height: 8),
+                _buildTextField(
+                  controller: _descriptionController,
+                  hintText: 'Informe uma breve descrição...',
+                  icon: null,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 20),
+                _buildLabel('Data'),
+                const SizedBox(height: 8),
+                _buildDateField(
+                  onTap: () => _selectDate(context),
+                  value: _selectedDate != null ? _formatDate(_selectedDate!) : null,
+                ),
+                const SizedBox(height: 20),
+                _buildLabel('Hora'),
+                const SizedBox(height: 8),
+                _buildTimeField(
+                  onTap: () => _selectTime(context),
+                  value: _selectedTime != null ? _formatTime(_selectedTime!) : null,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Aqui você pode adicionar a lógica para salvar o agendamento
-          //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Agendamento salvo com sucesso!')));
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita agendada!')));
-          context.go('/home');
-        },
-        child: const Icon(Icons.save),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _isSaving ? null : _salvarAgendamento,
+          child: _isSaving
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.save),
+        ),
       ),
     );
   }
@@ -227,9 +304,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Expanded(
               child: Text(
                 value ?? 'Select date',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: value != null ? null : colorScheme.onSurfaceVariant,
-                ),
+                style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : colorScheme.onSurfaceVariant),
               ),
             ),
           ],
@@ -257,9 +332,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             Expanded(
               child: Text(
                 value ?? 'Select time',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: value != null ? null : colorScheme.onSurfaceVariant,
-                ),
+                style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : colorScheme.onSurfaceVariant),
               ),
             ),
           ],

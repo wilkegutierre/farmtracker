@@ -82,10 +82,12 @@ class _CustomerAppointmentPageState extends State<CustomerAppointmentPage> {
 
     context.push('/appointment', extra: {
       'clientName': _nomeDoCustomer(customer),
+      'customerId': customer.id,
       'farmName': culturaSelecionada.projeto,
       'projectTitle': culturaSelecionada.projeto,
       'projectBatch': culturaSelecionada.lote,
       'projectArea': culturaSelecionada.tamanhoHectare,
+      'project': culturaSelecionada.toSerialized(),
     });
   }
 

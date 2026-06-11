@@ -50,10 +50,12 @@ GoRouter createAppRouter(AuthCubit authCubit) {
           final extra = state.extra as Map<String, dynamic>?;
           return AppointmentPage(
             clientName: extra?['clientName'] as String?,
+            customerId: extra?['customerId'] as String?,
             farmName: extra?['farmName'] as String?,
             projectTitle: extra?['projectTitle'] as String?,
             projectBatch: extra?['projectBatch'] as String?,
             projectArea: extra?['projectArea'] as double?,
+            project: extra?['project'] as String?,
           );
         },
       ),

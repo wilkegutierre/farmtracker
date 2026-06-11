@@ -2,11 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/databases/local/auth/session_manager_impl.dart';
 import 'package:farmtracker/databases/local/repositories/address_local_repository.dart';
+import 'package:farmtracker/databases/local/repositories/appointment_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/base_entity_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/customer_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
 import 'package:farmtracker/databases/local/repositories/wallet_local_repository.dart';
 import 'package:farmtracker/databases/local/sql/address_database_impl.dart';
+import 'package:farmtracker/databases/local/sql/appointment_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/base_entity_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/customer_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/wallet_database_impl.dart';
@@ -36,6 +38,7 @@ import 'package:farmtracker/domains/repositories/wallet/wallet_repository.dart';
 import 'package:farmtracker/modules/app_material_route.dart';
 
 import 'package:farmtracker/views/cubits/address/address_cubit.dart';
+import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
 import 'package:farmtracker/views/cubits/base_entity/base_entity_cubit.dart';
 import 'package:farmtracker/views/cubits/customer/customer_cubit.dart';
 import 'package:farmtracker/views/cubits/usuario/usuario_cubit.dart';
@@ -111,6 +114,7 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<CustomerLocalRepository>(create: (_) => CustomerDatabaseImpl()),
         RepositoryProvider<AddressLocalRepository>(create: (_) => AddressDatabaseImpl()),
         RepositoryProvider<BaseEntityLocalRepository>(create: (_) => BaseEntityDatabaseImpl()),
+        RepositoryProvider<AppointmentLocalRepository>(create: (_) => AppointmentDatabaseImpl()),
         // RepositoryProvider<UsuarioLocalRepository>(create: (_) => UsuarioDatabaseImpl()),
         // RepositoryProvider<ClienteLocalRepository>(create: (_) => ClienteDatabaseImpl()),
         // RepositoryProvider<ClienteCulturaLocalRepository>(create: (_) => ClienteCulturaDatabaseImpl()),
@@ -150,6 +154,9 @@ class FarmTrackerApp extends StatelessWidget {
               ctx.read<BaseEntityRepository>(),
               ctx.read<BaseEntityLocalRepository>(),
             ),
+          ),
+          BlocProvider<AppointmentCubit>(
+            create: (ctx) => AppointmentCubit(ctx.read<AppointmentLocalRepository>()),
           ),
           // BlocProvider<ClienteCubit>(
           //   create: (ctx) => ClienteCubit(

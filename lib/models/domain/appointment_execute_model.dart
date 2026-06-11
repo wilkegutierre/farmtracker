@@ -7,54 +7,54 @@ part 'appointment_execute_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AppointmentExecutedModel with EquatableMixin {
-  final String uuid;
+  final String id;
   final int completed;
   final int reason;
   final int submotive;
   final int hasPest;
   final int pest;
   // TODO:(wilkealmeida) campo abaixo recebe dateTime formatado
-  final String datetimeAppointment;
-  final List<String> projectLotCult;
-  final double hectares;
+  final String datetime;
+  final List<String> projects;
   final String todo;
+  final String appointmentId;
 
   AppointmentExecutedModel({
-    required this.uuid,
+    required this.id,
     required this.completed,
     required this.reason,
     required this.submotive,
     required this.hasPest,
     required this.pest,
-    required this.projectLotCult,
-    required this.datetimeAppointment,
-    required this.hectares,
+    required this.projects,
+    required this.datetime,
     required this.todo,
+    required this.appointmentId,
   });
 
   AppointmentExecutedModel copyWith({
-    String? uuid,
+    String? id,
     int? completed,
     int? reason,
     int? submotive,
     int? hasPest,
     int? pest,
-    List<String>? projectLotCult,
-    String? datetimeAppointment,
-    double? hectares,
+    List<String>? projects,
+    String? datetime,
     String? todo,
+    String? appointmentId,
   }) {
     return AppointmentExecutedModel(
-      uuid: uuid ?? this.uuid,
+      id: id ?? this.id,
       completed: completed ?? this.completed,
       reason: reason ?? this.reason,
       submotive: submotive ?? this.submotive,
       hasPest: hasPest ?? this.hasPest,
       pest: pest ?? this.pest,
-      projectLotCult: projectLotCult ?? this.projectLotCult,
-      datetimeAppointment: datetimeAppointment ?? this.datetimeAppointment,
-      hectares: hectares ?? this.hectares,
+      projects: projects ?? this.projects,
+      datetime: datetime ?? this.datetime,
       todo: todo ?? this.todo,
+      appointmentId: appointmentId ?? this.appointmentId,
     );
   }
 
@@ -65,18 +65,7 @@ class AppointmentExecutedModel with EquatableMixin {
   String toJsonStringfy() => json.encode(toJson());
 
   @override
-  List<Object?> get props => [
-    uuid,
-    completed,
-    reason,
-    submotive,
-    hasPest,
-    pest,
-    projectLotCult,
-    datetimeAppointment,
-    hectares,
-    todo,
-  ];
+  List<Object?> get props => [id, completed, reason, submotive, hasPest, pest, projects, datetime, todo, appointmentId];
 
   @override
   bool? get stringify => true;
