@@ -22,6 +22,24 @@ class AppointmentDatabaseImpl implements AppointmentLocalRepository {
   }
 
   @override
+  AsyncResult<List<AppointmentModel>> obterPorData(DateTime date) async {
+    try {
+      db = await FarmTrackerDatabase.instance.dataBase;
+      final String datePrefix =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final data = await db.query(
+        appointmentTable,
+        where: 'datetime LIKE ?',
+        whereArgs: ['$datePrefix%'],
+        orderBy: 'datetime',
+      );
+      return Success(_mapRows(data));
+    } catch (_) {
+      return Failure(SearchDataBaseError());
+    }
+  }
+
+  @override
   AsyncResult<AppointmentModel> obterPorId(String id) async {
     try {
       db = await FarmTrackerDatabase.instance.dataBase;

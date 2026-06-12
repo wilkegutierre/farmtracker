@@ -6,15 +6,18 @@ import 'package:farmtracker/databases/local/repositories/appointment_local_repos
 import 'package:farmtracker/databases/local/repositories/base_entity_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/customer_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/session_manager_repository.dart';
+import 'package:farmtracker/databases/local/repositories/type_visit_local_repository.dart';
 import 'package:farmtracker/databases/local/repositories/wallet_local_repository.dart';
 import 'package:farmtracker/databases/local/sql/address_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/appointment_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/base_entity_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/customer_database_impl.dart';
+import 'package:farmtracker/databases/local/sql/type_visit_database_impl.dart';
 import 'package:farmtracker/databases/local/sql/wallet_database_impl.dart';
 import 'package:farmtracker/databases/repositories/address/address_repository_impl.dart';
 import 'package:farmtracker/databases/repositories/base_entity/base_entity_repository_impl.dart';
 import 'package:farmtracker/databases/repositories/customer/customer_repository_impl.dart';
+import 'package:farmtracker/databases/repositories/type_visit/type_visit_repository_impl.dart';
 import 'package:farmtracker/databases/repositories/usuario/usuario_repository_impl.dart';
 import 'package:farmtracker/databases/repositories/wallet/wallet_repository_impl.dart';
 import 'package:farmtracker/databases/services/http/authenticated_http_client.dart';
@@ -28,11 +31,14 @@ import 'package:farmtracker/databases/services/customer/customer_service.dart';
 import 'package:farmtracker/databases/services/customer/customer_service_impl.dart';
 import 'package:farmtracker/databases/services/wallet/wallet_service.dart';
 import 'package:farmtracker/databases/services/wallet/wallet_service_impl.dart';
+import 'package:farmtracker/databases/services/type_visit/type_visit_service.dart';
+import 'package:farmtracker/databases/services/type_visit/type_visit_service_impl.dart';
 import 'package:farmtracker/databases/services/user/usuario_service.dart';
 import 'package:farmtracker/databases/services/user/usuario_service_impl.dart';
 import 'package:farmtracker/domains/repositories/address/address_repository.dart';
 import 'package:farmtracker/domains/repositories/base_entity/base_entity_repository.dart';
 import 'package:farmtracker/domains/repositories/customer/customer_repository.dart';
+import 'package:farmtracker/domains/repositories/type_visit/type_visit_repository.dart';
 import 'package:farmtracker/domains/repositories/user/usuario_repository.dart';
 import 'package:farmtracker/domains/repositories/wallet/wallet_repository.dart';
 import 'package:farmtracker/modules/app_material_route.dart';
@@ -41,6 +47,7 @@ import 'package:farmtracker/views/cubits/address/address_cubit.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
 import 'package:farmtracker/views/cubits/base_entity/base_entity_cubit.dart';
 import 'package:farmtracker/views/cubits/customer/customer_cubit.dart';
+import 'package:farmtracker/views/cubits/type_visit/type_visit_cubit.dart';
 import 'package:farmtracker/views/cubits/usuario/usuario_cubit.dart';
 import 'package:farmtracker/views/cubits/wallet/wallet_cubit.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +91,7 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<WalletService>(create: (ctx) => WalletServiceImpl(ctx.read<HttpClientInterface>())),
         RepositoryProvider<AddressService>(create: (ctx) => AddressServiceImpl(ctx.read<HttpClientInterface>())),
         RepositoryProvider<BaseEntityService>(create: (ctx) => BaseEntityServiceImpl(ctx.read<HttpClientInterface>())),
+        RepositoryProvider<TypeVisitService>(create: (ctx) => TypeVisitServiceImpl(ctx.read<HttpClientInterface>())),
         // RepositoryProvider<ClienteService>(create: (ctx) => ClienteServiceImpl(ctx.read<HttpClientInterface>())),
         // RepositoryProvider<CulturaService>(create: (ctx) => CutluraServiceImpl(ctx.read<HttpClientInterface>())),
         // RepositoryProvider<EnderecoService>(create: (ctx) => EnderecoServiceImpl(ctx.read<HttpClientInterface>())),
@@ -95,14 +103,15 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<CustomerRepository>(
           create: (ctx) => CustomerRepositoryImpl(service: ctx.read<CustomerService>()),
         ),
-        RepositoryProvider<WalletRepository>(
-          create: (ctx) => WalletRepositoryImpl(service: ctx.read<WalletService>()),
-        ),
+        RepositoryProvider<WalletRepository>(create: (ctx) => WalletRepositoryImpl(service: ctx.read<WalletService>())),
         RepositoryProvider<AddressRepository>(
           create: (ctx) => AddressRepositoryImpl(service: ctx.read<AddressService>()),
         ),
         RepositoryProvider<BaseEntityRepository>(
           create: (ctx) => BaseEntityRepositoryImpl(service: ctx.read<BaseEntityService>()),
+        ),
+        RepositoryProvider<TypeVisitRepository>(
+          create: (ctx) => TypeVisitRepositoryImpl(service: ctx.read<TypeVisitService>()),
         ),
 
         // RepositoryProvider<ClienteRepository>(create: (ctx) => ClienteRepositoryImpl(ctx.read<ClienteService>())),
@@ -115,6 +124,7 @@ class FarmTrackerApp extends StatelessWidget {
         RepositoryProvider<AddressLocalRepository>(create: (_) => AddressDatabaseImpl()),
         RepositoryProvider<BaseEntityLocalRepository>(create: (_) => BaseEntityDatabaseImpl()),
         RepositoryProvider<AppointmentLocalRepository>(create: (_) => AppointmentDatabaseImpl()),
+        RepositoryProvider<TypeVisitLocalRepository>(create: (_) => TypeVisitDatabaseImpl()),
         // RepositoryProvider<UsuarioLocalRepository>(create: (_) => UsuarioDatabaseImpl()),
         // RepositoryProvider<ClienteLocalRepository>(create: (_) => ClienteDatabaseImpl()),
         // RepositoryProvider<ClienteCulturaLocalRepository>(create: (_) => ClienteCulturaDatabaseImpl()),
@@ -132,31 +142,20 @@ class FarmTrackerApp extends StatelessWidget {
             ),
           ),
           BlocProvider<WalletCubit>(
-            create: (ctx) => WalletCubit(
-              ctx.read<WalletRepository>(),
-              ctx.read<WalletLocalRepository>(),
-            ),
+            create: (ctx) => WalletCubit(ctx.read<WalletRepository>(), ctx.read<WalletLocalRepository>()),
           ),
           BlocProvider<CustomerCubit>(
-            create: (ctx) => CustomerCubit(
-              ctx.read<CustomerRepository>(),
-              ctx.read<CustomerLocalRepository>(),
-            ),
+            create: (ctx) => CustomerCubit(ctx.read<CustomerRepository>(), ctx.read<CustomerLocalRepository>()),
           ),
           BlocProvider<AddressCubit>(
-            create: (ctx) => AddressCubit(
-              ctx.read<AddressRepository>(),
-              ctx.read<AddressLocalRepository>(),
-            ),
+            create: (ctx) => AddressCubit(ctx.read<AddressRepository>(), ctx.read<AddressLocalRepository>()),
           ),
           BlocProvider<BaseEntityCubit>(
-            create: (ctx) => BaseEntityCubit(
-              ctx.read<BaseEntityRepository>(),
-              ctx.read<BaseEntityLocalRepository>(),
-            ),
+            create: (ctx) => BaseEntityCubit(ctx.read<BaseEntityRepository>(), ctx.read<BaseEntityLocalRepository>()),
           ),
-          BlocProvider<AppointmentCubit>(
-            create: (ctx) => AppointmentCubit(ctx.read<AppointmentLocalRepository>()),
+          BlocProvider<AppointmentCubit>(create: (ctx) => AppointmentCubit(ctx.read<AppointmentLocalRepository>())),
+          BlocProvider<TypeVisitCubit>(
+            create: (ctx) => TypeVisitCubit(ctx.read<TypeVisitRepository>(), ctx.read<TypeVisitLocalRepository>()),
           ),
           // BlocProvider<ClienteCubit>(
           //   create: (ctx) => ClienteCubit(

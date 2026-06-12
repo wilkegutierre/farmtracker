@@ -25,6 +25,16 @@ final class AppointmentListLoaded extends AppointmentState {
   List<Object?> get props => [appointments];
 }
 
+final class AppointmentDayLoaded extends AppointmentState {
+  final DateTime date;
+  final List<AppointmentModel> appointments;
+
+  const AppointmentDayLoaded({required this.date, required this.appointments});
+
+  @override
+  List<Object?> get props => [date, appointments];
+}
+
 final class AppointmentLoaded extends AppointmentState {
   final AppointmentModel appointment;
 
@@ -35,7 +45,12 @@ final class AppointmentLoaded extends AppointmentState {
 }
 
 final class AppointmentGravadoSucesso extends AppointmentState {
-  const AppointmentGravadoSucesso();
+  final DateTime appointmentDate;
+
+  const AppointmentGravadoSucesso({required this.appointmentDate});
+
+  @override
+  List<Object?> get props => [appointmentDate];
 }
 
 final class AppointmentAlteradoSucesso extends AppointmentState {

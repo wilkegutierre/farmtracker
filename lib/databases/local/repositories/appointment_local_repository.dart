@@ -5,5 +5,6 @@ abstract interface class AppointmentLocalRepository {
   AsyncResult<bool> gravar(AppointmentModel appointment);
   AsyncResult<bool> alterar(AppointmentModel appointment);
   AsyncResult<List<AppointmentModel>> appointments();
+  AsyncResult<List<AppointmentModel>> obterPorData(DateTime date);
   AsyncResult<AppointmentModel> obterPorId(String id);
 }

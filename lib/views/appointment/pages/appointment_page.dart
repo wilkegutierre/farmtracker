@@ -1,8 +1,12 @@
 import 'package:farmtracker/core/session/session_storage.dart';
+import 'package:farmtracker/databases/models/response/type_visit_response_model.dart';
 import 'package:farmtracker/models/domain/appointment_model.dart';
+import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_state.dart';
+import 'package:farmtracker/views/cubits/type_visit/type_visit_cubit.dart';
+import 'package:farmtracker/views/cubits/type_visit/type_visit_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +21,8 @@ class AppointmentPage extends StatefulWidget {
   final String? projectBatch;
   final double? projectArea;
   final String? project;
+  final String? orgOwner;
+  final DateTime? selectedDate;
 
   const AppointmentPage({
     super.key,
@@ -27,6 +33,8 @@ class AppointmentPage extends StatefulWidget {
     this.projectBatch,
     this.projectArea,
     this.project,
+    this.orgOwner,
+    this.selectedDate,
   });
 
   @override
@@ -35,21 +43,9 @@ class AppointmentPage extends StatefulWidget {
 
 class _AppointmentPageState extends State<AppointmentPage> {
   final TextEditingController _descriptionController = TextEditingController();
-  DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  String? _selectedVisitType;
+  int? _selectedVisitTypeId;
   bool _isSaving = false;
-
-  final List<String> _visitTypes = [
-    'Monitoramento',
-    'Tratamento',
-    'Consulta',
-    'Inspeção',
-    'Análise de Solo',
-    'Avaliação de Irrigação',
-    'Colheita',
-    'Plantio',
-  ];
 
   @override
   void dispose() {
@@ -60,22 +56,18 @@ class _AppointmentPageState extends State<AppointmentPage> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime.now();
-    _selectedTime = const TimeOfDay(hour: 10, minute: 30);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _carregarTiposVisita());
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      locale: const Locale('pt', 'BR'),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+  Future<void> _carregarTiposVisita() async {
+    final TypeVisitCubit typeVisitCubit = context.read<TypeVisitCubit>();
+    await typeVisitCubit.carregarTypeVisits();
+
+    if (!mounted) return;
+
+    final String? orgOwner = widget.orgOwner?.trim();
+    if (orgOwner != null && orgOwner.isNotEmpty) {
+      await typeVisitCubit.syncTypeVisits(orgOwner);
     }
   }
 
@@ -91,8 +83,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy', 'pt_BR').format(date);
+  String _formatDateLegenda(DateTime date) {
+    return DateFormat("EEEE, d 'de' MMMM 'de' y", 'pt_BR').format(date);
   }
 
   String _formatTime(TimeOfDay time) {
@@ -100,14 +92,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   String? _validarFormulario() {
-    if (_selectedVisitType == null || _selectedVisitType!.isEmpty) {
+    if (_selectedVisitTypeId == null) {
       return 'Selecione o tipo de visita.';
-    }
-    if (_selectedDate == null) {
-      return 'Selecione a data da visita.';
     }
     if (_selectedTime == null) {
       return 'Selecione o horário da visita.';
+    }
+    if (widget.selectedDate == null) {
+      return 'Data do agendamento não informada. Selecione um dia no calendário.';
     }
     if (widget.customerId == null || widget.customerId!.isEmpty) {
       return 'Cliente não identificado. Selecione um cliente antes de agendar.';
@@ -130,16 +122,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
     final String? userId = await SessionStorage.getUserId();
     if (userId == null || userId.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuário não autenticado. Faça login novamente.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Usuário não autenticado. Faça login novamente.')));
       return;
     }
 
+    final DateTime dataSelecionada = widget.selectedDate!;
     final DateTime dataHora = DateTime(
-      _selectedDate!.year,
-      _selectedDate!.month,
-      _selectedDate!.day,
+      dataSelecionada.year,
+      dataSelecionada.month,
+      dataSelecionada.day,
       _selectedTime!.hour,
       _selectedTime!.minute,
     );
@@ -150,7 +143,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       customer: widget.customerId!,
       project: widget.project!,
       datetime: dataHora.toIso8601String(),
-      type: _selectedVisitType!,
+      type: _selectedVisitTypeId!,
       todo: _descriptionController.text.trim(),
       status: 3,
     );
@@ -177,16 +170,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return BlocListener<AppointmentCubit, AppointmentState>(
       listener: (context, state) {
         if (state is AppointmentGravadoSucesso) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Visita agendada!')),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Visita agendada!')));
           context.go('/home');
         }
 
         if (state is AppointmentErro) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.mensagem)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.mensagem)));
         }
       },
       child: Scaffold(
@@ -210,8 +199,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   'Lote #$projectBatch ',
                   style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
-                const SizedBox(height: 32),
-                _buildLabel('Tipo de visita'),
+                const SizedBox(height: 24),
+                if (widget.selectedDate != null) ...[
+                  _buildDateLegend(theme),
+                  const SizedBox(height: 24),
+                ],
+                _buildLabel('Tipo de visita', obrigatorio: true),
                 const SizedBox(height: 8),
                 _buildDropdownField(),
                 const SizedBox(height: 20),
@@ -224,14 +217,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   maxLines: 4,
                 ),
                 const SizedBox(height: 20),
-                _buildLabel('Data'),
-                const SizedBox(height: 8),
-                _buildDateField(
-                  onTap: () => _selectDate(context),
-                  value: _selectedDate != null ? _formatDate(_selectedDate!) : null,
-                ),
-                const SizedBox(height: 20),
-                _buildLabel('Hora'),
+                _buildLabel('Hora', obrigatorio: true),
                 const SizedBox(height: 8),
                 _buildTimeField(
                   onTap: () => _selectTime(context),
@@ -244,21 +230,76 @@ class _AppointmentPageState extends State<AppointmentPage> {
         floatingActionButton: FloatingActionButton(
           onPressed: _isSaving ? null : _salvarAgendamento,
           child: _isSaving
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.save),
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String label) {
+  Widget _buildLabel(String label, {bool obrigatorio = false}) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(label, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600)),
+      child: Text.rich(
+        TextSpan(
+          text: label,
+          style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w600),
+          children: obrigatorio
+              ? [
+                  TextSpan(
+                    text: ' *',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ]
+              : null,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateLegend(ThemeData theme) {
+    final ColorScheme colorScheme = theme.colorScheme;
+    final String dataFormatada = _formatDateLegenda(widget.selectedDate!);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer.withValues(alpha: 0.25),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today, size: 22, color: AppColors.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Data do agendamento',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dataFormatada,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -285,34 +326,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 
-  Widget _buildDateField({required VoidCallback onTap, String? value}) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.calendar_today, size: 20, color: colorScheme.onSurfaceVariant),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                value ?? 'Select date',
-                style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : colorScheme.onSurfaceVariant),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildTimeField({required VoidCallback onTap, String? value}) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
@@ -331,7 +344,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                value ?? 'Select time',
+                value ?? 'Selecione o horário',
                 style: AppTextStyles.bodyLarge.copyWith(color: value != null ? null : colorScheme.onSurfaceVariant),
               ),
             ),
@@ -342,36 +355,50 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   Widget _buildDropdownField() {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedVisitType,
-          isExpanded: true,
-          hint: Text(
-            'Selecione o tipo de visita',
-            style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant),
+    return BlocBuilder<TypeVisitCubit, TypeVisitState>(
+      builder: (context, state) {
+        final List<TypeVisitResponseModel> typeVisits = state is TypeVisitListLoaded ? state.typeVisits : <TypeVisitResponseModel>[];
+        final bool hasSelectedType = typeVisits.any((typeVisit) => typeVisit.id == _selectedVisitTypeId);
+        final bool isLoading = state is TypeVisitLoading;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(16),
           ),
-          icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
-          style: AppTextStyles.bodyLarge,
-          dropdownColor: colorScheme.surface,
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedVisitType = newValue;
-            });
-          },
-          items: _visitTypes.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(value: value, child: Text(value));
-          }).toList(),
-        ),
-      ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              value: hasSelectedType ? _selectedVisitTypeId : null,
+              isExpanded: true,
+              hint: Text(
+                isLoading ? 'Carregando tipos de visita...' : 'Selecione o tipo de visita',
+                style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+              icon: isLoading
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
+              style: AppTextStyles.bodyLarge,
+              dropdownColor: colorScheme.surface,
+              onChanged: isLoading || typeVisits.isEmpty
+                  ? null
+                  : (int? newValue) {
+                      setState(() {
+                        _selectedVisitTypeId = newValue;
+                      });
+                    },
+              items: typeVisits.map<DropdownMenuItem<int>>((TypeVisitResponseModel typeVisit) {
+                return DropdownMenuItem<int>(
+                  value: typeVisit.id,
+                  child: Text(typeVisit.description),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

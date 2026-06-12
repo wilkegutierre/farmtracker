@@ -11,7 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomerAppointmentPage extends StatefulWidget {
-  const CustomerAppointmentPage({super.key});
+  final DateTime? selectedDate;
+
+  const CustomerAppointmentPage({super.key, this.selectedDate});
 
   @override
   State<CustomerAppointmentPage> createState() => _CustomerAppointmentPageState();
@@ -80,15 +82,20 @@ class _CustomerAppointmentPageState extends State<CustomerAppointmentPage> {
 
     if (culturaSelecionada == null || !mounted) return;
 
-    context.push('/appointment', extra: {
-      'clientName': _nomeDoCustomer(customer),
-      'customerId': customer.id,
-      'farmName': culturaSelecionada.projeto,
-      'projectTitle': culturaSelecionada.projeto,
-      'projectBatch': culturaSelecionada.lote,
-      'projectArea': culturaSelecionada.tamanhoHectare,
-      'project': culturaSelecionada.toSerialized(),
-    });
+    context.push(
+      '/appointment',
+      extra: {
+        'clientName': _nomeDoCustomer(customer),
+        'customerId': customer.id,
+        'farmName': culturaSelecionada.projeto,
+        'projectTitle': culturaSelecionada.projeto,
+        'projectBatch': culturaSelecionada.lote,
+        'projectArea': culturaSelecionada.tamanhoHectare,
+        'project': culturaSelecionada.toSerialized(),
+        'orgOwner': customer.orgOwner,
+        'selectedDate': widget.selectedDate,
+      },
+    );
   }
 
   @override
@@ -114,9 +121,7 @@ class _CustomerAppointmentPageState extends State<CustomerAppointmentPage> {
                   listenWhen: (_, current) => current is CustomerErro,
                   listener: (context, state) {
                     if (state is CustomerErro) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.mensagem)),
-                      );
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.mensagem)));
                     }
                   },
                   buildWhen: (previous, current) =>
@@ -203,11 +208,7 @@ class _CustomerAppointmentPageState extends State<CustomerAppointmentPage> {
     );
   }
 
-  Widget _buildEstadoVazio({
-    required ColorScheme colorScheme,
-    required String mensagem,
-    required IconData icone,
-  }) {
+  Widget _buildEstadoVazio({required ColorScheme colorScheme, required String mensagem, required IconData icone}) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

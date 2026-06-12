@@ -56,6 +56,8 @@ GoRouter createAppRouter(AuthCubit authCubit) {
             projectBatch: extra?['projectBatch'] as String?,
             projectArea: extra?['projectArea'] as double?,
             project: extra?['project'] as String?,
+            orgOwner: extra?['orgOwner'] as String?,
+            selectedDate: extra?['selectedDate'] as DateTime?,
           );
         },
       ),
@@ -66,7 +68,13 @@ GoRouter createAppRouter(AuthCubit authCubit) {
           return ExecuteAppointmentPage(clientName: extra?['clientName'] as String?);
         },
       ),
-      GoRoute(path: '/customerAppointment', builder: (context, state) => const CustomerAppointmentPage()),
+      GoRoute(
+        path: '/customerAppointment',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CustomerAppointmentPage(selectedDate: extra?['selectedDate'] as DateTime?);
+        },
+      ),
     ],
   );
 }

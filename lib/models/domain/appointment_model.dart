@@ -12,7 +12,7 @@ class AppointmentModel with EquatableMixin {
   final String customer;
   final String project;
   final String datetime;
-  final String type;
+  final int type;
   final String todo;
   final int status;
 
@@ -33,7 +33,7 @@ class AppointmentModel with EquatableMixin {
     String? customer,
     String? project,
     String? datetime,
-    String? type,
+    int? type,
     String? todo,
     int? status,
   }) {
