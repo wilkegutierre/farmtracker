@@ -3,69 +3,68 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'appointment_execute_model.g.dart';
+part 'appointment_execution_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class AppointmentExecutedModel with EquatableMixin {
+class AppointmentExecutionModel with EquatableMixin {
   final String id;
   final int completed;
   final int reason;
-  final int submotive;
+  //final int subreason;
   final int hasPest;
-  final int pest;
-  // TODO:(wilkealmeida) campo abaixo recebe dateTime formatado
+  final String pest;
+  final String cropPest;
   final String datetime;
-  final List<String> projects;
   final String todo;
   final String appointmentId;
 
-  AppointmentExecutedModel({
+  AppointmentExecutionModel({
     required this.id,
     required this.completed,
     required this.reason,
-    required this.submotive,
+    //required this.subreason,
     required this.hasPest,
     required this.pest,
-    required this.projects,
+    required this.cropPest,
     required this.datetime,
     required this.todo,
     required this.appointmentId,
   });
 
-  AppointmentExecutedModel copyWith({
+  AppointmentExecutionModel copyWith({
     String? id,
     int? completed,
     int? reason,
-    int? submotive,
+    //int? subreason,
     int? hasPest,
-    int? pest,
-    List<String>? projects,
+    String? pest,
+    String? cropPest,
     String? datetime,
     String? todo,
     String? appointmentId,
   }) {
-    return AppointmentExecutedModel(
+    return AppointmentExecutionModel(
       id: id ?? this.id,
       completed: completed ?? this.completed,
       reason: reason ?? this.reason,
-      submotive: submotive ?? this.submotive,
+      //subreason: subreason ?? this.subreason,
       hasPest: hasPest ?? this.hasPest,
       pest: pest ?? this.pest,
-      projects: projects ?? this.projects,
+      cropPest: cropPest ?? this.cropPest,
       datetime: datetime ?? this.datetime,
       todo: todo ?? this.todo,
       appointmentId: appointmentId ?? this.appointmentId,
     );
   }
 
-  Map<String, dynamic> toJson() => _$AppointmentExecutedModelToJson(this);
+  Map<String, dynamic> toJson() => _$AppointmentExecutionModelToJson(this);
 
-  factory AppointmentExecutedModel.fromJson(Map<String, dynamic> json) => _$AppointmentExecutedModelFromJson(json);
+  factory AppointmentExecutionModel.fromJson(Map<String, dynamic> json) => _$AppointmentExecutionModelFromJson(json);
 
   String toJsonStringfy() => json.encode(toJson());
 
   @override
-  List<Object?> get props => [id, completed, reason, submotive, hasPest, pest, projects, datetime, todo, appointmentId];
+  List<Object?> get props => [id, completed, reason, hasPest, pest, cropPest, datetime, todo, appointmentId];
 
   @override
   bool? get stringify => true;

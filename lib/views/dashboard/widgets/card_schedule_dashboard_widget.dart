@@ -1,3 +1,4 @@
+import 'package:farmtracker/domains/enums/appointment_status_enum.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/dashboard/widgets/outlined_button_dashboard_widget.dart';
@@ -9,7 +10,8 @@ class CardScheduleDashboardWidget extends StatelessWidget {
   final String time;
   final String title;
   final String location;
-  final int status;
+  final int statusAppointment;
+  final DateTime appointmentDateTime;
 
   const CardScheduleDashboardWidget({
     super.key,
@@ -17,46 +19,63 @@ class CardScheduleDashboardWidget extends StatelessWidget {
     required this.time,
     required this.title,
     required this.location,
-    required this.status,
+    required this.statusAppointment,
+    required this.appointmentDateTime,
   });
 
+  bool get _isAtrasado => AppointmentStatusEnum.appointmentIsAtrasado(
+        status: statusAppointment,
+        appointmentDateTime: appointmentDateTime,
+      );
+
   String _getStatusText() {
-    switch (status) {
-      case 0:
-        return 'Realizada';
-      case 1:
-        return 'Cancelado';
-      case 2:
-        return 'Realizada';
-      case 3:
-        return 'Pendente';
-      default:
-        return 'Realizada';
+    if (_isAtrasado) return 'Atrasado';
+
+    final AppointmentStatusEnum? statusEnum = AppointmentStatusEnum.fromValue(statusAppointment);
+    return statusEnum?.label ?? 'Desconhecido';
+  }
+
+  Color _getStatusColor() {
+    if (_isAtrasado) return AppColors.warning;
+
+    final AppointmentStatusEnum? statusEnum = AppointmentStatusEnum.fromValue(statusAppointment);
+
+    switch (statusEnum) {
+      case AppointmentStatusEnum.criado:
+        return AppColors.success;
+      case AppointmentStatusEnum.cancelado:
+        return AppColors.error;
+      case AppointmentStatusEnum.realizado:
+        return AppColors.secondary;
+      case null:
+        return AppColors.error;
     }
   }
 
-  Color _getStatusColor(ColorScheme scheme) {
-    switch (status) {
-      case 1: // Cancelado
-        return AppColors.error;
-      case 0: // Agendado
-      case 2: // Concluído
-        return AppColors.success;
-      case 3: // Pendente
-        return scheme.onSurfaceVariant;
-      default: // Agendado
-        return AppColors.success;
+  Color _getCardBackgroundColor(ColorScheme scheme) {
+    if (_isAtrasado) return AppColors.warning.withValues(alpha: 0.12);
+    return scheme.surfaceContainer;
+  }
+
+  BorderSide _getCardBorder() {
+    if (_isAtrasado) {
+      return BorderSide(color: AppColors.warning.withValues(alpha: 0.45));
     }
+    return BorderSide.none;
   }
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final bool isAtrasado = _isAtrasado;
 
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide.none),
-      color: scheme.surfaceContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: _getCardBorder(),
+      ),
+      color: _getCardBackgroundColor(scheme),
       child: InkWell(
         onTap: onPressedCard,
         borderRadius: BorderRadius.circular(16),
@@ -65,17 +84,25 @@ class CardScheduleDashboardWidget extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left side: Time, Title, Location
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Time with icon
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 16, color: scheme.onSurfaceVariant),
+                        Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: isAtrasado ? AppColors.warning : scheme.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 6),
-                        Text(time, style: AppTextStyles.bodyMedium.copyWith(color: scheme.onSurfaceVariant)),
+                        Text(
+                          time,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: isAtrasado ? AppColors.warning : scheme.onSurfaceVariant,
+                            fontWeight: isAtrasado ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -107,21 +134,27 @@ class CardScheduleDashboardWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Status
-                  Text(
-                    _getStatusText(),
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: _getStatusColor(scheme),
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isAtrasado) ...[
+                        Icon(Icons.warning_amber_rounded, size: 18, color: AppColors.warning),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        _getStatusText(),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: _getStatusColor(),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   // Ver button
                   OutlinedButtonDashboardWidget(
-                    onPressed: () => context.push(
-                      '/appointment',
-                      extra: {'clientName': 'Cliente', 'farmName': 'Fazenda'},
-                    ),
+                    onPressed: () =>
+                        context.push('/appointment', extra: {'clientName': 'Cliente', 'farmName': 'Fazenda'}),
                     text: 'Ver',
                   ),
                 ],

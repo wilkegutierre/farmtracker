@@ -3,7 +3,7 @@ import 'package:farmtracker/core/session/auth_cubit.dart';
 import 'package:farmtracker/core/session/auth_state.dart';
 import 'package:farmtracker/views/appointment/pages/appointment_page.dart';
 import 'package:farmtracker/views/appointment/pages/customer_appointment_page.dart';
-import 'package:farmtracker/views/appointment/pages/execute_appointment_page.dart';
+import 'package:farmtracker/views/appointment/pages/appointment_execution_page.dart';
 import 'package:farmtracker/views/clients/page/cadastro_cliente_page.dart';
 import 'package:farmtracker/views/clients/page/customer_page.dart';
 import 'package:farmtracker/views/clients/page/relacao_cliente_page.dart';
@@ -65,7 +65,10 @@ GoRouter createAppRouter(AuthCubit authCubit) {
         path: '/executeAppointment',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
-          return ExecuteAppointmentPage(clientName: extra?['clientName'] as String?);
+          return AppointmentExecutionPage(
+            clientName: extra?['clientName'] as String?,
+            orgOwner: extra?['orgOwner'] as String?,
+          );
         },
       ),
       GoRoute(

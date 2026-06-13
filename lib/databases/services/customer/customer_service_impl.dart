@@ -1,16 +1,18 @@
 import 'dart:convert';
 
 import 'package:farmtracker/databases/errors/http_error.dart';
+import 'package:farmtracker/databases/models/enum/sync_table_action.dart';
 import 'package:farmtracker/databases/models/response/customer_response_model.dart';
 import 'package:farmtracker/databases/services/customer/customer_service.dart';
 import 'package:farmtracker/databases/services/http/base_service.dart';
 import 'package:farmtracker/databases/services/http/http_interface.dart';
+import 'package:farmtracker/domains/repositories/sync/sync_repository.dart';
 import 'package:farmtracker/enviroment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:result_dart/result_dart.dart';
 
-class CustomerServiceImpl with BaseServiceMixin implements CustomerService {
+class CustomerServiceImpl with BaseServiceMixin implements CustomerService, SyncRepository {
   final HttpClientInterface _httpClient;
 
   CustomerServiceImpl(this._httpClient);
@@ -53,5 +55,15 @@ class CustomerServiceImpl with BaseServiceMixin implements CustomerService {
     }
     if (items.isEmpty) return [];
     return items.map((item) => CustomerResponseModel.fromJson(item as Map<String, dynamic>)).toList();
+  }
+
+  @override
+  Future<AsyncResult<dynamic>> sendToServer({
+    required String recordId,
+    required SyncAction action,
+    required Map<String, dynamic> payload,
+  }) {
+    // TODO: implement sendToServer
+    throw UnimplementedError();
   }
 }

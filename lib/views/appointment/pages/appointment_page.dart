@@ -1,8 +1,10 @@
+import 'package:farmtracker/domains/enums/appointment_status_enum.dart';
 import 'package:farmtracker/core/session/session_storage.dart';
 import 'package:farmtracker/databases/models/response/type_visit_response_model.dart';
 import 'package:farmtracker/models/domain/appointment_model.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_text_styles.dart';
+import 'package:farmtracker/views/appointment/widgets/retroactive_time_dialog.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_state.dart';
 import 'package:farmtracker/views/cubits/type_visit/type_visit_cubit.dart';
@@ -62,25 +64,39 @@ class _AppointmentPageState extends State<AppointmentPage> {
   Future<void> _carregarTiposVisita() async {
     final TypeVisitCubit typeVisitCubit = context.read<TypeVisitCubit>();
     await typeVisitCubit.carregarTypeVisits();
-
-    if (!mounted) return;
-
-    final String? orgOwner = widget.orgOwner?.trim();
-    if (orgOwner != null && orgOwner.isNotEmpty) {
-      await typeVisitCubit.syncTypeVisits(orgOwner);
-    }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime ?? const TimeOfDay(hour: 10, minute: 30),
-    );
-    if (picked != null && picked != _selectedTime) {
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(context: context, initialTime: _selectedTime ?? TimeOfDay.now());
+    if (picked == null || !mounted) return;
+
+    if (_isHorarioRetroativo(picked)) {
+      await showRetroactiveTimeDialog(context);
+      return;
+    }
+
+    if (picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
       });
     }
+  }
+
+  bool _isAgendamentoParaHoje() {
+    final DateTime dataSelecionada = widget.selectedDate!;
+    final DateTime agora = DateTime.now();
+    return dataSelecionada.year == agora.year &&
+        dataSelecionada.month == agora.month &&
+        dataSelecionada.day == agora.day;
+  }
+
+  bool _isHorarioRetroativo(TimeOfDay time) {
+    if (widget.selectedDate == null || !_isAgendamentoParaHoje()) return false;
+
+    final DateTime agora = DateTime.now();
+    final int minutosSelecionados = time.hour * 60 + time.minute;
+    final int minutosAtuais = agora.hour * 60 + agora.minute;
+    return minutosSelecionados < minutosAtuais;
   }
 
   String _formatDateLegenda(DateTime date) {
@@ -93,7 +109,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   String? _validarFormulario() {
     if (_selectedVisitTypeId == null) {
-      return 'Selecione o tipo de visita.';
+      return 'Selecione o motivo da visita.';
     }
     if (_selectedTime == null) {
       return 'Selecione o horário da visita.';
@@ -116,6 +132,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
     final String? erroValidacao = _validarFormulario();
     if (erroValidacao != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(erroValidacao)));
+      return;
+    }
+
+    if (_isHorarioRetroativo(_selectedTime!)) {
+      if (!mounted) return;
+      await showRetroactiveTimeDialog(context);
       return;
     }
 
@@ -145,7 +167,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       datetime: dataHora.toIso8601String(),
       type: _selectedVisitTypeId!,
       todo: _descriptionController.text.trim(),
-      status: 3,
+      status: AppointmentStatusEnum.criado.value,
     );
 
     if (!mounted) return;
@@ -200,11 +222,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 24),
-                if (widget.selectedDate != null) ...[
-                  _buildDateLegend(theme),
-                  const SizedBox(height: 24),
-                ],
-                _buildLabel('Tipo de visita', obrigatorio: true),
+                if (widget.selectedDate != null) ...[_buildDateLegend(theme), const SizedBox(height: 24)],
+                _buildLabel('Motivo', obrigatorio: true),
                 const SizedBox(height: 8),
                 _buildDropdownField(),
                 const SizedBox(height: 20),
@@ -219,10 +238,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 const SizedBox(height: 20),
                 _buildLabel('Hora', obrigatorio: true),
                 const SizedBox(height: 8),
-                _buildTimeField(
-                  onTap: () => _selectTime(context),
-                  value: _selectedTime != null ? _formatTime(_selectedTime!) : null,
-                ),
+                _buildTimeField(onTap: _selectTime, value: _selectedTime != null ? _formatTime(_selectedTime!) : null),
               ],
             ),
           ),
@@ -290,10 +306,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 const SizedBox(height: 2),
                 Text(
                   dataFormatada,
-                  style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -359,7 +372,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
     return BlocBuilder<TypeVisitCubit, TypeVisitState>(
       builder: (context, state) {
-        final List<TypeVisitResponseModel> typeVisits = state is TypeVisitListLoaded ? state.typeVisits : <TypeVisitResponseModel>[];
+        final List<TypeVisitResponseModel> typeVisits = state is TypeVisitListLoaded
+            ? state.typeVisits
+            : <TypeVisitResponseModel>[];
         final bool hasSelectedType = typeVisits.any((typeVisit) => typeVisit.id == _selectedVisitTypeId);
         final bool isLoading = state is TypeVisitLoading;
 
@@ -374,7 +389,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
               value: hasSelectedType ? _selectedVisitTypeId : null,
               isExpanded: true,
               hint: Text(
-                isLoading ? 'Carregando tipos de visita...' : 'Selecione o tipo de visita',
+                isLoading ? 'Carregando tipos de visita...' : 'Selecione o motivo da visita',
                 style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant),
               ),
               icon: isLoading
@@ -390,10 +405,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       });
                     },
               items: typeVisits.map<DropdownMenuItem<int>>((TypeVisitResponseModel typeVisit) {
-                return DropdownMenuItem<int>(
-                  value: typeVisit.id,
-                  child: Text(typeVisit.description),
-                );
+                return DropdownMenuItem<int>(value: typeVisit.id, child: Text(typeVisit.description));
               }).toList(),
             ),
           ),

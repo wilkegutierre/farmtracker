@@ -7,10 +7,30 @@ class AppointmentCubit extends Cubit<AppointmentState> {
   final AppointmentLocalRepository _appointmentLocalRepository;
 
   List<AppointmentModel> _allAppointments = [];
+  AppointmentModel? _appointmentEmExecucao;
 
   AppointmentCubit(this._appointmentLocalRepository) : super(const AppointmentInitial());
 
   List<AppointmentModel> get allAppointments => _allAppointments;
+  AppointmentModel? get appointmentEmExecucao => _appointmentEmExecucao;
+
+  Future<bool> selecionarParaExecucao(String appointmentId) async {
+    final result = await _appointmentLocalRepository.obterPorId(appointmentId);
+    return result.fold(
+      (appointment) {
+        _appointmentEmExecucao = appointment;
+        return true;
+      },
+      (_) {
+        _appointmentEmExecucao = null;
+        return false;
+      },
+    );
+  }
+
+  void limparExecucao() {
+    _appointmentEmExecucao = null;
+  }
 
   Future<void> carregarAppointments() async {
     emit(const AppointmentLoading());

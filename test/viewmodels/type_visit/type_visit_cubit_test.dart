@@ -136,7 +136,7 @@ void main() {
         when(() => mockLocalRepository.gravar(any())).thenAnswer((_) async => const Success(true));
       },
       build: buildCubit,
-      act: (cubit) => cubit.syncTypeVisitsByCustomers([customerFixture]),
+      act: (cubit) => cubit.syncTypeVisitsByCustomers('customer-001'),
       expect: () => [
         const TypeVisitLoading(),
         TypeVisitListLoaded([typeVisitFixture]),
@@ -150,7 +150,7 @@ void main() {
     blocTest<TypeVisitCubit, TypeVisitState>(
       'syncTypeVisitsByCustomers emite [TypeVisitLoading, TypeVisitErro] quando customers não possuem orgOwner',
       build: buildCubit,
-      act: (cubit) => cubit.syncTypeVisitsByCustomers([CustomerResponseModel(id: 'customer-001')]),
+      act: (cubit) => cubit.syncTypeVisitsByCustomers('customer-001'),
       expect: () => [
         const TypeVisitLoading(),
         const TypeVisitErro('Nenhuma organização encontrada para sincronizar tipos de visita.'),
@@ -166,7 +166,7 @@ void main() {
         when(() => mockRemoteRepository.getByOrgOwner(any())).thenAnswer((_) async => Failure(InternalServerError()));
       },
       build: buildCubit,
-      act: (cubit) => cubit.syncTypeVisitsByCustomers([customerFixture]),
+      act: (cubit) => cubit.syncTypeVisitsByCustomers('customer-001'),
       expect: () => [const TypeVisitLoading(), const TypeVisitErro('Falha ao carregar tipos de visita da API.')],
     );
 
