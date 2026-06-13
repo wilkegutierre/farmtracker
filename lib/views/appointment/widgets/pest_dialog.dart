@@ -1,3 +1,4 @@
+import 'package:farmtracker/databases/models/response/pest_response_model.dart';
 import 'package:farmtracker/views/clients/models/cultura_item.dart';
 import 'package:farmtracker/views/core/style/app_colors.dart';
 import 'package:farmtracker/views/core/style/app_spacing.dart';
@@ -5,6 +6,8 @@ import 'package:farmtracker/views/core/style/app_text_styles.dart';
 import 'package:farmtracker/views/cubits/appointment/appointment_cubit.dart';
 import 'package:farmtracker/views/cubits/customer/customer_cubit.dart';
 import 'package:farmtracker/views/cubits/customer/customer_state.dart';
+import 'package:farmtracker/views/cubits/pest/pest_cubit.dart';
+import 'package:farmtracker/views/cubits/pest/pest_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,31 +33,28 @@ class PestLotCropInfo {
     required this.crop,
     required this.hectares,
   });
+
+  String get rotuloExibicao => '$crop; $pest; ${hectares.toStringAsFixed(2)} ha';
 }
 
-Future<PestLotCropInfo?> showPestDialog(
-  BuildContext context, {
-  required String customerName,
-  required List<String> pests,
-}) {
+Future<PestLotCropInfo?> showPestDialog(BuildContext context, {required String customerName}) {
   return showDialog<PestLotCropInfo>(
     context: context,
-    builder: (_) => PestDialog(customerName: customerName, pests: pests),
+    builder: (_) => PestDialog(customerName: customerName),
   );
 }
 
 class PestDialog extends StatefulWidget {
   final String customerName;
-  final List<String> pests;
 
-  const PestDialog({super.key, required this.customerName, required this.pests});
+  const PestDialog({super.key, required this.customerName});
 
   @override
   State<PestDialog> createState() => _PestDialogState();
 }
 
 class _PestDialogState extends State<PestDialog> {
-  String? _selectedPest;
+  String? _selectedPestId;
   CulturaItem? _selectedCultura;
   List<CulturaItem> _culturas = <CulturaItem>[];
   bool _isLoadingCulturas = true;
@@ -69,7 +69,24 @@ class _PestDialogState extends State<PestDialog> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _carregarCulturasDoCliente());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _carregarCulturasDoCliente();
+      _carregarPests();
+    });
+  }
+
+  Future<void> _carregarPests() async {
+    final PestCubit pestCubit = context.read<PestCubit>();
+
+    if (pestCubit.state is PestListLoaded) return;
+
+    await pestCubit.carregarPests();
+    if (!mounted) return;
+
+    final PestState state = pestCubit.state;
+    if (state is PestErro) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.mensagem)));
+    }
   }
 
   Future<void> _carregarCulturasDoCliente() async {
@@ -128,24 +145,27 @@ class _PestDialogState extends State<PestDialog> {
   }
 
   void _adicionarPraga() {
-    if (_selectedPest == null || _selectedCultura == null || _hectareController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, preencha todos os campos')),
-      );
+    final PestState pestState = context.read<PestCubit>().state;
+    final PestResponseModel? selectedPest = pestState is PestListLoaded
+        ? pestState.pests.where((PestResponseModel pest) => pest.id == _selectedPestId).firstOrNull
+        : null;
+
+    if (selectedPest == null || _selectedCultura == null || _hectareController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, preencha todos os campos')));
       return;
     }
 
     final double hectares = double.tryParse(_hectareController.text.replaceAll(',', '.')) ?? 0;
     if (hectares <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, insira um valor válido para hectares')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Por favor, insira um valor válido para hectares')));
       return;
     }
 
     Navigator.of(context).pop(
       PestLotCropInfo(
-        pest: _selectedPest!,
+        pest: selectedPest.name,
         projeto: _selectedCultura!.projeto,
         lot: _selectedCultura!.lote,
         crop: _selectedCultura!.cultura,
@@ -163,10 +183,7 @@ class _PestDialogState extends State<PestDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 640),
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        ),
+        decoration: BoxDecoration(color: scheme.surface, borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -270,7 +287,10 @@ class _PestDialogState extends State<PestDialog> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text('Adicionar', style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Adicionar',
+                        style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600, color: scheme.onPrimary),
+                      ),
                     ),
                   ),
                 ],
@@ -327,26 +347,40 @@ class _PestDialogState extends State<PestDialog> {
   }
 
   Widget _buildPestDropdown(ColorScheme scheme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: 4),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedPest,
-          isExpanded: true,
-          hint: Text('Selecione uma praga', style: AppTextStyles.bodyLarge.copyWith(color: scheme.onSurfaceVariant)),
-          icon: Icon(Icons.arrow_drop_down, color: scheme.onSurfaceVariant),
-          style: AppTextStyles.bodyLarge,
-          dropdownColor: scheme.surface,
-          onChanged: (String? value) => setState(() => _selectedPest = value),
-          items: widget.pests.map<DropdownMenuItem<String>>((String pest) {
-            return DropdownMenuItem<String>(value: pest, child: Text(pest));
-          }).toList(),
-        ),
-      ),
+    return BlocBuilder<PestCubit, PestState>(
+      builder: (context, state) {
+        final List<PestResponseModel> pests = state is PestListLoaded ? state.pests : <PestResponseModel>[];
+        final bool isLoading = state is PestLoading || state is PestInitial;
+        final bool hasSelectedPest =
+            _selectedPestId != null && pests.any((PestResponseModel pest) => pest.id == _selectedPestId);
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: 4),
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: hasSelectedPest ? _selectedPestId : null,
+              isExpanded: true,
+              hint: Text(
+                isLoading ? 'Carregando pragas...' : 'Selecione uma praga',
+                style: AppTextStyles.bodyLarge.copyWith(color: scheme.onSurfaceVariant),
+              ),
+              icon: isLoading
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Icon(Icons.arrow_drop_down, color: scheme.onSurfaceVariant),
+              style: AppTextStyles.bodyLarge,
+              dropdownColor: scheme.surface,
+              onChanged: isLoading || pests.isEmpty ? null : (String? value) => setState(() => _selectedPestId = value),
+              items: pests.map<DropdownMenuItem<String>>((PestResponseModel pest) {
+                return DropdownMenuItem<String>(value: pest.id, child: Text(pest.name));
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -361,12 +395,7 @@ class _ProjetoCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _ProjetoCard({
-    required this.cultura,
-    required this.corLote,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const _ProjetoCard({required this.cultura, required this.corLote, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -376,10 +405,7 @@ class _ProjetoCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        side: BorderSide(
-          color: isSelected ? AppColors.primary : Colors.transparent,
-          width: isSelected ? 2 : 0,
-        ),
+        side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent, width: isSelected ? 2 : 0),
       ),
       color: isSelected ? AppColors.primaryContainer.withValues(alpha: 0.2) : scheme.surfaceContainer,
       child: InkWell(

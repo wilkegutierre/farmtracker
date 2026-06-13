@@ -1,18 +1,13 @@
 class CulturaItem {
   static const String _separadorCulturas = ';;;';
-  static const String _separadorCampos = '|';
+  static const String _separadorCampos = ' | ';
 
   final String projeto;
   final String lote;
   final double tamanhoHectare;
   final String cultura;
 
-  CulturaItem({
-    required this.projeto,
-    required this.lote,
-    required this.tamanhoHectare,
-    required this.cultura,
-  });
+  CulturaItem({required this.projeto, required this.lote, required this.tamanhoHectare, required this.cultura});
 
   String get rotuloExibicao => 'P: $projeto - L: $lote - C: $cultura';
 
@@ -50,11 +45,7 @@ class CulturaItem {
     if (texto == null || texto.isEmpty) return [];
 
     if (texto.contains(_separadorCulturas)) {
-      return texto
-          .split(_separadorCulturas)
-          .map(fromSerialized)
-          .whereType<CulturaItem>()
-          .toList();
+      return texto.split(_separadorCulturas).map(fromSerialized).whereType<CulturaItem>().toList();
     }
 
     final CulturaItem? serializado = fromSerialized(texto);
@@ -63,14 +54,7 @@ class CulturaItem {
     final CulturaItem? rotulo = fromRotuloExibicao(texto);
     if (rotulo != null) return [rotulo];
 
-    return [
-      CulturaItem(
-        projeto: texto,
-        lote: '-',
-        cultura: '-',
-        tamanhoHectare: 1,
-      ),
-    ];
+    return [CulturaItem(projeto: texto, lote: '-', cultura: '-', tamanhoHectare: 1)];
   }
 
   static String? serializarLista(List<CulturaItem> culturas) {

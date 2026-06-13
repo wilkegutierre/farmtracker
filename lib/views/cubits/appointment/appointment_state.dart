@@ -53,6 +53,15 @@ final class AppointmentGravadoSucesso extends AppointmentState {
   List<Object?> get props => [appointmentDate];
 }
 
+final class AppointmentExecucaoGravadaSucesso extends AppointmentState {
+  final bool visitaRealizada;
+
+  const AppointmentExecucaoGravadaSucesso({required this.visitaRealizada});
+
+  @override
+  List<Object?> get props => [visitaRealizada];
+}
+
 final class AppointmentAlteradoSucesso extends AppointmentState {
   const AppointmentAlteradoSucesso();
 }

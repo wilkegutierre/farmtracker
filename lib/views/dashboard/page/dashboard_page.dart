@@ -15,6 +15,8 @@ import 'package:farmtracker/views/cubits/base_entity/base_entity_cubit.dart';
 import 'package:farmtracker/views/cubits/base_entity/base_entity_state.dart';
 import 'package:farmtracker/views/cubits/customer/customer_cubit.dart';
 import 'package:farmtracker/views/cubits/customer/customer_state.dart';
+import 'package:farmtracker/views/cubits/pest/pest_cubit.dart';
+import 'package:farmtracker/views/cubits/pest/pest_state.dart';
 import 'package:farmtracker/views/cubits/type_visit/type_visit_cubit.dart';
 import 'package:farmtracker/views/cubits/type_visit/type_visit_state.dart';
 import 'package:farmtracker/views/cubits/wallet/wallet_cubit.dart';
@@ -209,6 +211,15 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!mounted) return;
     final BaseEntityState baseEntityState = baseEntityCubit.state;
     if (baseEntityState is! BaseEntityListLoaded || baseEntityState.baseEntities.isEmpty) return;
+
+    // Sync pests
+    final PestCubit pestCubit = context.read<PestCubit>();
+    final String organizationId = baseEntityState.baseEntities.first.orgOwner;
+    await pestCubit.syncPests(organizationId);
+
+    if (!mounted) return;
+    final PestState pestState = pestCubit.state;
+    if (pestState is PestErro) return;
 
     // Sync addresses
     final AddressCubit addressCubit = context.read<AddressCubit>();

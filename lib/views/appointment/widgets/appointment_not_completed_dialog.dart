@@ -23,10 +23,7 @@ class AppointmentNotCompletedDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        ),
+        decoration: BoxDecoration(color: scheme.surface, borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.s6),
           child: Column(
@@ -35,19 +32,13 @@ class AppointmentNotCompletedDialog extends StatelessWidget {
               Container(
                 width: 64,
                 height: 64,
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.12), shape: BoxShape.circle),
                 child: const Icon(Icons.event_busy_outlined, size: 32, color: AppColors.error),
               ),
               const SizedBox(height: AppSpacing.s4),
               Text(
                 'Visita não realizada',
-                style: AppTextStyles.titleLarge.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: scheme.onSurface,
-                ),
+                style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.bold, color: scheme.onSurface),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.s2),
@@ -83,7 +74,10 @@ class AppointmentNotCompletedDialog extends StatelessWidget {
                       ),
                       child: Text(
                         'Confirmar',
-                        style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600),
+                        style: AppTextStyles.labelLarge.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onPrimary,
+                        ),
                       ),
                     ),
                   ),

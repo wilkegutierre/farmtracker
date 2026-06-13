@@ -1,9 +1,11 @@
 import 'package:farmtracker/databases/local/tables/address_table.dart';
+import 'package:farmtracker/databases/local/tables/appointment_execution_table.dart';
 import 'package:farmtracker/databases/local/tables/appointment_table.dart';
 import 'package:farmtracker/databases/local/tables/base_entity_table.dart';
 import 'package:farmtracker/databases/local/tables/crop_table.dart';
 import 'package:farmtracker/databases/local/tables/customer_table.dart';
 import 'package:farmtracker/databases/local/tables/organization_table.dart';
+import 'package:farmtracker/databases/local/tables/pest_table.dart';
 import 'package:farmtracker/databases/local/tables/type_visit_table.dart';
 import 'package:farmtracker/databases/local/tables/user_table.dart';
 import 'package:farmtracker/databases/local/tables/wallet_database_table.dart';
@@ -13,7 +15,7 @@ import 'package:sqflite/sqflite.dart';
 class FarmTrackerDatabase {
   FarmTrackerDatabase._();
 
-  final int _version = 3;
+  final int _version = 5;
 
   static final FarmTrackerDatabase instance = FarmTrackerDatabase._();
   static Database? _database;
@@ -44,11 +46,19 @@ class FarmTrackerDatabase {
     await db.execute(CustomerTable().create);
     await db.execute(AppointmentTable().create);
     await db.execute(TypeVisitTable().create);
+    await db.execute(PestTable().create);
+    await db.execute(AppointmentExecutionTable().create);
   }
 
   Future<void> _onUpgradeDataBase(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 3) {
       await db.execute(AppointmentTable().create);
+    }
+    if (oldVersion < 4) {
+      await db.execute(PestTable().create);
+    }
+    if (oldVersion < 5) {
+      await db.execute(AppointmentExecutionTable().create);
     }
   }
 }
